@@ -343,15 +343,24 @@
       <p class="klead rv d2" style="max-width:420px;margin-top:0">SF·레이싱·액션·청춘·광고까지 —
       대규모 세트·로케이션·군중 없이, 전 컷을 자체 데이터와 Flowmark 파이프라인으로 완성했습니다.</p>
     </div>
+    <!-- 대표작 — 데모 필름 (Films 섹션과 중복이지만 의도된 재노출) -->
+    <figure class="film reel-feature rv" data-yt="65sRoCflCuo">
+      <div class="ph">
+        <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
+        <div class="play"></div>
+      </div>
+      <figcaption><b>데모 필름 — The First Demo</b><span>RT 3:24 · 전 컷 AI 제작 · Generated &amp; Directed by SAW</span></figcaption>
+    </figure>
+    <!-- 각 셀의 data-yt에 유튜브 ID를 넣으면 클릭 재생 활성화 -->
     <div class="reel-grid">
-      <div class="reel wide rv"><img src="images/sf_whale.jpg" alt="SF 장면"><span class="cn">SF</span></div>
-      <div class="reel rv d1"><img src="images/helmet_demo.jpg" alt="레이싱 장면"><span class="cn">레이싱</span></div>
-      <div class="reel rv"><img src="images/fire.jpg" alt="액션 장면"><span class="cn">액션</span></div>
-      <div class="reel rv d1"><img src="images/youth_train.jpg" alt="청춘 장면"><span class="cn">청춘</span></div>
-      <div class="reel rv d2"><img src="images/youth_pair.jpg" alt="드라마 장면"><span class="cn">드라마</span></div>
-      <div class="reel rv"><img src="images/cf_drink.jpg" alt="광고 장면"><span class="cn">광고</span></div>
-      <div class="reel rv d1"><img src="images/war.jpg" alt="밀리터리 장면"><span class="cn">밀리터리</span></div>
-      <div class="reel rv d2"><img src="images/ending_saw.jpg" alt="사극 장면"><span class="cn">사극</span></div>
+      <div class="reel wide rv" data-yt=""><img src="images/sf_whale.jpg" alt="SF 장면"><span class="cn">SF</span></div>
+      <div class="reel rv d1" data-yt=""><img src="images/helmet_demo.jpg" alt="레이싱 장면"><span class="cn">레이싱</span></div>
+      <div class="reel rv" data-yt=""><img src="images/fire.jpg" alt="액션 장면"><span class="cn">액션</span></div>
+      <div class="reel rv d1" data-yt=""><img src="images/youth_train.jpg" alt="청춘 장면"><span class="cn">청춘</span></div>
+      <div class="reel rv d2" data-yt=""><img src="images/youth_pair.jpg" alt="드라마 장면"><span class="cn">드라마</span></div>
+      <div class="reel rv" data-yt=""><img src="images/cf_drink.jpg" alt="광고 장면"><span class="cn">광고</span></div>
+      <div class="reel rv d1" data-yt=""><img src="images/war.jpg" alt="밀리터리 장면"><span class="cn">밀리터리</span></div>
+      <div class="reel rv d2" data-yt=""><img src="images/ending_saw.jpg" alt="사극 장면"><span class="cn">사극</span></div>
     </div>
   </div>
 </section>
@@ -559,24 +568,31 @@ addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { 
 document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
 document.querySelectorAll('#navlinks a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
 
-// 필름 플레이어 — data-yt에 유튜브 ID를 넣으면 클릭 시 재생
-document.querySelectorAll('.film').forEach(f => {
-  const id = f.dataset.yt;
-  const ph = f.querySelector('.ph');
+// 유튜브 플레이어 — data-yt에 영상 ID가 있는 모든 요소(.film, .reel)를 클릭 재생으로 활성화
+document.querySelectorAll('[data-yt]').forEach(el => {
+  const id = el.dataset.yt;
+  const ph = el.querySelector('.ph') || el;
   if (!id) {
-    f.classList.add('empty');
-    const soon = document.createElement('span');
-    soon.className = 'soon';
-    soon.textContent = 'Link Coming Soon';
-    ph.appendChild(soon);
+    if (el.classList.contains('film')) {
+      el.classList.add('empty');
+      const soon = document.createElement('span');
+      soon.className = 'soon';
+      soon.textContent = 'Link Coming Soon';
+      ph.appendChild(soon);
+    }
     return;
+  }
+  el.classList.add('has-video');
+  if (!ph.querySelector('.play')) {
+    const pl = document.createElement('div');
+    pl.className = 'play';
+    ph.appendChild(pl);
   }
   ph.addEventListener('click', () => {
     const ifr = document.createElement('iframe');
     ifr.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
     ifr.allow = 'autoplay; encrypted-media; picture-in-picture';
     ifr.allowFullscreen = true;
-    ph.innerHTML = '';
     ph.appendChild(ifr);
   }, { once: true });
 });
