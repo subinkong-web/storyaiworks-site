@@ -243,7 +243,7 @@ async function ghPut(path, base64, msg) {
 
 /* ── 로그인 ── */
 function tryLogin() {
-  if ($('#l-id').value === 'Admin' && $('#l-pw').value === '00000') {
+  if ($('#l-id').value.trim().toLowerCase() === 'admin' && $('#l-pw').value === '00000') {
     sessionStorage.setItem('saw_admin', '1');
     boot();
   } else {
