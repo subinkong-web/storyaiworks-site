@@ -82,14 +82,14 @@
     <h2 class="ktitle rv d1">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
     <div class="film-grid">
       <!-- data-yt에 유튜브 영상 ID(예: dQw4w9WgXcQ)를 넣으면 재생 가능 -->
-      <figure class="film rv d1" data-yt="65sRoCflCuo">
+      <figure class="film rv d1" data-yt="65sRoCflCuo" data-slot="film_demo">
         <div class="ph">
           <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
           <div class="play"></div>
         </div>
         <figcaption><b>데모 필름</b><span>Demo Film · 전 컷 AI 제작</span></figcaption>
       </figure>
-      <figure class="film rv d2" data-yt="poNytRVqcjs">
+      <figure class="film rv d2" data-yt="poNytRVqcjs" data-slot="film_making">
         <div class="ph">
           <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지">
           <div class="play"></div>
@@ -528,7 +528,7 @@
       대규모 세트·로케이션·군중 없이, 전 컷을 자체 데이터와 Flowmark 파이프라인으로 완성했습니다.</p>
     </div>
     <!-- 대표작 — 데모 필름 (Films 섹션과 중복이지만 의도된 재노출) -->
-    <figure class="film reel-feature rv" data-yt="65sRoCflCuo">
+    <figure class="film reel-feature rv" data-yt="65sRoCflCuo" data-slot="showreel_featured">
       <div class="ph">
         <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
         <div class="play"></div>
@@ -1008,34 +1008,49 @@ document.getElementById('modal-bk').addEventListener('click', closeModal);
 document.getElementById('modal-x').addEventListener('click', closeModal);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// 유튜브 플레이어 — data-yt에 영상 ID가 있는 모든 요소(.film, .reel)를 클릭 재생으로 활성화
-document.querySelectorAll('[data-yt]').forEach(el => {
-  const id = el.dataset.yt;
-  const ph = el.querySelector('.ph') || el;
-  if (!id) {
-    if (el.classList.contains('film')) {
-      el.classList.add('empty');
-      const soon = document.createElement('span');
-      soon.className = 'soon';
-      soon.textContent = 'Link Coming Soon';
-      ph.appendChild(soon);
+// 유튜브 플레이어 — site-config.json의 링크를 반영한 뒤 data-yt 요소를 클릭 재생으로 활성화
+function initPlayers() {
+  document.querySelectorAll('[data-yt]').forEach(el => {
+    const id = el.dataset.yt;
+    const ph = el.querySelector('.ph') || el;
+    if (!id) {
+      if (el.classList.contains('film')) {
+        el.classList.add('empty');
+        const soon = document.createElement('span');
+        soon.className = 'soon';
+        soon.textContent = 'Link Coming Soon';
+        ph.appendChild(soon);
+      }
+      return;
     }
-    return;
-  }
-  el.classList.add('has-video');
-  if (!ph.querySelector('.play')) {
-    const pl = document.createElement('div');
-    pl.className = 'play';
-    ph.appendChild(pl);
-  }
-  ph.addEventListener('click', () => {
-    const ifr = document.createElement('iframe');
-    ifr.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-    ifr.allow = 'autoplay; encrypted-media; picture-in-picture';
-    ifr.allowFullscreen = true;
-    ph.appendChild(ifr);
-  }, { once: true });
-});
+    el.classList.add('has-video');
+    if (!ph.querySelector('.play')) {
+      const pl = document.createElement('div');
+      pl.className = 'play';
+      ph.appendChild(pl);
+    }
+    ph.addEventListener('click', () => {
+      const ifr = document.createElement('iframe');
+      ifr.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      ifr.allow = 'autoplay; encrypted-media; picture-in-picture';
+      ifr.allowFullscreen = true;
+      ph.appendChild(ifr);
+    }, { once: true });
+  });
+}
+fetch('site-config.json', { cache: 'no-store' })
+  .then(r => r.json())
+  .then(cfg => {
+    const v = (cfg && cfg.videos) || {};
+    document.querySelectorAll('[data-slot]').forEach(el => {
+      if (v[el.dataset.slot] !== undefined) el.dataset.yt = v[el.dataset.slot];
+    });
+    Object.keys(PROJECTS).forEach(k => {
+      if (v['pj_' + k] !== undefined) PROJECTS[k].yt = v['pj_' + k];
+    });
+  })
+  .catch(() => {})
+  .finally(initPlayers);
 
 </script>
 </body>
