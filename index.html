@@ -256,6 +256,139 @@
   </div>
 </section>
 
+<!-- ══ FLOWMARK 02 — 멀티 엔진 오케스트레이션 다이어그램 ══ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="klabel rv">Flowmark 02 — Multi-Engine Orchestration</div>
+    <h2 class="ktitle rv d1">하나의 모델에 걸지 않습니다.<br><em>여덟 기능군</em>을 지휘합니다</h2>
+    <p class="klead rv d2">장면마다 요구가 다르기 때문에, 특정 엔진에 종속되지 않습니다.
+    여덟 개 기능군의 엔진을 목적별로 조합하고 — <b>더 나은 엔진이 나오면 그 자리에 교체</b>합니다.</p>
+    <div class="dwrap rv d2">
+      <svg viewBox="0 0 1144 400" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="var(--acchair)" fill="none">
+          <line x1="131" y1="96" x2="505" y2="168"/>
+          <line x1="425" y1="96" x2="549" y2="168"/>
+          <line x1="719" y1="96" x2="595" y2="168"/>
+          <line x1="1013" y1="96" x2="639" y2="168"/>
+          <line x1="131" y1="304" x2="505" y2="232"/>
+          <line x1="425" y1="304" x2="549" y2="232"/>
+          <line x1="719" y1="304" x2="595" y2="232"/>
+          <line x1="1013" y1="304" x2="639" y2="232"/>
+        </g>
+        <g stroke="var(--line)" fill="none">
+          <line x1="150" y1="200" x2="458" y2="200"/>
+          <line x1="686" y1="200" x2="988" y2="200"/>
+        </g>
+        <path d="M462 200 l-9 -4.5 v9 z" fill="var(--acc)"/>
+        <path d="M992 200 l-9 -4.5 v9 z" fill="var(--acc)"/>
+        <g>
+          <rect x="0" y="170" width="150" height="60" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="16" y="195" font-size="10.5" font-weight="700" fill="var(--txt)">시나리오 · 대본</text>
+          <text x="16" y="213" font-size="10.5" font-weight="700" fill="var(--txt)">촬영 데이터 · 에셋</text>
+          <rect x="994" y="170" width="150" height="60" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="1010" y="195" font-size="10.5" font-weight="700" fill="var(--ink)">씬 · 컷 · 시퀀스</text>
+          <text x="1010" y="213" font-size="9.5" fill="var(--dim)">연속성 유지 출력</text>
+        </g>
+        <rect x="464" y="166" width="216" height="68" fill="var(--bg)" stroke="var(--accline)" stroke-width="1.5"/>
+        <text x="572" y="197" font-size="17" font-weight="800" fill="var(--ink)" text-anchor="middle" letter-spacing="2">FLOWMARK</text>
+        <text x="572" y="217" font-size="9" font-weight="800" fill="var(--acc)" text-anchor="middle" letter-spacing="2.5">ORCHESTRATOR</text>
+        <g>
+          <rect x="0" y="10" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="16" y="36" font-size="10" font-weight="800" fill="var(--acc)">01</text>
+          <text x="40" y="36" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">IMAGE GENERATION</text>
+          <text x="16" y="59" font-size="14" font-weight="700" fill="var(--ink)">이미지 생성</text>
+          <text x="16" y="79" font-size="10" fill="var(--dim)">콘셉트 아트부터 최종 프레임까지 선별 구동</text>
+        </g>
+        <g>
+          <rect x="294" y="10" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="310" y="36" font-size="10" font-weight="800" fill="var(--acc)">02</text>
+          <text x="334" y="36" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">VIDEO GENERATION</text>
+          <text x="310" y="59" font-size="14" font-weight="700" fill="var(--ink)">영상 생성</text>
+          <text x="310" y="79" font-size="10" fill="var(--dim)">시네마틱 무빙 컷 — 샷 길이·카메라 워크 제어</text>
+        </g>
+        <g>
+          <rect x="588" y="10" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="604" y="36" font-size="10" font-weight="800" fill="var(--acc)">03</text>
+          <text x="628" y="36" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">IDENTITY</text>
+          <text x="604" y="59" font-size="14" font-weight="700" fill="var(--ink)">인물 · 아이덴티티</text>
+          <text x="604" y="79" font-size="10" fill="var(--dim)">배우 데이터셋 기준 — 전 장면 동일 인물 유지</text>
+        </g>
+        <g>
+          <rect x="882" y="10" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="898" y="36" font-size="10" font-weight="800" fill="var(--acc)">04</text>
+          <text x="922" y="36" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">SPATIAL / 3D</text>
+          <text x="898" y="59" font-size="14" font-weight="700" fill="var(--ink)">3D · 공간</text>
+          <text x="898" y="79" font-size="10" fill="var(--dim)">3D 공간·에셋 생성 — 앵글 자유도·정합성</text>
+        </g>
+        <g>
+          <rect x="0" y="304" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="16" y="330" font-size="10" font-weight="800" fill="var(--acc)">05</text>
+          <text x="40" y="330" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">ENHANCEMENT</text>
+          <text x="16" y="353" font-size="14" font-weight="700" fill="var(--ink)">화질 · 향상</text>
+          <text x="16" y="373" font-size="10" fill="var(--dim)">업스케일·디테일 복원 — 극장 상영 기준</text>
+        </g>
+        <g>
+          <rect x="294" y="304" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="310" y="330" font-size="10" font-weight="800" fill="var(--acc)">06</text>
+          <text x="334" y="330" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">COMPOSITING</text>
+          <text x="310" y="353" font-size="14" font-weight="700" fill="var(--ink)">매팅 · 합성</text>
+          <text x="310" y="373" font-size="10" fill="var(--dim)">크로마키 분리·재조명·합성을 일괄 처리</text>
+        </g>
+        <g>
+          <rect x="588" y="304" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="604" y="330" font-size="10" font-weight="800" fill="var(--acc)">07</text>
+          <text x="628" y="330" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">LANGUAGE</text>
+          <text x="604" y="353" font-size="14" font-weight="700" fill="var(--ink)">언어 · 구조화</text>
+          <text x="604" y="373" font-size="10" fill="var(--dim)">씬 분할·프롬프트 등 텍스트 공정 자동화</text>
+        </g>
+        <g>
+          <rect x="882" y="304" width="262" height="86" fill="var(--panel)" stroke="var(--hair)"/>
+          <text x="898" y="330" font-size="10" font-weight="800" fill="var(--acc)">08</text>
+          <text x="922" y="330" font-size="8.5" font-weight="800" letter-spacing="1.5" fill="var(--dim2)">ORCHESTRATION</text>
+          <text x="898" y="353" font-size="14" font-weight="700" fill="var(--ink)">파이프라인 제어</text>
+          <text x="898" y="373" font-size="10" fill="var(--dim)">잡 큐·이력·자동 복원 — 수백 컷 배치 운영</text>
+        </g>
+      </svg>
+    </div>
+    <p class="fm-note rv">15종+ 엔진을 여덟 기능군으로 편성해 목적별로 구동합니다 —
+    특정 엔진의 성능이 아니라 <b>조합의 구조</b>가 Flowmark의 경쟁력입니다.</p>
+  </div>
+</section>
+
+<!-- ══ FLOWMARK 03 — 데이터→컷 일관성 증명 ══ -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">Flowmark 03 — Consistency Proof</div>
+    <h2 class="ktitle rv d1">같은 데이터에서,<br><em>다른 장르</em>가 태어납니다</h2>
+    <p class="klead rv d2">인물·의상·에셋의 <b>데이터 기준값</b>이 컷과 컷 사이의 연속성을 지킵니다.
+    각 열의 위는 스튜디오에서 확보한 원재료, 아래는 같은 데이터로 완성한 실제 컷입니다.</p>
+    <div class="pairlb rv d2"><b>Production Data</b><span>스튜디오에서 확보한 원재료</span></div>
+    <div class="pairs">
+      <div class="pairc rv d1">
+        <figure><img src="images/mk_green_face.jpg" alt="배우 아이덴티티 데이터"><span class="cn">배우 데이터</span></figure>
+        <div class="parr"></div>
+        <figure><img src="images/sf_man.jpg" alt="SF 완성 컷"><span class="cn">SF 컷</span></figure>
+      </div>
+      <div class="pairc rv d2">
+        <figure><img src="images/mk_boat3d.jpg" alt="3D 에셋"><span class="cn">3D 에셋</span></figure>
+        <div class="parr"></div>
+        <figure><img src="images/storm.jpg" alt="재난 완성 컷"><span class="cn">재난 컷</span></figure>
+      </div>
+      <div class="pairc rv d3">
+        <figure><img src="images/mk_hanbok_sheet.jpg" alt="캐릭터 시트"><span class="cn">캐릭터 시트</span></figure>
+        <div class="parr"></div>
+        <figure><img src="images/hist.jpg" alt="사극 완성 컷"><span class="cn">사극 컷</span></figure>
+      </div>
+      <div class="pairc rv d4">
+        <figure><img src="images/mk_green_helmet.jpg" alt="크로마키 촬영"><span class="cn">크로마키 촬영</span></figure>
+        <div class="parr"></div>
+        <figure><img src="images/race_helmet.jpg" alt="레이싱 완성 컷"><span class="cn">레이싱 컷</span></figure>
+      </div>
+    </div>
+    <div class="pairlb rv" style="margin-top:16px"><b>Final Cut</b><span>같은 데이터로 완성한 장면 — 전 컷 AI 제작</span></div>
+  </div>
+</section>
+
 <!-- ══ SCRIPTURE ENGINE (LIGHT PRODUCT) ══ -->
 <section class="sec light" id="scripture">
   <div class="wrap">
@@ -266,21 +399,18 @@
     극작 이론에 따른 구조 변환입니다.</p>
     <div class="scrip-grid">
       <div>
-        <div class="scrip-steps rv d3">
-          <div class="st"><i>01</i><div><b>Story Bible — 기준 데이터 구축</b>
-            <span>인물·관계·세계관·고유명사를 추출해 작품의 일관성을 지킬 기준 데이터셋을 만듭니다.</span></div></div>
-          <div class="st"><i>02</i><div><b>Standardization — 구조 분해</b>
-            <span>본문을 의미 단위로 나누고 대사·행동·지문·내면을 분류 태깅해 데이터로 변환합니다.</span></div></div>
-          <div class="st"><i>03</i><div><b>Script Conversion — 대본 생성</b>
-            <span>씬 헤더를 만들고 내면 묘사를 시각적 행동으로 치환해 표준 대본 포맷으로 출력합니다.</span></div></div>
+        <p class="klead rv d3">국내 웹소설·웹툰 시장에는 영상화를 기다리는 원천 IP가 쌓여 있지만,
+        비정형 서사를 대본으로 옮기는 각색 공정이 병목입니다. Scripture Engine은 이 병목을
+        자동화합니다 — <b>원작의 내용을 지어내거나 줄이지 않고</b>, 문장 하나하나를
+        극작 이론의 구조로 재배치합니다.</p>
+        <div class="tworoots rv d4" style="margin-top:30px">
+          <span class="lb">원칙</span>
+          요약이 아니라 <b>구조 변환.</b> 원작이 가진 정보량을 보존한 채,
+          카메라가 찍을 수 있는 형태로만 바꿉니다.
         </div>
-        <div class="stats3 rv d4">
-          <div><b>98.2%</b><span>화자–대사 매칭</span></div>
-          <div><b>94.5%</b><span>장면 전환 인식</span></div>
-          <div><b>0.8초</b><span>페이지당 처리</span></div>
+        <div class="chips rv d4">
+          <span>OUTPUT — .hwp</span><span>.docx</span><span>표준 대본 포맷</span><span>씬 헤더 자동 생성</span>
         </div>
-        <p class="fm-note rv" style="margin-top:16px">수치는 내부 알파 테스트 기준 ·
-        생성된 대본은 <b>Flowmark의 씬 분할 모듈로 직결</b>됩니다.</p>
       </div>
       <div class="page-demo rv d2">
         <span class="lb">Input — 웹소설 원문</span>
@@ -297,6 +427,53 @@
 <b>지호</b>   (낮게) 여기서 끝낼 거야?</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ══ SCRIPTURE 02 — 프로세스 · Beat 태깅 ══ -->
+<section class="sec light" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">Scripture Engine 02 — Process</div>
+    <h2 class="ktitle rv d1">원문에서 대본까지,<br><em>세 단계</em>의 구조 변환</h2>
+    <div class="seflow rv d2">
+      <div class="senode doc"><em>Input</em><b>웹소설 원문</b><span>비정형 서사 · 수백 화 분량</span></div>
+      <div class="searr"></div>
+      <div class="senode"><i>01</i><b>Story Bible</b><span>인물·관계·세계관·고유명사를 추출해 일관성 기준 데이터셋 구축</span></div>
+      <div class="searr"></div>
+      <div class="senode"><i>02</i><b>Standardization</b><span>본문을 의미 단위(Beat)로 분해하고 대사·행동·지문·내면을 분류 태깅</span></div>
+      <div class="searr"></div>
+      <div class="senode"><i>03</i><b>Script Conversion</b><span>씬 헤더 생성 · 내면 묘사를 시각적 행동으로 치환해 대본 출력</span></div>
+      <div class="searr"></div>
+      <div class="senode doc"><em>Output</em><b>표준 대본</b><span>.hwp / .docx · 즉시 촬영 가능</span></div>
+    </div>
+    <div class="beats rv d3">
+      <div class="bhead"><span><b>Stage 02</b> — Beat 분해·태깅 예시</span><span>S#42 옥상 (밤)</span></div>
+      <div class="beat"><span class="btag">지문 · 묘사</span><p>차가운 밤바람이 목덜미를 파고들었다.</p></div>
+      <div class="beat"><span class="btag act">행동</span><p>서연은 난간을 붙잡은 채 도시의 불빛을 내려다보았다.</p></div>
+      <div class="beat"><span class="btag inner">내면 → 시각화</span><p>심장 뛰는 소리가 귓가를 채울 무렵 — <b>“가쁜 숨”</b>이라는 행동으로 치환됩니다.</p></div>
+      <div class="beat"><span class="btag line">대사 · 지호</span><p>“여기서 끝낼 거야?”</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCRIPTURE 03 — 성능 · 파이프라인 직결 ══ -->
+<section class="sec light" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">Scripture Engine 03 — Performance &amp; Integration</div>
+    <h2 class="ktitle rv d1">수치로 증명하고,<br><em>파이프라인에 직결</em>됩니다</h2>
+    <div class="stats-lg rv d2">
+      <div><b>98.2%</b><span>화자–대사 매칭</span><em>누가 한 말인지 흔들리지 않습니다</em></div>
+      <div><b>94.5%</b><span>장면 전환 인식</span><em>씬의 경계를 스스로 찾아냅니다</em></div>
+      <div><b>0.8초</b><span>페이지당 처리</span><em>수백 화 분량도 하루 안에 끝납니다</em></div>
+    </div>
+    <div class="seflow rv d3">
+      <div class="senode"><em>Scripture Engine</em><b>표준 대본 출력</b><span>씬 헤더·대사·행동이 구조화된 데이터</span></div>
+      <div class="searr"></div>
+      <div class="senode"><em>Flowmark</em><b>씬 분할 모듈 직결</b><span>대본이 곧 생성 파이프라인의 입력값</span></div>
+      <div class="searr"></div>
+      <div class="senode doc"><em>Output</em><b>씬 · 컷 · 시퀀스</b><span>원작 IP에서 촬영 데이터까지 무개입</span></div>
+    </div>
+    <p class="fm-note rv" style="margin-top:20px">수치는 내부 알파 테스트 기준 · 변환 예시는 재구성 샘플입니다.</p>
   </div>
 </section>
 
