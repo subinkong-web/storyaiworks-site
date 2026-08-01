@@ -179,9 +179,10 @@
   </div>
 </section>
 
-<!-- ══ BAND — 청춘 ══ -->
-<section class="band grain">
+<!-- ══ BAND — 청춘 (켄 번스 + 라이트리크) ══ -->
+<section class="band kb grain">
   <div class="bg"><img src="images/still_youth.jpg" alt="SAW 데모 필름 — 청춘"></div>
+  <div class="leak" aria-hidden="true"></div>
   <div class="in wrap">
     <div class="g rv">청춘</div>
     <div class="t rv d1">카메라 없이 촬영한, 어느 여름</div>
@@ -500,13 +501,18 @@
   </div>
 </section>
 
-<!-- ══ BAND — 액션 ══ -->
-<section class="band grain">
-  <div class="bg"><img src="images/still_fire.jpg" alt="SAW 데모 필름 — 액션"></div>
+<!-- ══ BAND — 인터랙티브 와이프 (데이터 ⇄ 완성 컷) ══ -->
+<section class="band wipe grain" style="--wx:50%">
+  <div class="wlayer base"><img src="images/mk_green_helmet.jpg" alt="크로마키 원본 데이터"></div>
+  <div class="wlayer top"><img src="images/race_helmet.jpg" alt="완성 컷 — 레이싱"></div>
+  <div class="wshade" aria-hidden="true"></div>
+  <div class="wdiv" aria-hidden="true"><span class="wh"></span></div>
+  <span class="wtag l">Final Cut</span>
+  <span class="wtag r">Production Data</span>
   <div class="in wrap">
-    <div class="g rv">액션</div>
-    <div class="t rv d1">이 불꽃은 전부 데이터였습니다</div>
-    <div class="e rv d2">Demo Film · Scene 01:30 · Made with AI</div>
+    <div class="g rv">Interactive</div>
+    <div class="t rv d1">모든 컷의 아래에는, 데이터가 있습니다</div>
+    <div class="e rv d2">좌우로 움직여 보세요 — Chroma Data ⇄ Final Cut</div>
   </div>
 </section>
 
@@ -780,9 +786,41 @@ addEventListener('scroll', () => {
   prog.style.width = (scrollY / (h.scrollHeight - innerHeight) * 100) + '%';
 }, { passive: true });
 
-// 밴드·컨택트 배경 패럴랙스
+// 밴드 타이틀 — 글자별 상승 등장
+document.querySelectorAll('.band .t').forEach(t => {
+  const txt = t.textContent;
+  t.textContent = '';
+  t.classList.add('kt');
+  [...txt].forEach((ch, i) => {
+    const s = document.createElement('span');
+    s.textContent = ch;
+    s.style.transitionDelay = (i * 26) + 'ms';
+    t.appendChild(s);
+  });
+});
+
+// 인터랙티브 와이프 — 커서 위치가 데이터/완성 컷의 경계가 된다
+document.querySelectorAll('.band.wipe').forEach(band => {
+  let manual = false;
+  band.addEventListener('pointermove', e => {
+    manual = true;
+    const r = band.getBoundingClientRect();
+    const x = Math.max(3, Math.min(97, (e.clientX - r.left) / r.width * 100));
+    band.style.setProperty('--wx', x.toFixed(2) + '%');
+  }, { passive: true });
+  if (!reduced) {
+    const t0 = performance.now();
+    (function idle(t) {
+      if (manual) return;
+      band.style.setProperty('--wx', (50 + 7 * Math.sin((t - t0) / 1300)).toFixed(2) + '%');
+      requestAnimationFrame(idle);
+    })(t0);
+  }
+});
+
+// 컨택트 배경 패럴랙스 (밴드는 자체 효과가 있어 제외)
 if (!reduced) {
-  const plx = [...document.querySelectorAll('.band .bg img, .contact .bg img')];
+  const plx = [...document.querySelectorAll('.contact .bg img')];
   let pTick = false;
   const applyPlx = () => {
     pTick = false;

@@ -353,6 +353,61 @@ body.hascur .cring{opacity:1}
 .band .t{font-family:var(--serifkr);font-weight:600;font-size:clamp(23px,3.2vw,40px);color:#F4F3F0;margin-top:14px;letter-spacing:-.01em;word-break:keep-all}
 .band .e{font-size:10.5px;letter-spacing:.3em;color:#93939A;text-transform:uppercase;margin-top:12px}
 
+/* ---- 밴드 타이틀 글자별 상승 등장 ---- */
+.kt{overflow:hidden}
+.js .kt span{display:inline-block;white-space:pre;transform:translateY(120%);opacity:0;
+  transition:transform .8s cubic-bezier(.2,.7,.2,1),opacity .6s}
+.js .rv.on.kt span,.js .rv.on .kt span{transform:none;opacity:1}
+
+/* ---- 청춘 밴드 — 켄 번스 + 라이트리크 ---- */
+.band.kb .bg img{animation:kb 16s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.03)}to{transform:scale(1.11) translateY(-1.5%)}}
+.band.kb .leak{
+  position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,190,140,.17) 49%,rgba(180,155,226,.15) 56%,transparent 66%);
+  background-size:280% 100%;animation:leak 9s linear infinite;
+}
+@keyframes leak{from{background-position:140% 0}to{background-position:-60% 0}}
+
+/* ---- 인터랙티브 와이프 밴드 ---- */
+.band.wipe{cursor:ew-resize}
+.wlayer{position:absolute;inset:0}
+.wlayer img{width:100%;height:100%;object-fit:cover}
+.wlayer.top{clip-path:inset(0 calc(100% - var(--wx)) 0 0)}
+.wshade{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to top,rgba(11,11,12,.88),rgba(11,11,12,.08) 52%);
+}
+.wdiv{
+  position:absolute;top:0;bottom:0;left:var(--wx);width:2px;z-index:3;
+  background:rgba(244,243,240,.85);transform:translateX(-1px);
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+.wh{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.9);background:rgba(11,11,12,.45);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.wh::before,.wh::after{content:"";position:absolute;top:50%;transform:translateY(-50%)}
+.wh::before{left:9px;border-right:7px solid #F4F3F0;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.wh::after{right:9px;border-left:7px solid #F4F3F0;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.wtag{
+  position:absolute;bottom:26px;z-index:4;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px;font-weight:800;letter-spacing:.24em;color:#F4F3F0;text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.3);background:rgba(11,11,12,.5);
+  backdrop-filter:blur(5px);padding:6px 13px;
+}
+.wtag.l{left:clamp(16px,3vw,40px)}
+.wtag.r{right:clamp(16px,3vw,40px)}
+.band.wipe .in{z-index:4}
+@media (prefers-reduced-motion:reduce){
+  .band.kb .bg img{animation:none}
+  .band.kb .leak{animation:none;display:none}
+  .js .kt span{transform:none;opacity:1;transition:none}
+}
+
 /* ============ FLOWMARK ============ */
 .flowmark{overflow:hidden}
 .flowmark .bg{position:absolute;inset:0}
