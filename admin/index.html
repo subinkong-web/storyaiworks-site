@@ -220,7 +220,8 @@ const auth = () => ({ Authorization: 'Bearer ' + token(), Accept: 'application/v
 const ytId = s => {
   s = (s || '').trim();
   if (!s) return '';
-  const m = s.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/);
+  const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/|\/v\/)([\w-]{11})/)
+    || s.match(/^([\w-]{11})$/);
   return m ? m[1] : null;
 };
 
