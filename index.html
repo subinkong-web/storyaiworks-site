@@ -40,6 +40,7 @@
 <!-- ══ HERO ══ -->
 <header class="hero grain" id="top">
   <div class="bg"><img src="images/sf_whale.jpg" alt="SAW 데모 필름 — SF 장면"></div>
+  <canvas id="herofx" aria-hidden="true"></canvas>
   <div class="hero-in wrap">
     <div class="hero-k rv">AI-Native Film Studio</div>
     <h1 class="hero-t rv d1">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
@@ -65,8 +66,15 @@
   </div>
 </section>
 
+<!-- ══ 파이프라인 티커 ══ -->
+<div class="ticker" aria-hidden="true">
+  <div class="tin">
+    <span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> SCRIPTURE ENGINE <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span><span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> SCRIPTURE ENGINE <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span>
+  </div>
+</div>
+
 <!-- ══ FILMS ══ -->
-<section class="sec" id="films" style="padding-top:0">
+<section class="sec" id="films">
   <div class="wrap">
     <div class="klabel rv">01 — Films</div>
     <h2 class="ktitle rv d1">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
@@ -442,11 +450,106 @@
 <script>
 document.documentElement.classList.replace('no-js','js');
 
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 라벨 디코드(스크램블) — 데이터가 해독되듯 나타나는 효과
+const SCR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/<>_';
+function scramble(el) {
+  const orig = el.dataset.txt ?? (el.dataset.txt = el.textContent);
+  if (reduced || !/^[\x20-\x7E·—–]+$/.test(orig)) return;
+  let f = 0;
+  const total = Math.min(22, orig.length + 6);
+  const iv = setInterval(() => {
+    f++;
+    el.textContent = [...orig].map((c, i) =>
+      c === ' ' ? ' ' : (i < f * orig.length / total ? c : SCR[Math.random() * SCR.length | 0])
+    ).join('');
+    if (f >= total) { el.textContent = orig; clearInterval(iv); }
+  }, 30);
+}
+
 // 스크롤 리빌
 const io = new IntersectionObserver(es => {
-  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('on');
+      if (e.target.matches('.klabel, .hero-k, .fm-k, .statement .k, .band .e')) scramble(e.target);
+      io.unobserve(e.target);
+    }
+  });
 }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+// 히어로 데이터 파티클 필드 — 커서 근처의 입자가 밀리고, 연결선이 생긴다
+const cv = document.getElementById('herofx');
+if (cv && !reduced) {
+  const ctx = cv.getContext('2d');
+  let w, h, parts = [], mx = -1e4, my = -1e4, running = false;
+  const size = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const r = cv.parentElement.getBoundingClientRect();
+    w = r.width; h = r.height;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  size();
+  addEventListener('resize', size);
+  const N = Math.min(110, (w * h / 14000) | 0);
+  for (let i = 0; i < N; i++) parts.push({
+    x: Math.random() * w, y: Math.random() * h,
+    vx: (Math.random() - .5) * .12, vy: -.06 - Math.random() * .2,
+    r: 1 + Math.random() * 1.6, a: .1 + Math.random() * .3,
+  });
+  cv.parentElement.addEventListener('pointermove', e => {
+    const b = cv.getBoundingClientRect(); mx = e.clientX - b.left; my = e.clientY - b.top;
+  });
+  cv.parentElement.addEventListener('pointerleave', () => { mx = my = -1e4; });
+  const tick = () => {
+    if (!running) return;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#B49BE2';
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy;
+      const dx = p.x - mx, dy = p.y - my, d = Math.hypot(dx, dy) || 1;
+      if (d < 130) { p.x += dx / d * .7; p.y += dy / d * .7; }
+      if (p.y < -12) { p.y = h + 12; p.x = Math.random() * w; }
+      if (p.x < -12) p.x = w + 12; else if (p.x > w + 12) p.x = -12;
+      ctx.globalAlpha = p.a;
+      ctx.fillRect(p.x, p.y, p.r, p.r);
+    }
+    ctx.strokeStyle = '#B49BE2'; ctx.lineWidth = .5;
+    for (const p of parts) {
+      const d = Math.hypot(p.x - mx, p.y - my);
+      if (d < 160) {
+        ctx.globalAlpha = .2 * (1 - d / 160);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mx, my); ctx.stroke();
+      }
+    }
+    requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(es => {
+    const v = es[0].isIntersecting;
+    if (v && !running) { running = true; tick(); }
+    else if (!v) running = false;
+  }).observe(cv);
+}
+
+// 커서 글로우 — 다크 섹션에서만 은은하게 드러난다 (screen 블렌드)
+if (matchMedia('(pointer: fine)').matches && !reduced) {
+  const g = document.createElement('div');
+  g.className = 'glow';
+  document.body.appendChild(g);
+  let gx = innerWidth / 2, gy = innerHeight / 2, tx = gx, ty = gy;
+  addEventListener('pointermove', e => {
+    tx = e.clientX; ty = e.clientY;
+    document.body.classList.add('hasglow');
+  }, { passive: true });
+  (function loop() {
+    gx += (tx - gx) * .09; gy += (ty - gy) * .09;
+    g.style.transform = `translate(${gx}px,${gy}px)`;
+    requestAnimationFrame(loop);
+  })();
+}
 
 // 내비게이션 배경
 const nav = document.getElementById('nav');

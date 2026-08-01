@@ -91,6 +91,37 @@ section{position:relative}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* ============ 미디어아트 터치 ============ */
+/* 히어로 데이터 파티클 캔버스 */
+#herofx{position:absolute;inset:0;z-index:1;pointer-events:none}
+
+/* 커서 글로우 — screen 블렌드라 다크 섹션에서만 드러남 */
+.glow{
+  position:fixed;left:0;top:0;width:680px;height:680px;margin:-340px 0 0 -340px;
+  border-radius:50%;pointer-events:none;z-index:6;
+  background:radial-gradient(circle,rgba(158,127,214,.09),transparent 62%);
+  mix-blend-mode:screen;opacity:0;transition:opacity .8s;will-change:transform;
+}
+body.hasglow .glow{opacity:1}
+
+/* 파이프라인 키네틱 티커 */
+.ticker{
+  overflow:hidden;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  padding:15px 0;background:var(--bg);position:relative;
+}
+.ticker .tin{display:flex;width:max-content;animation:tick 46s linear infinite}
+.ticker span{
+  flex:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11px;letter-spacing:.32em;color:var(--dim2);text-transform:uppercase;white-space:pre;
+}
+.ticker em{font-style:normal;color:var(--acc)}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+  .ticker .tin{animation:none}
+  .glow{display:none}
+  #herofx{display:none}
+}
+
 /* ============ NAV ============ */
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
