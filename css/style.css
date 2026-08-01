@@ -104,6 +104,28 @@ section{position:relative}
 }
 body.hasglow .glow{opacity:1}
 
+/* 스크롤 프로그레스 라인 */
+.progress{
+  position:fixed;top:0;left:0;height:2px;width:0;z-index:130;pointer-events:none;
+  background:linear-gradient(90deg,var(--accd),var(--acc));
+  box-shadow:0 0 12px rgba(158,127,214,.5);
+}
+
+/* 커서 트레일 링 — difference 블렌드로 라이트/다크 모두 대응 */
+.cring{
+  position:fixed;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;
+  border:1.5px solid rgba(180,155,226,.9);border-radius:50%;
+  pointer-events:none;z-index:140;mix-blend-mode:difference;opacity:0;
+  transition:width .35s cubic-bezier(.2,.7,.2,1),height .35s cubic-bezier(.2,.7,.2,1),
+    margin .35s cubic-bezier(.2,.7,.2,1),border-color .35s,opacity .5s;
+  will-change:transform;
+}
+body.hascur .cring{opacity:1}
+.cring.big{width:60px;height:60px;margin:-30px 0 0 -30px;border-color:#B49BE2}
+
+/* 3D 틸트 대상 */
+.film .ph,.biz{will-change:transform;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+
 /* 파이프라인 키네틱 티커 */
 .ticker{
   overflow:hidden;overflow:clip;contain:paint;max-width:100%;
@@ -117,10 +139,12 @@ body.hasglow .glow{opacity:1}
 }
 .ticker em{font-style:normal;color:var(--acc)}
 @keyframes tick{to{transform:translateX(-50%)}}
+.ticker:hover .tin{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){
   .ticker .tin{animation:none}
   .glow{display:none}
   #herofx{display:none}
+  .cring{display:none}
 }
 
 /* ============ NAV ============ */
@@ -541,7 +565,8 @@ body.hasglow .glow{opacity:1}
 /* ============ CONTACT / FOOTER ============ */
 .contact{overflow:hidden}
 .contact .bg{position:absolute;inset:0}
-.contact .bg img{width:100%;height:100%;object-fit:cover;opacity:.42}
+.contact .bg img{width:100%;height:114%;margin-top:-7%;object-fit:cover;opacity:.42;will-change:transform}
+.band .bg img{will-change:transform}
 .contact .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,#0B0B0C 4%,rgba(11,11,12,.72) 45%,rgba(11,11,12,.96))}
 .contact .in{position:relative;z-index:2;padding:clamp(110px,16vh,180px) 0 90px;text-align:center}
 .contact .m{font-size:11px;font-weight:800;letter-spacing:.4em;color:var(--acc);text-transform:uppercase}

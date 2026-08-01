@@ -736,22 +736,90 @@ if (cv && !reduced) {
   }).observe(cv);
 }
 
-// 커서 글로우 — 다크 섹션에서만 은은하게 드러난다 (screen 블렌드)
+// 커서 글로우 + 트레일 링 — 다크 섹션에서만 드러나는 광원과, 인터랙티브 요소에서 커지는 링
 if (matchMedia('(pointer: fine)').matches && !reduced) {
   const g = document.createElement('div');
   g.className = 'glow';
-  document.body.appendChild(g);
-  let gx = innerWidth / 2, gy = innerHeight / 2, tx = gx, ty = gy;
+  const ring = document.createElement('div');
+  ring.className = 'cring';
+  document.body.append(g, ring);
+  let gx = innerWidth / 2, gy = innerHeight / 2, rx = gx, ry = gy, tx = gx, ty = gy;
   addEventListener('pointermove', e => {
     tx = e.clientX; ty = e.clientY;
-    document.body.classList.add('hasglow');
+    document.body.classList.add('hasglow', 'hascur');
+  }, { passive: true });
+  addEventListener('pointerover', e => {
+    ring.classList.toggle('big', !!e.target.closest('a, button, [data-pj], .film .ph, input, textarea'));
   }, { passive: true });
   (function loop() {
     gx += (tx - gx) * .09; gy += (ty - gy) * .09;
+    rx += (tx - rx) * .22; ry += (ty - ry) * .22;
     g.style.transform = `translate(${gx}px,${gy}px)`;
+    ring.style.transform = `translate(${rx}px,${ry}px)`;
     requestAnimationFrame(loop);
   })();
+
+  // 3D 틸트 — 필름 썸네일·사업영역 카드
+  document.querySelectorAll('.film .ph, .biz').forEach(el => {
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - .5;
+      const py = (e.clientY - r.top) / r.height - .5;
+      el.style.transform = `perspective(900px) rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 7).toFixed(2)}deg)`;
+    });
+    el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+  });
 }
+
+// 스크롤 프로그레스 라인
+const prog = document.createElement('div');
+prog.className = 'progress';
+document.body.appendChild(prog);
+addEventListener('scroll', () => {
+  const h = document.documentElement;
+  prog.style.width = (scrollY / (h.scrollHeight - innerHeight) * 100) + '%';
+}, { passive: true });
+
+// 밴드·컨택트 배경 패럴랙스
+if (!reduced) {
+  const plx = [...document.querySelectorAll('.band .bg img, .contact .bg img')];
+  let pTick = false;
+  const applyPlx = () => {
+    pTick = false;
+    plx.forEach(img => {
+      const r = img.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+      img.style.transform = `translateY(${(p * -5).toFixed(2)}%)`;
+    });
+  };
+  addEventListener('scroll', () => {
+    if (!pTick) { pTick = true; requestAnimationFrame(applyPlx); }
+  }, { passive: true });
+  applyPlx();
+}
+
+// 성능 지표 카운트업
+const cio = new IntersectionObserver(es => {
+  es.forEach(en => {
+    if (!en.isIntersecting) return;
+    cio.unobserve(en.target);
+    const el = en.target;
+    const m = el.textContent.match(/^([\d.]+)(.*)$/);
+    if (!m) return;
+    const target = parseFloat(m[1]), suffix = m[2];
+    const dec = (m[1].split('.')[1] || '').length;
+    if (reduced) { return; }
+    const t0 = performance.now(), dur = 1400;
+    (function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(dec) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  });
+}, { threshold: .5 });
+document.querySelectorAll('.stats-lg b').forEach(el => cio.observe(el));
 
 // 내비게이션 배경
 const nav = document.getElementById('nav');
