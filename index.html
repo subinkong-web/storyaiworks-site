@@ -799,53 +799,55 @@ document.querySelectorAll('.band .t').forEach(t => {
   });
 });
 
-// 청춘 밴드 — 이미지가 데이터 타일로 쪼개진 채 스스로 물결친다
+// 청춘 밴드 — 떠다니는 빛 입자 (더스트)
 (() => {
   const band = document.querySelector('.band.kb');
   if (!band || reduced) return;
-  const img = band.querySelector('.bg img');
   const cv = document.createElement('canvas');
-  cv.className = 'pxcv';
-  band.querySelector('.bg').appendChild(cv);
+  cv.className = 'dustcv';
+  band.appendChild(cv);
   const ctx = cv.getContext('2d');
-  let base, W, H, G, cols, rows, running = false;
+  let W, H, parts = [], running = false;
   const t0 = performance.now();
 
-  function build() {
+  function size() {
     const r = band.getBoundingClientRect();
     W = cv.width = Math.round(r.width);
     H = cv.height = Math.round(r.height);
-    G = W > 1100 ? 13 : W > 700 ? 12 : 10;
-    cols = Math.ceil(W / G); rows = Math.ceil(H / G);
-    base = document.createElement('canvas');
-    base.width = W; base.height = H;
-    const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-    base.getContext('2d').drawImage(img,
-      (W - img.naturalWidth * s) / 2, (H - img.naturalHeight * s) / 2,
-      img.naturalWidth * s, img.naturalHeight * s);
-    ctx.drawImage(base, 0, 0);
-    band.classList.add('px');
+    const N = Math.min(40, (W / 36) | 0);
+    parts = [];
+    for (let i = 0; i < N; i++) parts.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: 1 + Math.random() * 2.6,
+      vy: -.08 - Math.random() * .28,
+      sway: .3 + Math.random() * .7, ph: Math.random() * 6.28,
+      tw: .5 + Math.random() * 1.4, ph2: Math.random() * 6.28,
+      a: .18 + Math.random() * .4,
+      warm: Math.random() < .7,
+    });
   }
-  if (img.complete && img.naturalWidth) build();
-  else img.addEventListener('load', build);
-  addEventListener('resize', () => { if (img.complete) build(); });
+  size();
+  addEventListener('resize', size);
 
   function frame(t) {
-    if (!running || !base) return;
+    if (!running) return;
     const tt = (t - t0) / 1000;
-    ctx.fillStyle = '#0B0B0C';
-    ctx.fillRect(0, 0, W, H);
-    // 가로로 진행하는 파동 — 마루가 좌→우로 쓸고 지나가며 타일이 상하로 출렁인다
-    for (let cy = 0; cy < rows; cy++) {
-      const y = cy * G;
-      for (let cx = 0; cx < cols; cx++) {
-        const x = cx * G;
-        const p1 = x * .0058 - tt * 1.7;                 // 주 파동 (횡 진행)
-        const p2 = x * .0021 + y * .0007 - tt * .95;     // 느린 보조 스웰
-        const dy = Math.sin(p1) * 5.8 + Math.sin(p2 + .8) * 3.4;
-        const dx = Math.cos(p1 * .9) * 1.7;              // 미세 좌우 흔들림
-        ctx.drawImage(base, x, y, G, G, x + dx, y + dy, G, G);
-      }
+    ctx.clearRect(0, 0, W, H);
+    for (const p of parts) {
+      p.y += p.vy;
+      p.x += Math.sin(tt * p.sway + p.ph) * .25;
+      if (p.y < -12) { p.y = H + 12; p.x = Math.random() * W; }
+      const a = p.a * (.55 + .45 * Math.sin(tt * p.tw + p.ph2));
+      if (a <= 0.02) continue;
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+      const c = p.warm ? '255,224,180' : '190,165,235';
+      g.addColorStop(0, `rgba(${c},${a})`);
+      g.addColorStop(.4, `rgba(${c},${a * .45})`);
+      g.addColorStop(1, `rgba(${c},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 4, 0, 6.2832);
+      ctx.fill();
     }
     requestAnimationFrame(frame);
   }
