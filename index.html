@@ -799,27 +799,24 @@ document.querySelectorAll('.band .t').forEach(t => {
   });
 });
 
-// 청춘 밴드 — 커서를 따라 이미지가 데이터 조각으로 해체됐다가 복원된다
+// 청춘 밴드 — 이미지가 데이터 타일로 쪼개진 채 스스로 물결친다
 (() => {
   const band = document.querySelector('.band.kb');
-  if (!band || reduced || !matchMedia('(pointer: fine)').matches) return;
+  if (!band || reduced) return;
   const img = band.querySelector('.bg img');
   const cv = document.createElement('canvas');
   cv.className = 'pxcv';
   band.querySelector('.bg').appendChild(cv);
   const ctx = cv.getContext('2d');
-  let base, W, H, G, cols, rows, dxA, dyA, vxA, vyA, active = new Set(), raf = null;
+  let base, W, H, G, cols, rows, running = false;
+  const t0 = performance.now();
 
   function build() {
     const r = band.getBoundingClientRect();
     W = cv.width = Math.round(r.width);
     H = cv.height = Math.round(r.height);
-    G = W > 1100 ? 7 : 10;
+    G = W > 1100 ? 13 : W > 700 ? 12 : 10;
     cols = Math.ceil(W / G); rows = Math.ceil(H / G);
-    const n = cols * rows;
-    dxA = new Float32Array(n); dyA = new Float32Array(n);
-    vxA = new Float32Array(n); vyA = new Float32Array(n);
-    active.clear();
     base = document.createElement('canvas');
     base.width = W; base.height = H;
     const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
@@ -833,72 +830,30 @@ document.querySelectorAll('.band .t').forEach(t => {
   else img.addEventListener('load', build);
   addEventListener('resize', () => { if (img.complete) build(); });
 
-  const sparks = [];
-  function frame() {
-    raf = null;
-    ctx.drawImage(base, 0, 0);
-    for (const i of active) {
-      let dx = dxA[i], dy = dyA[i], vx = vxA[i], vy = vyA[i];
-      vx += -0.085 * dx; vy += -0.085 * dy;   // 스프링 복원
-      vx *= 0.885; vy *= 0.885;               // 감쇠
-      dx += vx; dy += vy;
-      if (Math.abs(dx) < .3 && Math.abs(dy) < .3 && Math.abs(vx) < .1 && Math.abs(vy) < .1) {
-        dxA[i] = dyA[i] = vxA[i] = vyA[i] = 0; active.delete(i); continue;
+  function frame(t) {
+    if (!running || !base) return;
+    const tt = (t - t0) / 1000;
+    ctx.fillStyle = '#0B0B0C';
+    ctx.fillRect(0, 0, W, H);
+    // 두 개의 사선 파동이 겹치며 타일 사이 틈이 벌어졌다 닫힌다
+    for (let cy = 0; cy < rows; cy++) {
+      const y = cy * G;
+      for (let cx = 0; cx < cols; cx++) {
+        const x = cx * G;
+        const p1 = x * .008 + y * .005 - tt * 1.4;
+        const p2 = x * .0032 - y * .0022 + tt * .85;
+        const dx = Math.sin(p1) * 3.4 + Math.sin(p2 * 1.8 + 1.3) * 2.4;
+        const dy = Math.cos(p1 * .85) * 3 + Math.sin(p2) * 4.4;
+        ctx.drawImage(base, x, y, G, G, x + dx, y + dy, G, G);
       }
-      dxA[i] = dx; dyA[i] = dy; vxA[i] = vx; vyA[i] = vy;
-      const hx = (i % cols) * G, hy = ((i / cols) | 0) * G;
-      const dist = Math.hypot(dx, dy);
-      // 빈자리 — 어둡게 눌린 잔상 (원본이 희미하게 남는다)
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = 'rgba(11,11,12,.82)';
-      ctx.fillRect(hx, hy, G, G);
-      ctx.globalAlpha = .2;
-      ctx.drawImage(base, hx, hy, G, G, hx, hy, G, G);
-      // 날아가는 조각 — 멀수록 작아지고 투명해지며 증발
-      const a = Math.max(0, 1 - dist / 240);
-      const sc = 1 - Math.min(dist / 480, .5);
-      const sz = G * sc, off = (G - sz) / 2;
-      ctx.globalAlpha = a;
-      ctx.drawImage(base, hx, hy, G, G, hx + dx + off, hy + dy + off, sz, sz);
     }
-    // 퍼플 스파크 — 커서 궤적에서 피어오르는 데이터 입자
-    for (let s = sparks.length - 1; s >= 0; s--) {
-      const k = sparks[s];
-      k.x += k.vx; k.y += k.vy; k.vy -= .02; k.life -= .022;
-      if (k.life <= 0) { sparks.splice(s, 1); continue; }
-      ctx.globalAlpha = k.life * .9;
-      ctx.fillStyle = k.c;
-      ctx.fillRect(k.x, k.y, k.r, k.r);
-    }
-    ctx.globalAlpha = 1;
-    if (active.size || sparks.length) raf = requestAnimationFrame(frame);
+    requestAnimationFrame(frame);
   }
-
-  band.addEventListener('pointermove', e => {
-    if (!base) return;
-    const r = cv.getBoundingClientRect();
-    const mx = e.clientX - r.left, my = e.clientY - r.top, R = 110;
-    const c0 = Math.max(0, ((mx - R) / G) | 0), c1 = Math.min(cols - 1, ((mx + R) / G) | 0);
-    const r0 = Math.max(0, ((my - R) / G) | 0), r1 = Math.min(rows - 1, ((my + R) / G) | 0);
-    for (let cy = r0; cy <= r1; cy++) for (let cx = c0; cx <= c1; cx++) {
-      const px = cx * G + G / 2, py = cy * G + G / 2;
-      const ddx = px - mx, ddy = py - my;
-      const d = Math.hypot(ddx, ddy);
-      if (d > R || d === 0) continue;
-      const i = cy * cols + cx;
-      const f = (1 - d / R) * 3.1;
-      vxA[i] += (ddx / d) * f + (Math.random() - .5) * .5;
-      vyA[i] += (ddy / d) * f + (Math.random() - .5) * .5 - .45;  // 위로 증발
-      active.add(i);
-    }
-    for (let s = 0; s < 3; s++) sparks.push({
-      x: mx + (Math.random() - .5) * 30, y: my + (Math.random() - .5) * 30,
-      vx: (Math.random() - .5) * 1.1, vy: -.7 - Math.random() * 1.6,
-      r: 1.5 + Math.random() * 1.8, life: 1,
-      c: Math.random() < .65 ? '#B49BE2' : '#F4F3F0',
-    });
-    if (!raf) raf = requestAnimationFrame(frame);
-  }, { passive: true });
+  new IntersectionObserver(es => {
+    const v = es[0].isIntersecting;
+    if (v && !running) { running = true; requestAnimationFrame(frame); }
+    else if (!v) running = false;
+  }).observe(band);
 })();
 
 // 인터랙티브 와이프 — 커서 위치가 데이터/완성 컷의 경계가 된다

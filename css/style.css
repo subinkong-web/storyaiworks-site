@@ -359,10 +359,9 @@ body.hascur .cring{opacity:1}
   transition:transform .8s cubic-bezier(.2,.7,.2,1),opacity .6s}
 .js .rv.on.kt span,.js .rv.on .kt span{transform:none;opacity:1}
 
-/* ---- 청춘 밴드 — 픽셀 해체 캔버스 ---- */
+/* ---- 청춘 밴드 — 데이터 타일 물결 캔버스 ---- */
 .pxcv{position:absolute;inset:0;z-index:1;width:100%;height:100%}
 .band.kb.px .bg img{visibility:hidden}
-.band.kb.px{cursor:crosshair}
 
 /* ---- 청춘 밴드 — 켄 번스 + 라이트리크 ---- */
 .band.kb .bg img{animation:kb 16s ease-in-out infinite alternate}
