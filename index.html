@@ -799,6 +799,81 @@ document.querySelectorAll('.band .t').forEach(t => {
   });
 });
 
+// 청춘 밴드 — 커서를 따라 이미지가 데이터 조각으로 해체됐다가 복원된다
+(() => {
+  const band = document.querySelector('.band.kb');
+  if (!band || reduced || !matchMedia('(pointer: fine)').matches) return;
+  const img = band.querySelector('.bg img');
+  const cv = document.createElement('canvas');
+  cv.className = 'pxcv';
+  band.querySelector('.bg').appendChild(cv);
+  const ctx = cv.getContext('2d');
+  let base, W, H, G, cols, rows, dxA, dyA, vxA, vyA, active = new Set(), raf = null;
+
+  function build() {
+    const r = band.getBoundingClientRect();
+    W = cv.width = Math.round(r.width);
+    H = cv.height = Math.round(r.height);
+    G = W > 1100 ? 8 : 11;
+    cols = Math.ceil(W / G); rows = Math.ceil(H / G);
+    const n = cols * rows;
+    dxA = new Float32Array(n); dyA = new Float32Array(n);
+    vxA = new Float32Array(n); vyA = new Float32Array(n);
+    active.clear();
+    base = document.createElement('canvas');
+    base.width = W; base.height = H;
+    const s = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    base.getContext('2d').drawImage(img,
+      (W - img.naturalWidth * s) / 2, (H - img.naturalHeight * s) / 2,
+      img.naturalWidth * s, img.naturalHeight * s);
+    ctx.drawImage(base, 0, 0);
+    band.classList.add('px');
+  }
+  if (img.complete && img.naturalWidth) build();
+  else img.addEventListener('load', build);
+  addEventListener('resize', () => { if (img.complete) build(); });
+
+  function frame() {
+    raf = null;
+    ctx.drawImage(base, 0, 0);
+    ctx.fillStyle = '#0B0B0C';
+    for (const i of active) {
+      let dx = dxA[i], dy = dyA[i], vx = vxA[i], vy = vyA[i];
+      vx += -0.11 * dx; vy += -0.11 * dy;   // 스프링 복원
+      vx *= 0.86; vy *= 0.86;               // 감쇠
+      dx += vx; dy += vy;
+      if (Math.abs(dx) < .3 && Math.abs(dy) < .3 && Math.abs(vx) < .1 && Math.abs(vy) < .1) {
+        dxA[i] = dyA[i] = vxA[i] = vyA[i] = 0; active.delete(i); continue;
+      }
+      dxA[i] = dx; dyA[i] = dy; vxA[i] = vx; vyA[i] = vy;
+      const hx = (i % cols) * G, hy = ((i / cols) | 0) * G;
+      ctx.fillRect(hx, hy, G, G);                                   // 빈자리
+      ctx.drawImage(base, hx, hy, G, G, hx + dx, hy + dy, G, G);    // 날아간 조각
+    }
+    if (active.size) raf = requestAnimationFrame(frame);
+  }
+
+  band.addEventListener('pointermove', e => {
+    if (!base) return;
+    const r = cv.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top, R = 110;
+    const c0 = Math.max(0, ((mx - R) / G) | 0), c1 = Math.min(cols - 1, ((mx + R) / G) | 0);
+    const r0 = Math.max(0, ((my - R) / G) | 0), r1 = Math.min(rows - 1, ((my + R) / G) | 0);
+    for (let cy = r0; cy <= r1; cy++) for (let cx = c0; cx <= c1; cx++) {
+      const px = cx * G + G / 2, py = cy * G + G / 2;
+      const ddx = px - mx, ddy = py - my;
+      const d = Math.hypot(ddx, ddy);
+      if (d > R || d === 0) continue;
+      const i = cy * cols + cx;
+      const f = (1 - d / R) * 3.4;
+      vxA[i] += (ddx / d) * f + (Math.random() - .5) * .7;
+      vyA[i] += (ddy / d) * f + (Math.random() - .5) * .7 - .4;  // 살짝 위로 증발
+      active.add(i);
+    }
+    if (!raf) raf = requestAnimationFrame(frame);
+  }, { passive: true });
+})();
+
 // 인터랙티브 와이프 — 커서 위치가 데이터/완성 컷의 경계가 된다
 document.querySelectorAll('.band.wipe').forEach(band => {
   let manual = false;
