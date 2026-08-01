@@ -351,16 +351,16 @@
       </div>
       <figcaption><b>데모 필름 — The First Demo</b><span>RT 3:24 · 전 컷 AI 제작 · Generated &amp; Directed by SAW</span></figcaption>
     </figure>
-    <!-- 각 셀의 data-yt에 유튜브 ID를 넣으면 클릭 재생 활성화 -->
+    <!-- 셀 클릭 → 상세 모달(영상 + 스틸 + 설명). 영상 링크는 스크립트의 PROJECTS에서 관리 -->
     <div class="reel-grid">
-      <div class="reel wide rv" data-yt=""><img src="images/sf_whale.jpg" alt="SF 장면"><span class="cn">SF</span></div>
-      <div class="reel rv d1" data-yt=""><img src="images/helmet_demo.jpg" alt="레이싱 장면"><span class="cn">레이싱</span></div>
-      <div class="reel rv" data-yt=""><img src="images/fire.jpg" alt="액션 장면"><span class="cn">액션</span></div>
-      <div class="reel rv d1" data-yt=""><img src="images/youth_train.jpg" alt="청춘 장면"><span class="cn">청춘</span></div>
-      <div class="reel rv d2" data-yt=""><img src="images/youth_pair.jpg" alt="드라마 장면"><span class="cn">드라마</span></div>
-      <div class="reel rv" data-yt=""><img src="images/cf_drink.jpg" alt="광고 장면"><span class="cn">광고</span></div>
-      <div class="reel rv d1" data-yt=""><img src="images/war.jpg" alt="밀리터리 장면"><span class="cn">밀리터리</span></div>
-      <div class="reel rv d2" data-yt=""><img src="images/ending_saw.jpg" alt="사극 장면"><span class="cn">사극</span></div>
+      <div class="reel wide rv" data-pj="sf"><img src="images/sf_whale.jpg" alt="SF 장면"><span class="cn">SF</span></div>
+      <div class="reel rv d1" data-pj="racing"><img src="images/helmet_demo.jpg" alt="레이싱 장면"><span class="cn">레이싱</span></div>
+      <div class="reel rv" data-pj="action"><img src="images/fire.jpg" alt="액션 장면"><span class="cn">액션</span></div>
+      <div class="reel rv d1" data-pj="youth"><img src="images/youth_train.jpg" alt="청춘 장면"><span class="cn">청춘</span></div>
+      <div class="reel rv d2" data-pj="drama"><img src="images/youth_pair.jpg" alt="드라마 장면"><span class="cn">드라마</span></div>
+      <div class="reel rv" data-pj="cf"><img src="images/cf_drink.jpg" alt="광고 장면"><span class="cn">광고</span></div>
+      <div class="reel rv d1" data-pj="military"><img src="images/war.jpg" alt="밀리터리 장면"><span class="cn">밀리터리</span></div>
+      <div class="reel rv d2" data-pj="hist"><img src="images/ending_saw.jpg" alt="사극 장면"><span class="cn">사극</span></div>
     </div>
   </div>
 </section>
@@ -455,6 +455,21 @@
     </div>
   </div>
 </section>
+
+<!-- ══ 쇼케이스 모달 ══ -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-bk" id="modal-bk"></div>
+  <button class="modal-x" id="modal-x" aria-label="닫기">×</button>
+  <div class="modal-card">
+    <div class="modal-video" id="modal-video"></div>
+    <div class="modal-body">
+      <div class="modal-k" id="modal-k"></div>
+      <h3 id="modal-t"></h3>
+      <p id="modal-d"></p>
+      <div class="modal-stills" id="modal-stills"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 document.documentElement.classList.replace('no-js','js');
@@ -567,6 +582,90 @@ addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { 
 // 모바일 메뉴
 document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
 document.querySelectorAll('#navlinks a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+
+// 쇼케이스 데이터 — yt에 유튜브 ID를 넣으면 모달 상단에서 재생됨 (비어 있으면 준비 중 표시)
+const PROJECTS = {
+  sf: {
+    k: 'Genre Showcase — SF', t: '도시 위를 헤엄치는 고래',
+    yt: '',
+    stills: ['sf_whale', 'sf_man', 'mk_viewer_city', 'mk_boat3d', 'storm'],
+    d: '실존하지 않는 장면은 데이터에서 시작됩니다. 도시의 공간 데이터와 3D 에셋을 결합해 Flowmark 파이프라인에서 생성한 컷입니다. 조명과 안개의 방향은 미장센 단계에서 확정한 기준값을 따르고, 세트·로케이션·CG 외주 없이 완성했습니다.',
+  },
+  racing: {
+    k: 'Genre Showcase — Racing', t: '존재하지 않는 서킷의 야간 레이스',
+    yt: '',
+    stills: ['race_suit', 'race_helmet', 'race_car', 'mk_f1_3d', 'mk_green_helmet'],
+    d: '레이싱 슈트와 헬멧은 스튜디오에서 데이터로 확보했습니다. 차량과 서킷은 3D 에셋과 생성 컷의 조합입니다. 배우는 단 한 번의 레퍼런스 촬영으로 전 장면에 등장하며, 야간 서킷의 조명까지 러프 컷 기준으로 정렬돼 있습니다.',
+  },
+  action: {
+    k: 'Genre Showcase — Action', t: '이 불꽃은 전부 데이터였습니다',
+    yt: '',
+    stills: ['fire', 'still_fire', 'mk_sniper', 'mk_car_split', 'div_tank'],
+    d: '불타는 공장, 총구의 섬광 — 물리적으로 위험한 장면일수록 AI 파이프라인의 가치가 커집니다. 크로마키 실사와 생성 컷을 같은 러프 컷 기준으로 합성해, 배우의 안전과 장면의 스케일을 동시에 확보했습니다.',
+  },
+  youth: {
+    k: 'Genre Showcase — Youth', t: '카메라 없이 촬영한, 어느 여름',
+    yt: '',
+    stills: ['still_youth', 'youth_train', 'youth_pair', 'mk_rough_girl', 'mk_edit_multi'],
+    d: '여름 햇살, 바닷가 건널목, 스쳐 가는 전철 — 로케이션 헌팅 없이 만든 계절입니다. 인물의 아이덴티티 데이터셋을 기준으로 전 컷에서 동일한 얼굴과 톤을 유지하며, 러프 컷과 편집을 병행해 흐름을 먼저 완성했습니다.',
+  },
+  drama: {
+    k: 'Genre Showcase — Drama', t: '감정이 머무는 컷',
+    yt: '',
+    stills: ['youth_pair', 'sf_man', 'still_youth', 'mk_green_face', 'mk_edit_multi'],
+    d: '드라마의 핵심은 스펙터클이 아니라 표정의 연속성입니다. 배우 레퍼런스 촬영에서 확보한 표정 데이터가 전 장면의 기준값이 되어, 클로즈업이 이어져도 인물이 흔들리지 않습니다. 대사와 호흡은 실사 촬영으로 완성합니다.',
+  },
+  cf: {
+    k: 'Genre Showcase — Commercial', t: '이미 광고 현장에서 구동 중입니다',
+    yt: '',
+    stills: ['cf_can', 'cf_drink', 'studio_white_shoot', 'studio_blue', 'mk_nodes_clean'],
+    d: '영화에서 검증한 파이프라인을 그대로 광고에 적용했습니다. 제품 촬영과 모델 데이터 확보 후, 배경·연출·버전 변경을 데이터에서 재생성합니다. 시안 단계에서 완성 수준의 컷을 보여줄 수 있는 것이 가장 큰 차이입니다.',
+  },
+  military: {
+    k: 'Genre Showcase — Military', t: '군중도, 전장도, 세트 없이',
+    yt: '',
+    stills: ['war', 'mk_war_multi', 'mk_sniper', 'div_tank', 'fire'],
+    d: '대규모 병력과 장비가 등장하는 장면은 전통 제작에서 가장 비싼 컷입니다. SAW는 소수의 배우 데이터와 3D 에셋으로 전장의 스케일을 만들고, 연속성 검증 단계에서 컷 간 정합성을 프레임 단위로 점검합니다.',
+  },
+  hist: {
+    k: 'Genre Showcase — Historical', t: '한 벌의 한복에서 시작된 사극',
+    yt: '',
+    stills: ['hist', 'hist_gallop', 'hist_walk', 'ending_saw', 'mk_hanbok_sheet'],
+    d: '의상 한 벌을 3면 데이터로 확보하면, 시대극의 전 장면에서 같은 옷이 살아 움직입니다. 말을 타고 달리는 컷도, 갈대밭을 걷는 엔딩도 같은 데이터 자산에서 나왔습니다. 고증 수정도 재촬영 없이 데이터에서 이뤄집니다.',
+  },
+};
+
+// 쇼케이스 모달
+const modal = document.getElementById('modal');
+const mVideo = document.getElementById('modal-video');
+function openModal(key) {
+  const pj = PROJECTS[key];
+  if (!pj) return;
+  document.getElementById('modal-k').textContent = pj.k;
+  document.getElementById('modal-t').textContent = pj.t;
+  document.getElementById('modal-d').textContent = pj.d;
+  document.getElementById('modal-stills').innerHTML =
+    pj.stills.map(s => `<img src="images/${s}.jpg" alt="" loading="lazy">`).join('');
+  if (pj.yt) {
+    mVideo.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${pj.yt}?autoplay=1&rel=0"
+      allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  } else {
+    mVideo.innerHTML = `<img src="images/${pj.stills[0]}.jpg" alt="">
+      <span class="msoon">Video — Coming Soon</span>`;
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  modal.classList.remove('open');
+  mVideo.innerHTML = '';
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.reel[data-pj]').forEach(el =>
+  el.addEventListener('click', () => openModal(el.dataset.pj)));
+document.getElementById('modal-bk').addEventListener('click', closeModal);
+document.getElementById('modal-x').addEventListener('click', closeModal);
+addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // 유튜브 플레이어 — data-yt에 영상 ID가 있는 모든 요소(.film, .reel)를 클릭 재생으로 활성화
 document.querySelectorAll('[data-yt]').forEach(el => {

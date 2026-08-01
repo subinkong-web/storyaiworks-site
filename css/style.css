@@ -462,6 +462,55 @@ body.hasglow .glow{opacity:1}
 }
 .reel.has-video:hover .play{background:rgba(103,68,152,.55);border-color:#B49BE2}
 
+/* ---- 그리드 셀 → 모달 어포던스 ---- */
+.reel[data-pj]{cursor:pointer}
+.reel[data-pj]::before{
+  content:"+";position:absolute;top:10px;right:14px;z-index:2;
+  font-size:22px;font-weight:300;line-height:1;color:#F4F3F0;
+  opacity:0;transform:rotate(-90deg);transition:opacity .35s,transform .35s;
+}
+.reel[data-pj]:hover::before{opacity:.9;transform:rotate(0)}
+
+/* ============ 쇼케이스 모달 ============ */
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:clamp(12px,3vw,32px)}
+.modal.open{display:flex}
+.modal-bk{
+  position:absolute;inset:0;background:rgba(6,6,8,.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.modal-x{
+  position:absolute;top:18px;right:22px;z-index:5;cursor:pointer;
+  width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);
+  background:rgba(11,11,12,.5);color:#F4F3F0;font-size:24px;font-weight:300;line-height:1;
+  transition:background .3s,border-color .3s;
+}
+.modal-x:hover{background:#674498;border-color:#674498}
+.modal-card{
+  position:relative;z-index:2;width:min(880px,100%);max-height:calc(100vh - 60px);
+  overflow-y:auto;background:#101012;border:1px solid rgba(255,255,255,.1);
+  animation:mIn .4s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes mIn{from{opacity:0;transform:translateY(26px) scale(.98)}}
+.modal-video{position:relative;aspect-ratio:16/9;background:#000;flex-shrink:0}
+.modal-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.modal-video img{width:100%;height:100%;object-fit:cover;opacity:.6}
+.msoon{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:10.5px;font-weight:800;letter-spacing:.3em;color:#C6C6CB;
+  text-transform:uppercase;border:1px solid rgba(255,255,255,.3);padding:9px 18px;
+  background:rgba(11,11,12,.55);backdrop-filter:blur(6px);white-space:nowrap;
+}
+.modal-body{padding:clamp(20px,3.4vw,32px)}
+.modal-k{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px;font-weight:800;letter-spacing:.28em;color:#B49BE2;text-transform:uppercase;
+}
+.modal-body h3{margin-top:12px;font-size:clamp(19px,2.4vw,25px);font-weight:800;color:#F4F3F0;word-break:keep-all}
+.modal-body p{margin-top:14px;font-size:14px;line-height:1.8;color:#C6C6CB;word-break:keep-all}
+.modal-stills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}
+.modal-stills img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+@media (max-width:560px){.modal-stills{grid-template-columns:1fr 1fr}}
+
 /* ============ TEAM ============ */
 .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,4vw,60px);margin-top:56px}
 .member{background:var(--panel);border:1px solid var(--hair);padding:clamp(26px,3.4vw,44px)}
