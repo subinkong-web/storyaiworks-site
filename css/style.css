@@ -652,15 +652,18 @@ body.hascur .cring{opacity:1}
 
 .footer{position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.08)}
 .footer .in{
-  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
-  padding:30px var(--pad);max-width:var(--maxw);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap;
+  padding:32px var(--pad) 36px;max-width:var(--maxw);margin:0 auto;
 }
-.footer img{height:16px;opacity:.85}
-.footer .cr{font-size:11px;color:#616168;letter-spacing:.08em}
-.footer .ppl{font-size:11.5px;color:#616168}
-.footer .ppl a{color:#93939A;transition:color .3s}
-.footer .ppl a:hover{color:#B49BE2}
-.footer .ppl span{margin:0 8px;opacity:.4}
+.footer img{height:16px;opacity:.85;flex:none}
+.footer .fmeta{flex:1;min-width:280px}
+.footer .fmeta p{font-size:11.5px;line-height:1.9;color:#7c7c84;letter-spacing:.02em;word-break:keep-all}
+.footer .fmeta b{color:#a8a8b0;font-weight:700}
+.footer .fmeta span{margin:0 9px;opacity:.35}
+.footer .fmeta a{color:#93939A;transition:color .3s}
+.footer .fmeta a:hover{color:#B49BE2}
+.footer .cr{font-size:11px;color:#616168;letter-spacing:.08em;text-align:right;line-height:1.7;flex:none}
+@media (max-width:700px){.footer .cr{text-align:left}}
 
 /* ============ 은은한 배경 패턴 — 그리드 + 정합 십자 마크 ============ */
 .sec,.statement,.ticker{
