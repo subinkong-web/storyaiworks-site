@@ -42,11 +42,11 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip}
 body{
   background:#0B0B0C;color:#C6C6CB;font-family:var(--sans);
   font-size:16px;line-height:1.7;letter-spacing:-.01em;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip;
 }
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
@@ -106,10 +106,11 @@ body.hasglow .glow{opacity:1}
 
 /* 파이프라인 키네틱 티커 */
 .ticker{
-  overflow:hidden;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  overflow:hidden;overflow:clip;contain:paint;max-width:100%;
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
   padding:15px 0;background:var(--bg);position:relative;
 }
-.ticker .tin{display:flex;width:max-content;animation:tick 46s linear infinite}
+.ticker .tin{display:flex;width:max-content;animation:tick 46s linear infinite;will-change:transform}
 .ticker span{
   flex:none;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
   font-size:11px;letter-spacing:.32em;color:var(--dim2);text-transform:uppercase;white-space:pre;
@@ -164,7 +165,7 @@ body.hasglow .glow{opacity:1}
 }
 
 /* ============ HERO ============ */
-.hero{height:100svh;min-height:620px;display:flex;align-items:flex-end;overflow:hidden}
+.hero{position:relative;height:100svh;min-height:620px;display:flex;align-items:flex-end;overflow:hidden}
 .hero .bg{position:absolute;inset:0}
 .hero .bg img{width:100%;height:100%;object-fit:cover;animation:heroZoom 14s ease-out forwards}
 @keyframes heroZoom{from{transform:scale(1.12)}to{transform:scale(1)}}
