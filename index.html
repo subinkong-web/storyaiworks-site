@@ -835,15 +835,15 @@ document.querySelectorAll('.band .t').forEach(t => {
     const tt = (t - t0) / 1000;
     ctx.fillStyle = '#0B0B0C';
     ctx.fillRect(0, 0, W, H);
-    // 두 개의 사선 파동이 겹치며 타일 사이 틈이 벌어졌다 닫힌다
+    // 가로로 진행하는 파동 — 마루가 좌→우로 쓸고 지나가며 타일이 상하로 출렁인다
     for (let cy = 0; cy < rows; cy++) {
       const y = cy * G;
       for (let cx = 0; cx < cols; cx++) {
         const x = cx * G;
-        const p1 = x * .008 + y * .005 - tt * 1.4;
-        const p2 = x * .0032 - y * .0022 + tt * .85;
-        const dx = Math.sin(p1) * 3.4 + Math.sin(p2 * 1.8 + 1.3) * 2.4;
-        const dy = Math.cos(p1 * .85) * 3 + Math.sin(p2) * 4.4;
+        const p1 = x * .0058 - tt * 1.7;                 // 주 파동 (횡 진행)
+        const p2 = x * .0021 + y * .0007 - tt * .95;     // 느린 보조 스웰
+        const dy = Math.sin(p1) * 5.8 + Math.sin(p2 + .8) * 3.4;
+        const dx = Math.cos(p1 * .9) * 1.7;              // 미세 좌우 흔들림
         ctx.drawImage(base, x, y, G, G, x + dx, y + dy, G, G);
       }
     }
