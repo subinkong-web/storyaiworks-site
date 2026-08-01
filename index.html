@@ -814,7 +814,7 @@ document.querySelectorAll('.band .t').forEach(t => {
     const r = band.getBoundingClientRect();
     W = cv.width = Math.round(r.width);
     H = cv.height = Math.round(r.height);
-    G = W > 1100 ? 8 : 11;
+    G = W > 1100 ? 7 : 10;
     cols = Math.ceil(W / G); rows = Math.ceil(H / G);
     const n = cols * rows;
     dxA = new Float32Array(n); dyA = new Float32Array(n);
@@ -833,24 +833,45 @@ document.querySelectorAll('.band .t').forEach(t => {
   else img.addEventListener('load', build);
   addEventListener('resize', () => { if (img.complete) build(); });
 
+  const sparks = [];
   function frame() {
     raf = null;
     ctx.drawImage(base, 0, 0);
-    ctx.fillStyle = '#0B0B0C';
     for (const i of active) {
       let dx = dxA[i], dy = dyA[i], vx = vxA[i], vy = vyA[i];
-      vx += -0.11 * dx; vy += -0.11 * dy;   // 스프링 복원
-      vx *= 0.86; vy *= 0.86;               // 감쇠
+      vx += -0.085 * dx; vy += -0.085 * dy;   // 스프링 복원
+      vx *= 0.885; vy *= 0.885;               // 감쇠
       dx += vx; dy += vy;
       if (Math.abs(dx) < .3 && Math.abs(dy) < .3 && Math.abs(vx) < .1 && Math.abs(vy) < .1) {
         dxA[i] = dyA[i] = vxA[i] = vyA[i] = 0; active.delete(i); continue;
       }
       dxA[i] = dx; dyA[i] = dy; vxA[i] = vx; vyA[i] = vy;
       const hx = (i % cols) * G, hy = ((i / cols) | 0) * G;
-      ctx.fillRect(hx, hy, G, G);                                   // 빈자리
-      ctx.drawImage(base, hx, hy, G, G, hx + dx, hy + dy, G, G);    // 날아간 조각
+      const dist = Math.hypot(dx, dy);
+      // 빈자리 — 어둡게 눌린 잔상 (원본이 희미하게 남는다)
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(11,11,12,.82)';
+      ctx.fillRect(hx, hy, G, G);
+      ctx.globalAlpha = .2;
+      ctx.drawImage(base, hx, hy, G, G, hx, hy, G, G);
+      // 날아가는 조각 — 멀수록 작아지고 투명해지며 증발
+      const a = Math.max(0, 1 - dist / 240);
+      const sc = 1 - Math.min(dist / 480, .5);
+      const sz = G * sc, off = (G - sz) / 2;
+      ctx.globalAlpha = a;
+      ctx.drawImage(base, hx, hy, G, G, hx + dx + off, hy + dy + off, sz, sz);
     }
-    if (active.size) raf = requestAnimationFrame(frame);
+    // 퍼플 스파크 — 커서 궤적에서 피어오르는 데이터 입자
+    for (let s = sparks.length - 1; s >= 0; s--) {
+      const k = sparks[s];
+      k.x += k.vx; k.y += k.vy; k.vy -= .02; k.life -= .022;
+      if (k.life <= 0) { sparks.splice(s, 1); continue; }
+      ctx.globalAlpha = k.life * .9;
+      ctx.fillStyle = k.c;
+      ctx.fillRect(k.x, k.y, k.r, k.r);
+    }
+    ctx.globalAlpha = 1;
+    if (active.size || sparks.length) raf = requestAnimationFrame(frame);
   }
 
   band.addEventListener('pointermove', e => {
@@ -865,11 +886,17 @@ document.querySelectorAll('.band .t').forEach(t => {
       const d = Math.hypot(ddx, ddy);
       if (d > R || d === 0) continue;
       const i = cy * cols + cx;
-      const f = (1 - d / R) * 3.4;
-      vxA[i] += (ddx / d) * f + (Math.random() - .5) * .7;
-      vyA[i] += (ddy / d) * f + (Math.random() - .5) * .7 - .4;  // 살짝 위로 증발
+      const f = (1 - d / R) * 3.1;
+      vxA[i] += (ddx / d) * f + (Math.random() - .5) * .5;
+      vyA[i] += (ddy / d) * f + (Math.random() - .5) * .5 - .45;  // 위로 증발
       active.add(i);
     }
+    for (let s = 0; s < 3; s++) sparks.push({
+      x: mx + (Math.random() - .5) * 30, y: my + (Math.random() - .5) * 30,
+      vx: (Math.random() - .5) * 1.1, vy: -.7 - Math.random() * 1.6,
+      r: 1.5 + Math.random() * 1.8, life: 1,
+      c: Math.random() < .65 ? '#B49BE2' : '#F4F3F0',
+    });
     if (!raf) raf = requestAnimationFrame(frame);
   }, { passive: true });
 })();
