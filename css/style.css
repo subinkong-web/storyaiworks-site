@@ -218,8 +218,8 @@ body.hasglow .glow{opacity:1}
   position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--panel);
   cursor:pointer;
 }
-.film .ph img{width:100%;height:100%;object-fit:cover;filter:brightness(.72);transition:transform 1s ease,filter .5s}
-.film .ph:hover img{transform:scale(1.04);filter:brightness(.86)}
+.film .ph img{width:100%;height:100%;object-fit:cover;filter:brightness(.92);transition:transform 1s ease,filter .5s}
+.film .ph:hover img{transform:scale(1.03);filter:brightness(1)}
 .film .ph iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .film .play{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
@@ -509,3 +509,19 @@ body.hasglow .glow{opacity:1}
 .footer .ppl a{color:#93939A;transition:color .3s}
 .footer .ppl a:hover{color:#B49BE2}
 .footer .ppl span{margin:0 8px;opacity:.4}
+
+/* ============ 은은한 배경 패턴 — 그리드 + 정합 십자 마크 ============ */
+.sec,.statement,.ticker{
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='264' height='264'%3E%3Cpath d='M132 125v14M125 132h14' stroke='%23FFFFFF' stroke-opacity='.07' fill='none'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:264px 264px,88px 88px,88px 88px;
+}
+.light{
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='264' height='264'%3E%3Cpath d='M132 125v14M125 132h14' stroke='%23131316' stroke-opacity='.10' fill='none'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(19,19,22,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(19,19,22,.032) 1px,transparent 1px);
+  background-size:264px 264px,88px 88px,88px 88px;
+}
