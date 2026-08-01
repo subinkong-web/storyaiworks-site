@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+  :root{
+    --bg:#0B0B0C; --ink:#F4F3F0; --dim:#93939A; --acc:#B49BE2; --accd:#674498;
+    --sans:"Pretendard Variable","Apple SD Gothic Neo",sans-serif;
+    --serif:"Instrument Serif",serif;
+    --serifkr:"Noto Serif KR",serif;
+    --mono:ui-monospace,Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .thumb{position:relative;width:1280px;height:720px;overflow:hidden;background:var(--bg);margin:20px auto}
+
+  /* 공통 장식 */
+  .grid{position:absolute;inset:0;z-index:3;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:80px 80px;}
+  .grain{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:.55;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .vin{position:absolute;inset:0;z-index:6;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(11,11,12,.55));}
+  .logo{position:absolute;top:44px;left:52px;z-index:9;height:30px}
+  .tr{position:absolute;top:48px;right:52px;z-index:9;font-size:13px;letter-spacing:.32em;color:rgba(244,243,240,.75);text-transform:uppercase;font-weight:700}
+  .corner{position:absolute;z-index:9;width:26px;height:26px;border:1px solid rgba(255,255,255,.35)}
+  .corner.bl{left:32px;bottom:32px;border-right:0;border-top:0}
+  .corner.br{right:32px;bottom:32px;border-left:0;border-top:0}
+
+  /* ══ 데모 필름 v2 — 장르 카드 그리드 ══ */
+  .demo .glowbg{position:absolute;right:-160px;top:-160px;width:820px;height:820px;z-index:0;
+    background:radial-gradient(circle,rgba(103,68,152,.32),transparent 62%)}
+  .demo .cards{position:absolute;right:64px;top:50%;transform:translateY(-50%) rotate(-4deg);z-index:4;
+    display:grid;grid-template-columns:288px 288px;gap:16px}
+  .demo .card{position:relative;height:184px;overflow:hidden;border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 22px 54px rgba(0,0,0,.5)}
+  .demo .card img{width:100%;height:100%;object-fit:cover;filter:saturate(1.06) contrast(1.05)}
+  .demo .card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,12,.6),transparent 45%)}
+  .demo .card i{position:absolute;left:12px;bottom:11px;z-index:2;font-style:normal;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;color:#F4F3F0;text-transform:uppercase;
+    background:rgba(11,11,12,.62);border:1px solid rgba(255,255,255,.25);padding:5px 11px;backdrop-filter:blur(4px)}
+  .demo .card i b{color:var(--acc);font-weight:800;margin-right:7px}
+  .demo .shade{position:absolute;inset:0;z-index:2;
+    background:linear-gradient(97deg,#0B0B0C 27%,rgba(11,11,12,.86) 40%,rgba(11,11,12,.08) 62%,rgba(11,11,12,.25));}
+  .demo .tt{position:absolute;left:52px;bottom:64px;z-index:7}
+  .demo .k{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:800;letter-spacing:.4em;color:var(--acc);text-transform:uppercase}
+  .demo .k::before{content:"";width:46px;height:2px;background:var(--accd)}
+  .demo h1{margin-top:22px;font-size:100px;line-height:1.02;font-weight:800;color:var(--ink);letter-spacing:-.015em}
+  .demo h1 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--acc);letter-spacing:0}
+  .demo .sub{margin-top:26px;font-size:15px;letter-spacing:.26em;color:var(--dim);text-transform:uppercase;font-weight:600}
+  .demo .sub b{color:var(--ink);font-weight:700}
+  .demo .meta{margin-top:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:#616168;text-transform:uppercase}
+
+  /* ══ 메이킹 필름 v2 ══ */
+  .making .bg{position:absolute;inset:0;
+    background:url('../images/studio_green_crew.jpg') 50% 72%/140% no-repeat;
+    filter:saturate(1.08) contrast(1.12) brightness(.8)}
+  .making .shade{position:absolute;inset:0;z-index:2;background:
+    radial-gradient(ellipse at 82% 30%,rgba(103,68,152,.28),transparent 55%),
+    linear-gradient(100deg,#0B0B0C 28%,rgba(11,11,12,.88) 42%,rgba(11,11,12,.18) 68%,rgba(11,11,12,.5));}
+  .making .frames{position:absolute;right:44px;top:47%;transform:translateY(-50%);z-index:5;display:flex;gap:18px}
+  .making .fr{width:204px;background:#F4F3F0;padding:8px 8px 30px;box-shadow:0 28px 64px rgba(0,0,0,.6);position:relative}
+  .making .fr::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-2deg);
+    width:92px;height:26px;background:rgba(244,243,240,.32);border:1px solid rgba(255,255,255,.14);z-index:3}
+  .making .fr img{width:100%;height:240px;object-fit:cover;display:block;filter:saturate(1.04)}
+  .making .fr figcaption{position:absolute;left:0;right:0;bottom:9px;text-align:center;
+    font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:#3a3a40;text-transform:uppercase}
+  .making .fr.f1{transform:rotate(-3.4deg) translateY(16px)}
+  .making .fr.f2{transform:rotate(1.8deg) translateY(-14px)}
+  .making .fr.f3{transform:rotate(3.6deg) translateY(24px)}
+  .making .tt{position:absolute;left:52px;bottom:64px;z-index:7}
+  .making .k{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:800;letter-spacing:.4em;color:var(--acc);text-transform:uppercase}
+  .making .k::before{content:"";width:46px;height:2px;background:var(--accd)}
+  .making h1{margin-top:22px;font-size:84px;line-height:1.08;font-weight:800;color:var(--ink);letter-spacing:-.015em}
+  .making h1 em{font-family:var(--serifkr);font-style:normal;font-weight:600;color:var(--acc)}
+  .making .sub{margin-top:24px;font-size:15px;letter-spacing:.26em;color:var(--dim);text-transform:uppercase;font-weight:600}
+  .making .sub b{color:var(--ink);font-weight:700}
+  .making .meta{margin-top:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:#7a7a82;text-transform:uppercase}
+  .making .meta b{color:var(--acc);font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- 데모 필름 썸네일 v2 -->
+<div class="thumb demo" id="t-demo">
+  <div class="glowbg"></div>
+  <div class="cards">
+    <div class="card"><img src="../images/sf_whale.jpg" alt=""><i><b>01</b>SF</i></div>
+    <div class="card"><img src="../images/race_suit.jpg" alt=""><i><b>02</b>Racing</i></div>
+    <div class="card"><img src="../images/youth_train.jpg" alt=""><i><b>03</b>Youth</i></div>
+    <div class="card"><img src="../images/cf_drink.jpg" alt=""><i><b>04</b>Commercial</i></div>
+  </div>
+  <div class="shade"></div>
+  <div class="grid"></div>
+  <img class="logo" src="../images/saw_logo_white.png" alt="">
+  <div class="tr">2026 · Made with AI</div>
+  <div class="tt">
+    <div class="k">SAW — Demo Film</div>
+    <h1>The First<br><em>Demo</em></h1>
+    <div class="sub">Generated &amp; Directed by <b>SAW</b></div>
+    <div class="meta">One Pipeline, Every Genre · RT 3:24</div>
+  </div>
+  <div class="vin"></div>
+  <div class="grain"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+</div>
+
+<!-- 메이킹 필름 썸네일 v2 -->
+<div class="thumb making" id="t-making">
+  <div class="bg"></div>
+  <div class="shade"></div>
+  <div class="grid"></div>
+  <img class="logo" src="../images/saw_logo_white.png" alt="">
+  <div class="tr">Behind the Scenes</div>
+  <div class="frames">
+    <figure class="fr f1"><img src="../images/mk_green_face.jpg" alt=""><figcaption>Identity Data</figcaption></figure>
+    <figure class="fr f2"><img src="../images/mk_turn_rain.jpg" alt=""><figcaption>Costume Turnaround</figcaption></figure>
+    <figure class="fr f3"><img src="../images/mk_nodes_clean.jpg" alt=""><figcaption>Flowmark Pipeline</figcaption></figure>
+  </div>
+  <div class="tt">
+    <div class="k">SAW — Making Film</div>
+    <h1>데이터가<br><em>컷</em>이 되기까지</h1>
+    <div class="sub">Behind the Pipeline</div>
+    <div class="meta"><b>Easteregg Studio</b> · Chroma Stage 1 · 15 × 10 M Horizont</div>
+  </div>
+  <div class="vin"></div>
+  <div class="grain"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+</div>
+
+</body>
+</html>
