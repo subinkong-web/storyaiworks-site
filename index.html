@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -23,6 +23,7 @@
 <nav class="nav" id="nav">
   <a class="logo" href="#top"><img src="images/saw_logo_white.png" alt="SAW"></a>
   <ul id="navlinks">
+    <li><a href="#films">Films</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#work">What We Do</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
@@ -64,10 +65,35 @@
   </div>
 </section>
 
-<!-- ══ ABOUT ══ -->
-<section class="sec" id="about">
+<!-- ══ FILMS ══ -->
+<section class="sec" id="films" style="padding-top:0">
   <div class="wrap">
-    <div class="klabel rv">01 — Company</div>
+    <div class="klabel rv">01 — Films</div>
+    <h2 class="ktitle rv d1">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
+    <div class="film-grid">
+      <!-- data-yt에 유튜브 영상 ID(예: dQw4w9WgXcQ)를 넣으면 재생 가능 -->
+      <figure class="film rv d1" data-yt="">
+        <div class="ph">
+          <img src="images/helmet_demo.jpg" alt="SAW 데모 필름">
+          <div class="play"></div>
+        </div>
+        <figcaption><b>데모 필름</b><span>Demo Film · 7:20 · 전 컷 AI 제작</span></figcaption>
+      </figure>
+      <figure class="film rv d2" data-yt="">
+        <div class="ph">
+          <img src="images/studio_green_crew.jpg" alt="SAW 메이킹 필름">
+          <div class="play"></div>
+        </div>
+        <figcaption><b>메이킹 필름</b><span>Making Film · 데이터가 컷이 되는 과정</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT (LIGHT) ══ -->
+<section class="sec light" id="about">
+  <div class="wrap">
+    <div class="klabel rv">02 — Company</div>
     <h2 class="ktitle rv d1">AI로 영화를 만드는<br><em>제작사</em>입니다</h2>
     <div class="about-grid">
       <div>
@@ -99,7 +125,7 @@
 <!-- ══ WHAT WE DO ══ -->
 <section class="sec" id="work">
   <div class="wrap">
-    <div class="klabel rv">02 — What We Do</div>
+    <div class="klabel rv">03 — What We Do</div>
     <h2 class="ktitle rv d1">IP의 발굴부터 영상의 완성까지,<br>네 영역이 <em>한 파이프라인</em> 안에서</h2>
     <div class="biz-grid">
       <div class="biz rv d1">
@@ -152,10 +178,10 @@
   </div>
 </section>
 
-<!-- ══ PIPELINE ══ -->
-<section class="sec" id="pipeline">
+<!-- ══ PIPELINE (LIGHT) ══ -->
+<section class="sec light" id="pipeline">
   <div class="wrap">
-    <div class="klabel rv">03 — The Pipeline</div>
+    <div class="klabel rv">04 — The Pipeline</div>
     <h2 class="ktitle rv d1">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
     <p class="klead rv d2">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
     <b>세 갈래로 갈라져 동시에</b> 진행한 뒤 최종 믹싱에서 합류합니다.
@@ -204,7 +230,7 @@
 <section class="flowmark grain" id="infra">
   <div class="bg"><img src="images/flowmark_hero.jpg" alt="Flowmark 워크플로우 시스템"></div>
   <div class="in wrap">
-    <div class="fm-k rv">04 — Infrastructure · Proprietary System</div>
+    <div class="fm-k rv">05 — Infrastructure · Proprietary System</div>
     <div class="fm-t rv d1">FLOWMARK</div>
     <p class="fm-s rv d2"><b>기다리지 않고, 직접 만들었습니다.</b>
     흩어져 있는 전 세계의 AI 엔진을 하나의 캔버스로 모아 —
@@ -219,8 +245,8 @@
   </div>
 </section>
 
-<!-- ══ SCRIPTURE ENGINE ══ -->
-<section class="sec">
+<!-- ══ SCRIPTURE ENGINE + STUDIO (LIGHT) ══ -->
+<section class="sec light">
   <div class="wrap">
     <div class="klabel rv">Scripture Engine</div>
     <h2 class="ktitle rv d1">웹소설이 <em>대본</em>이 되기까지,<br>손을 거치지 않습니다</h2>
@@ -254,11 +280,8 @@
       </div>
     </div>
   </div>
-</section>
 
-<!-- ══ STUDIO ══ -->
-<section class="sec" style="padding-top:0">
-  <div class="wrap">
+  <div class="wrap" style="margin-top:clamp(80px,12vh,140px)">
     <div class="klabel rv">Easteregg Studio</div>
     <h2 class="ktitle rv d1">데이터가 촬영되는 곳,<br>전용 <em>스튜디오</em></h2>
     <div class="studio-grid">
@@ -297,7 +320,7 @@
   <div class="wrap">
     <div class="reel-head">
       <div>
-        <div class="klabel rv">05 — Showreel</div>
+        <div class="klabel rv">06 — Showreel</div>
         <h2 class="ktitle rv d1">하나의 파이프라인,<br><em>모든 장르</em></h2>
       </div>
       <p class="klead rv d2" style="max-width:420px;margin-top:0">SF·레이싱·액션·청춘·광고까지 —
@@ -316,10 +339,10 @@
   </div>
 </section>
 
-<!-- ══ TEAM ══ -->
-<section class="sec" id="team" style="padding-top:0">
+<!-- ══ TEAM (LIGHT) ══ -->
+<section class="sec light" id="team">
   <div class="wrap">
-    <div class="klabel rv">06 — Founders</div>
+    <div class="klabel rv">07 — Founders</div>
     <h2 class="ktitle rv d1">기획과 기술이<br><em>창업자 단위</em>에서 결합돼 있습니다</h2>
     <div class="team-grid">
       <div class="member rv d1">
@@ -355,9 +378,9 @@
 </section>
 
 <!-- ══ ROADMAP ══ -->
-<section class="sec" style="padding-top:0">
+<section class="sec">
   <div class="wrap">
-    <div class="klabel rv">07 — Roadmap</div>
+    <div class="klabel rv">08 — Roadmap</div>
     <h2 class="ktitle rv d1">시스템은 완성되어 있습니다.<br>이제 <em>작품으로 증명</em>하는 단계입니다</h2>
     <div class="road">
       <div class="rv d1"><div class="y">2026 H1</div><b>설립 · 시스템 구축</b>
@@ -378,7 +401,28 @@
   <div class="in wrap">
     <div class="m rv">The Freedom to Create Without Limits</div>
     <p class="t rv d1">다음 장면을,<br>함께 만들 준비가 되어 있습니다</p>
-    <a class="mail rv d2" href="mailto:ceo@storyaiworks.com">ceo@storyaiworks.com</a>
+    <form class="cform rv d2" id="mailform">
+      <div class="frow">
+        <div>
+          <label for="f-name">이름 / 소속</label>
+          <input id="f-name" name="name" type="text" placeholder="홍길동 · 회사명" required>
+        </div>
+        <div>
+          <label for="f-email">회신받을 이메일</label>
+          <input id="f-email" name="email" type="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+      <div>
+        <label for="f-subject">제목</label>
+        <input id="f-subject" name="subject" type="text" placeholder="문의 제목">
+      </div>
+      <div>
+        <label for="f-message">내용</label>
+        <textarea id="f-message" name="message" placeholder="프로젝트 협업, 제작 의뢰, 투자·파트너십 등 어떤 이야기든 좋습니다." required></textarea>
+      </div>
+      <button class="send" type="submit">메일 보내기</button>
+      <p class="fnote">보내기를 누르면 메일 앱이 열립니다 — <b>정태우 CEO · 공수빈 CTO</b>에게 함께 전달됩니다.</p>
+    </form>
     <p class="addr rv d3">주식회사 스토리에이아이웍스 — 경기도 고양시 일산동구 노첨길24번길 34-3, 1층</p>
   </div>
   <div class="footer">
@@ -395,6 +439,7 @@
 
 <script>
 document.documentElement.classList.replace('no-js','js');
+
 // 스크롤 리빌
 const io = new IntersectionObserver(es => {
   es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
@@ -408,6 +453,38 @@ addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { 
 // 모바일 메뉴
 document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
 document.querySelectorAll('#navlinks a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+
+// 필름 플레이어 — data-yt에 유튜브 ID를 넣으면 클릭 시 재생
+document.querySelectorAll('.film').forEach(f => {
+  const id = f.dataset.yt;
+  const ph = f.querySelector('.ph');
+  if (!id) {
+    f.classList.add('empty');
+    const soon = document.createElement('span');
+    soon.className = 'soon';
+    soon.textContent = 'Link Coming Soon';
+    ph.appendChild(soon);
+    return;
+  }
+  ph.addEventListener('click', () => {
+    const ifr = document.createElement('iframe');
+    ifr.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    ifr.allow = 'autoplay; encrypted-media; picture-in-picture';
+    ifr.allowFullscreen = true;
+    ph.innerHTML = '';
+    ph.appendChild(ifr);
+  }, { once: true });
+});
+
+// 메일 폼 — 메일 앱으로 두 수신자에게 전송
+document.getElementById('mailform').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const subject = `[SAW 문의] ${f.subject.value.trim() || f.name.value.trim()}`;
+  const body = `보낸 사람: ${f.name.value.trim()} (${f.email.value.trim()})\n\n${f.message.value.trim()}`;
+  location.href = 'mailto:ceo@storyaiworks.com,subin.kong@storyaiworks.com'
+    + `?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+});
 </script>
 </body>
 </html>
