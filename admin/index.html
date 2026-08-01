@@ -16,7 +16,7 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--txt);font-family:"Pretendard Variable","Apple SD Gothic Neo",sans-serif;
     font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:980px;margin:0 auto;padding:0 20px 80px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 140px}
   a{color:var(--acc)}
   button{font:inherit;cursor:pointer}
   input[type=text],input[type=password]{
@@ -24,23 +24,21 @@
     padding:11px 14px;font:inherit;border-radius:0;
   }
   input:focus{outline:none;border-color:rgba(158,127,214,.5)}
-  .btn{
-    background:var(--accd);border:0;color:#fff;font-weight:700;padding:11px 22px;
-    letter-spacing:.06em;transition:opacity .2s;
-  }
+  .btn{background:var(--accd);border:0;color:#fff;font-weight:700;padding:11px 22px;letter-spacing:.06em;transition:opacity .2s}
   .btn:hover{opacity:.85}
   .btn.ghost{background:transparent;border:1px solid var(--hair);color:var(--txt)}
-  .btn:disabled{opacity:.4;cursor:default}
 
-  header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--hair);margin-bottom:34px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--hair);margin-bottom:30px}
   header img{height:18px}
   header .hr{display:flex;gap:10px;align-items:center}
   header span{font-size:11px;letter-spacing:.28em;color:var(--dim2);text-transform:uppercase}
 
-  .card{background:var(--panel);border:1px solid var(--hair);padding:26px 26px 30px;margin-bottom:24px}
-  .card h2{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px}
-  .card .sub{font-size:12.5px;color:var(--dim);margin-bottom:20px}
+  .card{background:var(--panel);border:1px solid var(--hair);padding:24px 24px 26px;margin-bottom:22px}
+  .card h2{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px}
+  .card .sub{font-size:12.5px;color:var(--dim);margin-bottom:16px}
   .card .sub b{color:var(--txt)}
+  .note{font-size:12px;color:var(--dim2);margin-top:12px;line-height:1.7}
+  .note b{color:var(--dim)}
 
   /* 로그인 */
   #login{max-width:340px;margin:16vh auto 0;text-align:center}
@@ -49,37 +47,108 @@
   #login .btn{width:100%;margin-top:6px}
   #login .msg{margin-top:12px;font-size:12px;color:var(--err);min-height:18px}
 
-  /* 영상 목록 */
-  .vrow{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:center;padding:11px 0;border-bottom:1px solid var(--hair)}
-  .vrow:last-child{border-bottom:0}
-  .vrow label{font-size:13px;color:var(--txt)}
-  .vrow label em{display:block;font-style:normal;font-size:10.5px;color:var(--dim2);font-family:ui-monospace,Menlo,monospace}
-  .vrow input{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
-  .vsave{margin-top:20px;display:flex;gap:14px;align-items:center}
-
-  /* 이미지 목록 */
-  .ghead{margin:30px 0 8px;font-size:11px;font-weight:800;letter-spacing:.24em;color:var(--acc);text-transform:uppercase}
-  .irow{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair)}
-  .irow img{width:120px;aspect-ratio:16/10;object-fit:cover;background:var(--panel2);display:block}
-  .irow .nm{font-size:13.5px;font-weight:700;color:var(--ink)}
-  .irow .nm em{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--dim2);margin-left:8px}
-  .irow .use{font-size:12px;color:var(--dim)}
-  .spec{
-    display:inline-block;margin-top:5px;font-family:ui-monospace,Menlo,monospace;
-    font-size:10.5px;letter-spacing:.08em;color:var(--acc);
-    border:1px solid rgba(158,127,214,.35);padding:3px 9px;
+  /* ══ 사이트 미러 ══ */
+  .mirror{border:1px solid var(--hair);margin-bottom:22px}
+  .msec{padding:34px clamp(18px,4vw,44px) 40px;border-bottom:1px solid var(--hair);position:relative}
+  .msec.light{background:#F2F1EE}
+  .msec:last-child{border-bottom:0}
+  .mlabel{
+    display:flex;align-items:center;gap:12px;margin-bottom:18px;
+    font-size:10.5px;font-weight:800;letter-spacing:.3em;color:var(--acc);text-transform:uppercase;
   }
-  .irow .st{font-size:11.5px;margin-top:6px;min-height:16px}
+  .mlabel::before{content:"";width:26px;height:1px;background:rgba(158,127,214,.5)}
+  .msec.light .mlabel{color:#674498}
+  .msec.light .mlabel::before{background:rgba(103,68,152,.45)}
+  .mhint{font-size:11.5px;color:var(--dim2);margin:-12px 0 16px}
+  .msec.light .mhint{color:#9B9BA2}
+  .mnone{font-size:12px;color:var(--dim2);border:1px dashed var(--hair);padding:14px 18px}
+  .msec.light .mnone{color:#9B9BA2;border-color:rgba(0,0,0,.14)}
+
+  /* 업로드 타일 */
+  .tile{position:relative;overflow:hidden;background:var(--panel2);cursor:pointer;border:1px solid var(--hair)}
+  .msec.light .tile{border-color:rgba(0,0,0,.1)}
+  .tile>img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:var(--ar,16/9)}
+  .tile .tov{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    background:rgba(11,11,12,.62);opacity:0;transition:opacity .25s;text-align:center;padding:8px;
+  }
+  .tile:hover .tov{opacity:1}
+  .tile .tspec{
+    font-family:ui-monospace,Menlo,monospace;font-size:10.5px;font-weight:800;letter-spacing:.1em;
+    color:var(--acc);border:1px solid rgba(158,127,214,.45);padding:3px 9px;background:rgba(11,11,12,.5);
+  }
+  .tile .tname{font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#c9c9cf;word-break:break-all}
+  .tile .tact{font-size:10.5px;font-weight:700;color:#F4F3F0;letter-spacing:.08em}
+  .tile input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .tile .tst{
+    position:absolute;left:0;right:0;bottom:0;z-index:3;font-size:10.5px;line-height:1.45;
+    padding:5px 9px;background:rgba(11,11,12,.85);display:none;
+  }
+  .tile .tst.show{display:block}
+  .tst.ok{color:var(--ok)} .tst.warn{color:var(--warn)} .tst.err{color:var(--err)} .tst.busy{color:var(--dim)}
+
+  /* 영상 입력 */
+  .vin{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .vin .tag{
+    flex:none;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:800;
+    letter-spacing:.12em;color:var(--acc);border:1px solid rgba(158,127,214,.4);padding:4px 8px;text-transform:uppercase;
+  }
+  .vin input{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;padding:8px 10px}
+  .msec.light .vin input{background:#fff;border-color:rgba(0,0,0,.15);color:#131316}
+
+  /* 레이아웃 미니어처 */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .about-mini{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
+  .ghost-txt{display:flex;flex-direction:column;gap:8px;padding-top:6px}
+  .ghost-txt i{display:block;height:10px;background:rgba(0,0,0,.08)}
+  .msec:not(.light) .ghost-txt i{background:rgba(255,255,255,.06)}
+  .ghost-txt i:nth-child(1){width:70%}.ghost-txt i:nth-child(2){width:92%}
+  .ghost-txt i:nth-child(3){width:85%}.ghost-txt i:nth-child(4){width:40%}
+  .caption{font-family:"Noto Serif KR",serif;font-size:15px;color:#F4F3F0;margin-top:10px}
+  .pipe-mini{display:grid;grid-template-columns:34px 150px 1fr 170px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.08)}
+  .pipe-mini:last-child{border-bottom:0}
+  .pipe-mini .pn{font-size:19px;color:#674498;font-weight:400;font-family:Georgia,serif}
+  .pipe-mini b{font-size:13px;color:#131316}
+  .pairs-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .pairc-mini{display:flex;flex-direction:column;gap:0}
+  .pairc-mini .parw{height:26px;position:relative}
+  .pairc-mini .parw::before{content:"";position:absolute;left:50%;top:3px;bottom:9px;width:1px;background:rgba(158,127,214,.5)}
+  .pairc-mini .parw::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+    border-top:5px solid var(--acc);border-left:4px solid transparent;border-right:4px solid transparent}
+  .reel-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .reel-cell{display:flex;flex-direction:column;gap:0}
+  .reel-cell.wide{grid-column:span 2}
+  .reel-cell .genre{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin:8px 0 0}
+  .stills-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}
+  .wipe-mini{display:grid;grid-template-columns:1fr 1fr;gap:2px;position:relative}
+  .wipe-mini::after{content:"⇄";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+    color:#F4F3F0;background:rgba(11,11,12,.6);border:1px solid rgba(255,255,255,.4);border-radius:50%;
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;pointer-events:none}
+  .wtag-mini{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-top:6px}
+  .logo-mini{display:flex;align-items:center;gap:18px}
+  .logo-mini .tile{width:220px;background:#2a2a30}
+
+  /* 하단 고정 저장바 */
+  .savebar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:rgba(11,11,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--hair);
+  }
+  .savebar .in{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+  .savebar .st{font-size:12px;min-height:18px}
   .st.ok{color:var(--ok)} .st.warn{color:var(--warn)} .st.err{color:var(--err)} .st.busy{color:var(--dim)}
-  .up{position:relative;overflow:hidden}
-  .up input{position:absolute;inset:0;opacity:0;cursor:pointer}
 
   .log{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--dim);
-    background:var(--panel2);border:1px solid var(--hair);padding:14px 16px;max-height:170px;overflow-y:auto;white-space:pre-wrap}
-  .note{font-size:12px;color:var(--dim2);margin-top:14px;line-height:1.7}
-  .note b{color:var(--dim)}
+    background:var(--panel2);border:1px solid var(--hair);padding:14px 16px;max-height:150px;overflow-y:auto;white-space:pre-wrap}
   .hidden{display:none!important}
-  @media(max-width:640px){.vrow,.irow{grid-template-columns:1fr}.irow img{width:100%}}
+  @media(max-width:720px){
+    .g4,.g5,.pairs-mini{grid-template-columns:1fr 1fr}
+    .about-mini,.g2{grid-template-columns:1fr}
+    .pipe-mini{grid-template-columns:34px 1fr;row-gap:6px}
+    .pipe-mini .tile{grid-column:1/-1}
+    .reel-mini{grid-template-columns:1fr 1fr}
+  }
 </style>
 </head>
 <body>
@@ -100,37 +169,25 @@
     <div class="hr"><span>Site Admin</span><button class="btn ghost" id="logout">로그아웃</button></div>
   </header>
 
-  <div class="card" id="tokencard">
-    <h2>1 · GitHub 토큰 연결</h2>
-    <p class="sub">사이트 수정은 GitHub 저장소에 직접 커밋되는 방식입니다. <b>최초 1회</b> 토큰을 등록하세요.
-    토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다.</p>
+  <div class="card">
+    <h2>GitHub 토큰 연결</h2>
+    <p class="sub">사이트 수정은 GitHub 저장소에 직접 커밋됩니다. <b>최초 1회</b>만 등록하면 이 브라우저에서 계속 사용됩니다.</p>
     <div style="display:flex;gap:10px">
       <input id="tk" type="password" placeholder="github_pat_... 또는 ghp_...">
       <button class="btn" id="tk-save" style="flex:none">저장</button>
     </div>
     <div class="note" id="tk-st"></div>
-    <div class="note">발급 방법: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>
-    (subinkong-web 계정으로) → Repository access에서 <b>storyaiworks-site만</b> 선택 →
-    Permissions에서 <b>Contents : Read and write</b>만 부여 → Generate.</div>
+    <div class="note">발급: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">personal-access-tokens/new</a>
+    (subinkong-web 계정) → Only select repositories: <b>storyaiworks-site</b> → Permissions → <b>Contents: Read and write</b> → Generate.</div>
   </div>
 
-  <div class="card">
-    <h2>2 · 유튜브 링크 관리</h2>
-    <p class="sub">전체 URL을 붙여넣으면 영상 ID를 자동 추출합니다. 비워두면 해당 자리는 "Coming Soon"으로 표시됩니다.
-    저장하면 <b>1~2분 후</b> 사이트에 반영됩니다.</p>
-    <div id="vlist"></div>
-    <div class="vsave">
-      <button class="btn" id="v-save">유튜브 링크 저장 → 배포</button>
-      <span class="st" id="v-st"></span>
-    </div>
+  <div class="card" style="margin-bottom:14px">
+    <h2>사이트 미러 — 아래 구조는 실제 홈페이지 순서와 동일합니다</h2>
+    <p class="sub" style="margin-bottom:0">🖼 <b>이미지</b>: 해당 자리를 클릭해 교체 (호버하면 권장 해상도 표시) ·
+    ▶ <b>영상</b>: 보라색 입력칸에 유튜브 URL 붙여넣기 → 하단 저장바로 일괄 배포 · 반영은 커밋 후 1~2분.</p>
   </div>
 
-  <div class="card">
-    <h2>3 · 이미지 교체</h2>
-    <p class="sub">각 이미지의 <b>권장 해상도</b>에 맞춰 제작한 뒤 업로드하세요. 파일 형식이 달라도 자동 변환되며,
-    비율이 다르면 경고 후 업로드할 수 있습니다(이 경우 사이트에서 잘려 보일 수 있음). 반영은 1~2분 소요.</p>
-    <div id="ilist"></div>
-  </div>
+  <div class="mirror" id="mirror"><!-- JS 렌더 --></div>
 
   <div class="card">
     <h2>작업 로그</h2>
@@ -138,93 +195,58 @@
   </div>
 </div>
 
+<!-- 하단 저장바 -->
+<div class="savebar hidden" id="savebar">
+  <div class="in">
+    <span class="st" id="v-st">유튜브 링크를 수정한 뒤 저장하세요.</span>
+    <button class="btn" id="v-save">유튜브 링크 저장 → 배포</button>
+  </div>
+</div>
+
 <script>
 const REPO = 'subinkong-web/storyaiworks-site';
 const SITE = 'https://www.storyaiworks.com';
 
-/* ── 영상 슬롯 정의 ── */
-const VIDEO_SLOTS = [
-  { key: 'film_demo',         label: '데모 필름 (Films 섹션)' },
-  { key: 'film_making',       label: '메이킹 필름 (Films 섹션)' },
-  { key: 'showreel_featured', label: '쇼릴 대표작 (데모 전편)' },
-  { key: 'pj_sf',       label: '쇼릴 모달 — SF' },
-  { key: 'pj_racing',   label: '쇼릴 모달 — 레이싱' },
-  { key: 'pj_action',   label: '쇼릴 모달 — 액션' },
-  { key: 'pj_youth',    label: '쇼릴 모달 — 청춘' },
-  { key: 'pj_drama',    label: '쇼릴 모달 — 드라마' },
-  { key: 'pj_cf',       label: '쇼릴 모달 — 광고' },
-  { key: 'pj_military', label: '쇼릴 모달 — 밀리터리' },
-  { key: 'pj_hist',     label: '쇼릴 모달 — 사극' },
-];
-
-/* ── 이미지 정의: [파일명, 용도, 권장W, 권장H, 그룹] ── */
-const IMAGES = [
-  ['sf_whale.jpg','히어로 배경 · 쇼릴 SF',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['still_youth.jpg','청춘 밴드 (물결 효과)',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['mk_green_helmet.jpg','와이프 밴드 — 크로마 데이터',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['race_helmet.jpg','와이프 밴드 — 완성 컷 · 페어 인포그래픽',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['flowmark_hero.jpg','FLOWMARK 섹션 배경',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['studio_green.jpg','EASTEREGG STUDIO 섹션 배경',1920,1080,'대형 배경 · 밴드 (16:9)'],
-  ['hist_walk.jpg','Contact 섹션 배경',1920,1080,'대형 배경 · 밴드 (16:9)'],
-
-  ['thumb_demo.jpg','데모 필름 썸네일 (Films·쇼릴 대표작)',1280,720,'필름 썸네일 (16:9)'],
-  ['thumb_making.jpg','메이킹 필름 썸네일',1280,720,'필름 썸네일 (16:9)'],
-
-  ['helmet_demo.jpg','쇼릴 그리드 — 레이싱',1280,720,'쇼릴 그리드 (16:9)'],
-  ['fire.jpg','쇼릴 그리드 — 액션 · 모달 스틸',1280,720,'쇼릴 그리드 (16:9)'],
-  ['youth_train.jpg','쇼릴 그리드 — 청춘 · 데모 썸네일 카드',1280,720,'쇼릴 그리드 (16:9)'],
-  ['youth_pair.jpg','쇼릴 그리드 — 드라마',1280,720,'쇼릴 그리드 (16:9)'],
-  ['cf_drink.jpg','쇼릴 그리드 — 광고 · 데모 썸네일 카드',1280,720,'쇼릴 그리드 (16:9)'],
-  ['war.jpg','쇼릴 그리드 — 밀리터리 · 파이프라인 5단계',1280,720,'쇼릴 그리드 (16:9)'],
-  ['ending_saw.jpg','쇼릴 그리드 — 사극',1280,720,'쇼릴 그리드 (16:9)'],
-
-  ['race_suit.jpg','회사소개 세로 이미지 · 데모 썸네일 카드',1000,1150,'세로 카드'],
-  ['hist.jpg','사업영역 01 · 페어 인포그래픽 · 모달',900,1230,'세로 카드'],
-  ['mk_hanbok_sheet.jpg','사업영역 02 · 페어 인포그래픽',900,1230,'세로 카드'],
-  ['cf_can.jpg','사업영역 03 · 모달 스틸',900,1230,'세로 카드'],
-  ['mk_nodes_clean.jpg','사업영역 04 · 모달 스틸',900,1230,'세로 카드'],
-
-  ['mk_green_view.jpg','파이프라인 01 — 데이터 확보',1200,720,'파이프라인 (16:9.5)'],
-  ['mk_f1_3d.jpg','파이프라인 02 — 미장센',1200,720,'파이프라인 (16:9.5)'],
-  ['mk_rough_girl.jpg','파이프라인 03 — 러프 컷',1200,720,'파이프라인 (16:9.5)'],
-  ['mk_car_split.jpg','파이프라인 04 — 병렬 공정',1200,720,'파이프라인 (16:9.5)'],
-
-  ['studio_3d_stage1.jpg','스튜디오 — Stage 1 공간 모델',1200,790,'스튜디오 (16:10.5)'],
-  ['studio_3d_stage2.jpg','스튜디오 — Stage 2 공간 모델',1200,790,'스튜디오 (16:10.5)'],
-  ['studio_green_crew.jpg','스튜디오 — 크로마키 현장 · 메이킹 썸네일',1200,790,'스튜디오 (16:10.5)'],
-  ['studio_white_shoot.jpg','스튜디오 — 화이트 현장',1200,790,'스튜디오 (16:10.5)'],
-
-  ['mk_green_face.jpg','페어 인포그래픽 · 모달 스틸 (배우 데이터)',1280,800,'모달 · 기타 스틸'],
-  ['mk_boat3d.jpg','페어 인포그래픽 · 모달 스틸 (3D 에셋)',1280,800,'모달 · 기타 스틸'],
-  ['storm.jpg','페어 인포그래픽 · 모달 스틸 (재난)',1280,800,'모달 · 기타 스틸'],
-  ['sf_man.jpg','페어 인포그래픽 · 모달 스틸 (SF)',1280,800,'모달 · 기타 스틸'],
-  ['mk_sniper.jpg','모달 스틸 (액션·밀리터리)',1280,800,'모달 · 기타 스틸'],
-  ['div_tank.jpg','모달 스틸 (액션·밀리터리)',1280,800,'모달 · 기타 스틸'],
-  ['still_fire.jpg','모달 스틸 (액션)',1280,800,'모달 · 기타 스틸'],
-  ['mk_edit_multi.jpg','모달 스틸 (청춘·드라마)',1280,800,'모달 · 기타 스틸'],
-  ['mk_turn_rain.jpg','모달 스틸 (의상 턴어라운드)',1280,800,'모달 · 기타 스틸'],
-  ['hist_gallop.jpg','모달 스틸 (사극)',1280,800,'모달 · 기타 스틸'],
-  ['studio_blue.jpg','모달 스틸 (광고)',1280,800,'모달 · 기타 스틸'],
-
-  ['saw_logo_white.png','로고 (내비게이션·푸터·파비콘) — 투명 PNG',600,180,'로고 (PNG)'],
-];
+/* ── 이미지 스펙: 파일명 → [권장W, 권장H] ── */
+const SPEC = {
+  'sf_whale.jpg':[1920,1080],'still_youth.jpg':[1920,1080],'mk_green_helmet.jpg':[1920,1080],
+  'race_helmet.jpg':[1920,1080],'flowmark_hero.jpg':[1920,1080],'studio_green.jpg':[1920,1080],
+  'hist_walk.jpg':[1920,1080],'thumb_demo.jpg':[1280,720],'thumb_making.jpg':[1280,720],
+  'helmet_demo.jpg':[1280,720],'fire.jpg':[1280,720],'youth_train.jpg':[1280,720],
+  'youth_pair.jpg':[1280,720],'cf_drink.jpg':[1280,720],'war.jpg':[1280,720],'ending_saw.jpg':[1280,720],
+  'race_suit.jpg':[1000,1150],'hist.jpg':[900,1230],'mk_hanbok_sheet.jpg':[900,1230],
+  'cf_can.jpg':[900,1230],'mk_nodes_clean.jpg':[900,1230],
+  'mk_green_view.jpg':[1200,720],'mk_f1_3d.jpg':[1200,720],'mk_rough_girl.jpg':[1200,720],'mk_car_split.jpg':[1200,720],
+  'studio_3d_stage1.jpg':[1200,790],'studio_3d_stage2.jpg':[1200,790],'studio_green_crew.jpg':[1200,790],'studio_white_shoot.jpg':[1200,790],
+  'mk_green_face.jpg':[1280,800],'mk_boat3d.jpg':[1280,800],'storm.jpg':[1280,800],'sf_man.jpg':[1280,800],
+  'mk_sniper.jpg':[1280,800],'div_tank.jpg':[1280,800],'still_fire.jpg':[1280,800],'mk_edit_multi.jpg':[1280,800],
+  'mk_turn_rain.jpg':[1280,800],'hist_gallop.jpg':[1280,800],'studio_blue.jpg':[1280,800],
+  'mk_viewer_city.jpg':[1280,800],'race_car.jpg':[1280,800],'mk_war_multi.jpg':[1280,800],'studio_white_shoot.jpg':[1200,790],
+  'saw_logo_white.png':[600,180],
+};
+/* 쇼릴 모달 스틸 (사이트 PROJECTS와 동일) */
+const PJ = {
+  sf:      { name:'SF',      grid:'sf_whale.jpg',    stills:['sf_whale','sf_man','mk_viewer_city','mk_boat3d','storm'] },
+  racing:  { name:'레이싱',   grid:'helmet_demo.jpg', stills:['race_suit','race_helmet','race_car','mk_f1_3d','mk_green_helmet'] },
+  action:  { name:'액션',     grid:'fire.jpg',        stills:['fire','still_fire','mk_sniper','mk_car_split','div_tank'] },
+  youth:   { name:'청춘',     grid:'youth_train.jpg', stills:['still_youth','youth_train','youth_pair','mk_rough_girl','mk_edit_multi'] },
+  drama:   { name:'드라마',   grid:'youth_pair.jpg',  stills:['youth_pair','sf_man','still_youth','mk_green_face','mk_edit_multi'] },
+  cf:      { name:'광고',     grid:'cf_drink.jpg',    stills:['cf_can','cf_drink','studio_white_shoot','studio_blue','mk_nodes_clean'] },
+  military:{ name:'밀리터리', grid:'war.jpg',         stills:['war','mk_war_multi','mk_sniper','div_tank','fire'] },
+  hist:    { name:'사극',     grid:'ending_saw.jpg',  stills:['hist','hist_gallop','hist_walk','ending_saw','mk_hanbok_sheet'] },
+};
 
 /* ── 유틸 ── */
 const $ = s => document.querySelector(s);
-const log = m => {
-  const el = $('#log');
-  el.textContent = `[${new Date().toLocaleTimeString('ko-KR')}] ${m}\n` + el.textContent.replace('대기 중…','');
-};
+const log = m => { const el = $('#log'); el.textContent = `[${new Date().toLocaleTimeString('ko-KR')}] ${m}\n` + el.textContent.replace('대기 중…',''); };
 const token = () => localStorage.getItem('saw_gh_token') || '';
 const auth = () => ({ Authorization: 'Bearer ' + token(), Accept: 'application/vnd.github+json' });
 const ytId = s => {
   s = (s || '').trim();
   if (!s) return '';
-  const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/|\/v\/)([\w-]{11})/)
-    || s.match(/^([\w-]{11})$/);
+  const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/|\/v\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/);
   return m ? m[1] : null;
 };
-
 async function ghGetSha(path) {
   const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}?ref=main`, { headers: auth() });
   if (r.status === 404) return null;
@@ -245,11 +267,8 @@ async function ghPut(path, base64, msg) {
 /* ── 로그인 ── */
 function tryLogin() {
   if ($('#l-id').value.trim().toLowerCase() === 'admin' && $('#l-pw').value === '00000') {
-    sessionStorage.setItem('saw_admin', '1');
-    boot();
-  } else {
-    $('#l-msg').textContent = 'ID 또는 비밀번호가 올바르지 않습니다.';
-  }
+    sessionStorage.setItem('saw_admin', '1'); boot();
+  } else $('#l-msg').textContent = 'ID 또는 비밀번호가 올바르지 않습니다.';
 }
 $('#l-go').addEventListener('click', tryLogin);
 $('#l-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
@@ -259,8 +278,7 @@ $('#logout').addEventListener('click', () => { sessionStorage.removeItem('saw_ad
 $('#tk-save').addEventListener('click', async () => {
   const t = $('#tk').value.trim();
   if (!t) return;
-  localStorage.setItem('saw_gh_token', t);
-  $('#tk').value = '';
+  localStorage.setItem('saw_gh_token', t); $('#tk').value = '';
   await checkToken();
 });
 async function checkToken() {
@@ -271,13 +289,10 @@ async function checkToken() {
     if (!r.ok) throw 0;
     st.innerHTML = '✅ 토큰 연결됨 — 저장소 접근 확인 완료. <button class="btn ghost" style="padding:4px 12px;font-size:11px" onclick="localStorage.removeItem(\'saw_gh_token\');checkToken()">토큰 삭제</button>';
     return true;
-  } catch {
-    st.innerHTML = '❌ 토큰이 유효하지 않거나 권한이 없습니다. 다시 발급해 주세요.';
-    return false;
-  }
+  } catch { st.innerHTML = '❌ 토큰이 유효하지 않거나 권한이 없습니다.'; return false; }
 }
 
-/* ── 영상 UI ── */
+/* ── 설정 로드 ── */
 let config = { videos: {} };
 async function loadConfig() {
   try {
@@ -286,28 +301,197 @@ async function loadConfig() {
       if (r.ok) {
         const j = await r.json();
         config = JSON.parse(decodeURIComponent(escape(atob(j.content))));
-        log('설정을 GitHub에서 불러왔습니다 (최신).');
-        return;
+        log('설정을 GitHub에서 불러왔습니다 (최신).'); return;
       }
     }
     config = await (await fetch(SITE + '/site-config.json', { cache: 'no-store' })).json();
     log('설정을 사이트에서 불러왔습니다.');
-  } catch { log('설정 로드 실패 — 기본값으로 시작합니다.'); }
+  } catch { log('설정 로드 실패 — 기본값으로 시작.'); }
 }
-function renderVideos() {
-  $('#vlist').innerHTML = VIDEO_SLOTS.map(s => `
-    <div class="vrow">
-      <label>${s.label}<em>${s.key}</em></label>
-      <input type="text" data-vkey="${s.key}" value="${(config.videos && config.videos[s.key]) || ''}"
-        placeholder="https://youtu.be/… 또는 영상 ID (비우면 Coming Soon)">
-    </div>`).join('');
+
+/* ── 미러 렌더 ── */
+const T = (file, ar, extra = '') => {
+  const s = SPEC[file] || [1280, 720];
+  return `<div class="tile ${extra}" data-file="${file}" style="--ar:${ar}">
+    <img src="${SITE}/images/${file}?t=${Date.now()}" loading="lazy" alt="">
+    <div class="tov"><span class="tspec">권장 ${s[0]}×${s[1]}</span><span class="tname">${file}</span><span class="tact">클릭하여 교체</span></div>
+    <input type="file" accept="image/*" data-up>
+    <div class="tst" data-st></div>
+  </div>`;
+};
+const V = (key, label) => `<div class="vin"><span class="tag">▶ ${label}</span>
+  <input type="text" data-vkey="${key}" value="${(config.videos && config.videos[key]) || ''}" placeholder="유튜브 URL 붙여넣기 (비우면 Coming Soon)"></div>`;
+
+function renderMirror() {
+  const m = $('#mirror');
+  m.innerHTML = `
+  <div class="msec">
+    <div class="mlabel">Hero — 첫 화면</div>
+    ${T('sf_whale.jpg', '16/6')}
+    <div class="caption">영화의 크기를 정하는 것은 예산이 아니라, 상상력입니다</div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">01 — Films (영상 2개 + 썸네일)</div>
+    <div class="g2">
+      <div>
+        ${T('thumb_demo.jpg', '16/9')}
+        ${V('film_demo', '데모 필름')}
+      </div>
+      <div>
+        ${T('thumb_making.jpg', '16/9')}
+        ${V('film_making', '메이킹 필름')}
+      </div>
+    </div>
+  </div>
+
+  <div class="msec light">
+    <div class="mlabel">02 — Company (회사소개)</div>
+    <div class="about-mini">
+      <div class="ghost-txt"><i></i><i></i><i></i><i></i></div>
+      ${T('race_suit.jpg', '4/4.6')}
+    </div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">03 — What We Do (사업영역 4카드)</div>
+    <div class="g4">
+      ${T('hist.jpg', '3/4.1')}${T('mk_hanbok_sheet.jpg', '3/4.1')}${T('cf_can.jpg', '3/4.1')}${T('mk_nodes_clean.jpg', '3/4.1')}
+    </div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">청춘 밴드 (빛 파티클)</div>
+    ${T('still_youth.jpg', '16/6')}
+    <div class="caption">카메라 없이 촬영한, 어느 여름</div>
+  </div>
+
+  <div class="msec light">
+    <div class="mlabel">04 — Pipeline (5단계)</div>
+    ${[['01','데이터 확보','mk_green_view.jpg'],['02','미장센 구축','mk_f1_3d.jpg'],['03','AI 제작 — 러프 컷','mk_rough_girl.jpg'],['04','실사·색·음향','mk_car_split.jpg'],['05','최종 믹싱','war.jpg']]
+      .map(([n, t, f]) => `<div class="pipe-mini"><span class="pn">${n}</span><b>${t}</b><span></span>${T(f, '16/9.5')}</div>`).join('')}
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">05 — Flowmark (섹션 배경)</div>
+    ${T('flowmark_hero.jpg', '16/6')}
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">Flowmark 03 — 데이터→컷 페어</div>
+    <div class="mhint">위 = 원재료 데이터 · 아래 = 완성 컷</div>
+    <div class="pairs-mini">
+      ${[['mk_green_face.jpg','sf_man.jpg'],['mk_boat3d.jpg','storm.jpg'],['mk_hanbok_sheet.jpg','hist.jpg'],['mk_green_helmet.jpg','race_helmet.jpg']]
+        .map(([a, b]) => `<div class="pairc-mini">${T(a, '16/10')}<div class="parw"></div>${T(b, '16/10')}</div>`).join('')}
+    </div>
+  </div>
+
+  <div class="msec light">
+    <div class="mlabel">Scripture Engine (3개 장)</div>
+    <div class="mnone">텍스트·다이어그램 섹션 — 교체할 이미지가 없습니다.</div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">Easteregg Studio (배경 + 사진 4장)</div>
+    ${T('studio_green.jpg', '16/6')}
+    <div class="g4" style="margin-top:10px">
+      ${T('studio_3d_stage1.jpg', '16/10.5')}${T('studio_3d_stage2.jpg', '16/10.5')}${T('studio_green_crew.jpg', '16/10.5')}${T('studio_white_shoot.jpg', '16/10.5')}
+    </div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">인터랙티브 와이프 밴드 (완성 컷 ⇄ 크로마 데이터)</div>
+    <div class="wipe-mini">
+      <div>${T('race_helmet.jpg', '16/8')}<div class="wtag-mini">Final Cut</div></div>
+      <div>${T('mk_green_helmet.jpg', '16/8')}<div class="wtag-mini" style="text-align:right">Production Data</div></div>
+    </div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">06 — Showreel (대표작 + 장르 그리드 8)</div>
+    ${T('thumb_demo.jpg', '16/7')}
+    ${V('showreel_featured', '대표작 영상')}
+    <div class="reel-mini">
+      ${Object.entries(PJ).map(([k, p], i) => `
+        <div class="reel-cell${i === 0 ? ' wide' : ''}">
+          ${T(p.grid, '16/9')}
+          <div class="genre">${p.name} — 모달</div>
+          ${V('pj_' + k, '영상')}
+          <div class="stills-mini">${p.stills.map(s => T(s + '.jpg', '16/10')).join('')}</div>
+        </div>`).join('')}
+    </div>
+    <div class="mhint" style="margin-top:12px">각 장르 셀: 그리드 이미지 → 모달 영상 → 모달 스틸 5장 순서입니다.</div>
+  </div>
+
+  <div class="msec light">
+    <div class="mlabel">07 — Team · Roadmap</div>
+    <div class="mnone">텍스트 섹션 — 교체할 이미지가 없습니다. (문구 수정은 개발자에게 요청)</div>
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">Contact (배경)</div>
+    ${T('hist_walk.jpg', '16/6')}
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">로고 (내비게이션·푸터 공용 — 투명 PNG)</div>
+    <div class="logo-mini">${T('saw_logo_white.png', '10/3')}</div>
+  </div>`;
+
+  m.querySelectorAll('[data-up]').forEach(inp => inp.addEventListener('change', () => handleUpload(inp)));
+  $('#savebar').classList.remove('hidden');
 }
+
+/* ── 이미지 업로드 ── */
+async function handleUpload(inp) {
+  const tile = inp.closest('.tile');
+  const file = inp.files[0];
+  inp.value = '';
+  if (!file) return;
+  const target = tile.dataset.file;
+  const spec = SPEC[target] || [1280, 720];
+  const st = tile.querySelector('[data-st]');
+  const isPng = target.endsWith('.png');
+  const show = (cls, msg) => { st.className = 'tst show ' + cls; st.textContent = msg; };
+
+  show('busy', '이미지 확인 중…');
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  try { await img.decode(); } catch { show('err', '이미지 파일이 아닙니다'); return; }
+
+  const wantR = spec[0] / spec[1], gotR = img.naturalWidth / img.naturalHeight;
+  const ratioOff = Math.abs(wantR - gotR) / wantR > 0.04;
+  const small = img.naturalWidth < spec[0] * 0.75;
+  if ((ratioOff || small) && !tile.dataset.force) {
+    show('warn', `⚠️ ${img.naturalWidth}×${img.naturalHeight} — ` +
+      (ratioOff ? '비율 다름(잘릴 수 있음) ' : '') + (small ? '해상도 낮음 ' : '') + '· 무시하려면 10초 안에 다시 선택');
+    tile.dataset.force = '1';
+    setTimeout(() => delete tile.dataset.force, 10000);
+    return;
+  }
+  delete tile.dataset.force;
+
+  show('busy', '업로드 중…');
+  try {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    c.getContext('2d').drawImage(img, 0, 0);
+    const dataUrl = c.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.92);
+    await ghPut('images/' + target, dataUrl.split(',')[1], 'admin: replace ' + target);
+    show('ok', '✅ 완료 — 1~2분 후 반영');
+    // 같은 파일을 쓰는 모든 타일 미리보기 갱신
+    document.querySelectorAll(`.tile[data-file="${target}"] > img`).forEach(im => im.src = dataUrl);
+    log(`이미지 교체: ${target} (${img.naturalWidth}×${img.naturalHeight})`);
+  } catch (e) { show('err', '❌ ' + e.message); log(`이미지 실패: ${target} — ${e.message}`); }
+}
+
+/* ── 영상 저장 ── */
 $('#v-save').addEventListener('click', async () => {
   const st = $('#v-st'); st.className = 'st busy'; st.textContent = '저장 중…';
-  const videos = {};
+  const videos = { ...(config.videos || {}) };
   for (const inp of document.querySelectorAll('[data-vkey]')) {
     const id = ytId(inp.value);
-    if (id === null) { st.className = 'st err'; st.textContent = `"${inp.value.slice(0, 30)}" — 유튜브 링크를 인식할 수 없습니다`; return; }
+    if (id === null) { st.className = 'st err'; st.textContent = `"${inp.value.slice(0, 34)}" — 유튜브 링크를 인식할 수 없습니다`; return; }
     videos[inp.dataset.vkey] = id;
     inp.value = id;
   }
@@ -320,83 +504,13 @@ $('#v-save').addEventListener('click', async () => {
   } catch (e) { st.className = 'st err'; st.textContent = '❌ ' + e.message; log('영상 저장 실패: ' + e.message); }
 });
 
-/* ── 이미지 UI ── */
-function renderImages() {
-  const groups = [...new Set(IMAGES.map(i => i[4]))];
-  $('#ilist').innerHTML = groups.map(g => `
-    <div class="ghead">${g}</div>
-    ${IMAGES.filter(i => i[4] === g).map(([f, use, w, h]) => `
-      <div class="irow" data-file="${f}">
-        <img src="${SITE}/images/${f}?t=${Date.now()}" loading="lazy" alt="">
-        <div>
-          <div class="nm">${f}<em>images/${f}</em></div>
-          <div class="use">${use}</div>
-          <span class="spec">권장 ${w} × ${h}px${f.endsWith('.png') ? ' · 투명 PNG' : ' · JPG'}</span>
-          <div class="st" data-st></div>
-        </div>
-        <button class="btn ghost up">파일 선택<input type="file" accept="image/*" data-up></button>
-      </div>`).join('')}`).join('');
-
-  document.querySelectorAll('[data-up]').forEach(inp => {
-    inp.addEventListener('change', () => handleUpload(inp));
-  });
-}
-async function handleUpload(inp) {
-  const row = inp.closest('.irow');
-  const file = inp.files[0];
-  inp.value = '';
-  if (!file) return;
-  const target = row.dataset.file;
-  const meta = IMAGES.find(i => i[0] === target);
-  const st = row.querySelector('[data-st]');
-  const isPng = target.endsWith('.png');
-
-  st.className = 'st busy'; st.textContent = '이미지 확인 중…';
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-  await img.decode().catch(() => { st.className = 'st err'; st.textContent = '이미지 파일이 아닙니다'; });
-  if (!img.naturalWidth) return;
-
-  const wantR = meta[2] / meta[3], gotR = img.naturalWidth / img.naturalHeight;
-  const ratioOff = Math.abs(wantR - gotR) / wantR > 0.04;
-  const small = img.naturalWidth < meta[2] * 0.75;
-  if ((ratioOff || small) && !row.dataset.force) {
-    st.className = 'st warn';
-    st.textContent = `⚠️ 업로드한 이미지 ${img.naturalWidth}×${img.naturalHeight} — ` +
-      (ratioOff ? '비율이 권장과 다릅니다(잘려 보일 수 있음). ' : '') +
-      (small ? '해상도가 낮습니다. ' : '') + '무시하려면 10초 안에 같은 파일을 다시 선택하세요.';
-    row.dataset.force = '1';
-    setTimeout(() => delete row.dataset.force, 10000);
-    return;
-  }
-  delete row.dataset.force;
-
-  st.className = 'st busy'; st.textContent = '변환·업로드 중…';
-  try {
-    // 대상 확장자에 맞게 재인코딩 (원본 해상도 유지)
-    const c = document.createElement('canvas');
-    c.width = img.naturalWidth; c.height = img.naturalHeight;
-    c.getContext('2d').drawImage(img, 0, 0);
-    const dataUrl = c.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.92);
-    const b64 = dataUrl.split(',')[1];
-    await ghPut('images/' + target, b64, 'admin: replace ' + target);
-    st.className = 'st ok'; st.textContent = '✅ 업로드 완료 — 1~2분 후 사이트 반영';
-    row.querySelector('img').src = dataUrl;
-    log(`이미지 교체: ${target} (${img.naturalWidth}×${img.naturalHeight})`);
-  } catch (e) {
-    st.className = 'st err'; st.textContent = '❌ ' + e.message;
-    log(`이미지 교체 실패: ${target} — ${e.message}`);
-  }
-}
-
 /* ── 부팅 ── */
 async function boot() {
   $('#login').classList.add('hidden');
   $('#app').classList.remove('hidden');
   await checkToken();
   await loadConfig();
-  renderVideos();
-  renderImages();
+  renderMirror();
 }
 if (sessionStorage.getItem('saw_admin') === '1') boot();
 </script>
