@@ -1,41 +1,412 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAW — Story AI Works</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d16 100%);
-      color: #fff;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
-    .wrap { text-align: center; }
-    h1 {
-      font-size: clamp(2rem, 8vw, 5rem);
-      font-weight: 200;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-    h1 strong { font-weight: 700; }
-    p {
-      margin-top: 1rem;
-      color: #8888aa;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAW — Story Ai Works · AI-Native Film Studio</title>
+<meta name="description" content="SAW는 AI로 영화를 만드는 제작사입니다. 시나리오에서 스크린까지, 하나의 파이프라인 — 주식회사 스토리에이아이웍스.">
+<meta property="og:title" content="SAW — Story Ai Works">
+<meta property="og:description" content="AI-Native Film Studio. 영화의 크기를 정하는 것은 예산이 아니라, 상상력입니다.">
+<meta property="og:image" content="https://www.storyaiworks.com/images/sf_whale.jpg">
+<meta property="og:url" content="https://www.storyaiworks.com/">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="images/saw_logo_white.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="wrap">
-    <h1>Hello, we are <strong>SAW</strong></h1>
-    <p>Story AI Works — Coming Soon</p>
+
+<!-- ══ NAV ══ -->
+<nav class="nav" id="nav">
+  <a class="logo" href="#top"><img src="images/saw_logo_white.png" alt="SAW"></a>
+  <ul id="navlinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">What We Do</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#infra">Infrastructure</a></li>
+    <li><a href="#showreel">Showreel</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="메뉴">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<header class="hero grain" id="top">
+  <div class="bg"><img src="images/sf_whale.jpg" alt="SAW 데모 필름 — SF 장면"></div>
+  <div class="hero-in wrap">
+    <div class="hero-k rv">AI-Native Film Studio</div>
+    <h1 class="hero-t rv d1">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
+    <p class="hero-d rv d2">폭풍의 바다, 불타는 공장, 미래의 도시 — 물리적 한계가 지워온 장면들을
+    SAW는 데이터와 AI 파이프라인으로 만듭니다.</p>
+    <div class="hero-meta rv d3">
+      <div>Company<b>주식회사 스토리에이아이웍스</b></div>
+      <div>Founded<b>2026 · Goyang, Korea</b></div>
+      <div>Systems<b>Flowmark · Scripture Engine</b></div>
+    </div>
   </div>
+  <div class="scrollcue"></div>
+</header>
+
+<!-- ══ STATEMENT ══ -->
+<section class="statement">
+  <div class="wrap">
+    <div class="k rv">Our Statement</div>
+    <p class="t rv d1">촬영 없이 시작해서,<br><b>촬영으로 완성합니다.</b></p>
+    <p class="d rv d2">데이터 확보부터 최종 믹싱까지 — 전 공정을 자체 파이프라인으로 수행하고,
+    그 파이프라인을 구동하는 제작 시스템을 직접 개발합니다.
+    이것은 구호가 아니라, 이미 광고 제작 현장에서 구동 중인 작동 방식입니다.</p>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="klabel rv">01 — Company</div>
+    <h2 class="ktitle rv d1">AI로 영화를 만드는<br><em>제작사</em>입니다</h2>
+    <div class="about-grid">
+      <div>
+        <p class="klead rv d2">SAW는 <b>AI로 영화를 만드는 제작사</b>입니다.
+        데이터 확보부터 최종 믹싱까지의 전 공정을 자체 파이프라인으로 수행하고,
+        그 파이프라인을 구동하는 <b>제작 시스템을 직접 개발</b>합니다.</p>
+        <div class="about-facts rv d3" style="margin-top:38px">
+          <div class="row"><span>법인명</span><div><b>주식회사 스토리에이아이웍스</b> — SAW / Story Ai Works</div></div>
+          <div class="row"><span>설립</span><div><b>2026. 4</b></div></div>
+          <div class="row"><span>경영진</span><div><b>정태우</b> CEO · Content Strategy&nbsp;/&nbsp;<b>공수빈</b> CTO · Tech Direction</div></div>
+          <div class="row"><span>소재지</span><div>경기도 고양시 일산동구</div></div>
+          <div class="row"><span>사업 영역</span><div>AI 영화·영상 제작 · 콘텐츠 IP 개발 · 제작 시스템 개발</div></div>
+          <div class="row"><span>자체 시스템</span><div><b>Flowmark</b> 통합 AI 워크플로우 · <b>Scripture Engine</b> 대본 자동화</div></div>
+        </div>
+        <div class="tworoots rv d4">
+          <span class="lb">Two Roots</span>
+          드라마·영화 IP를 기획해 온 <b>콘텐츠 프로듀싱 조직</b>과, 광고·패션·전시에서
+          기술 기반 영상을 만들어 온 <b>비주얼 스튜디오</b>가 SAW의 두 뿌리입니다.
+        </div>
+      </div>
+      <div class="about-img rv d2">
+        <img src="images/race_suit.jpg" alt="SAW 데모 필름 — AI 제작 레이싱 시퀀스">
+        <div class="cap">SAW Demo Film — AI 제작 레이싱 시퀀스</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHAT WE DO ══ -->
+<section class="sec" id="work">
+  <div class="wrap">
+    <div class="klabel rv">02 — What We Do</div>
+    <h2 class="ktitle rv d1">IP의 발굴부터 영상의 완성까지,<br>네 영역이 <em>한 파이프라인</em> 안에서</h2>
+    <div class="biz-grid">
+      <div class="biz rv d1">
+        <img src="images/hist.jpg" alt="AI 영화·드라마 제작">
+        <div class="in">
+          <div class="n">01</div>
+          <h3>AI 영화·드라마 제작</h3>
+          <div class="e">AI Filmmaking</div>
+          <p>시나리오에서 완성본까지, 5단계 파이프라인으로 장편·시리즈를 제작합니다. SAW의 본업입니다.</p>
+        </div>
+      </div>
+      <div class="biz rv d2">
+        <img src="images/mk_hanbok_sheet.jpg" alt="콘텐츠 IP 기획·개발">
+        <div class="in">
+          <div class="n">02</div>
+          <h3>콘텐츠 IP 기획·개발</h3>
+          <div class="e">Original IP</div>
+          <p>웹소설·웹툰 등 원천 스토리를 발굴하고 세계관과 캐릭터를 구체화해 영상화 가능한 IP로 패키징합니다.</p>
+        </div>
+      </div>
+      <div class="biz rv d3">
+        <img src="images/cf_can.jpg" alt="광고·브랜드 콘텐츠">
+        <div class="in">
+          <div class="n">03</div>
+          <h3>광고·브랜드 콘텐츠</h3>
+          <div class="e">Commercial</div>
+          <p>영화에서 검증한 동일 파이프라인으로 광고·브랜드 영상을 제작합니다. 이미 실제 광고 현장에 도입돼 있습니다.</p>
+        </div>
+      </div>
+      <div class="biz rv d4">
+        <img src="images/mk_nodes_clean.jpg" alt="제작 시스템 개발">
+        <div class="in">
+          <div class="n">04</div>
+          <h3>제작 시스템 개발</h3>
+          <div class="e">Production Tech</div>
+          <p>워크플로우 시스템 Flowmark, 대본 자동화 Scripture Engine 등 제작 기술을 직접 개발·자산화합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BAND — 청춘 ══ -->
+<section class="band grain">
+  <div class="bg"><img src="images/still_youth.jpg" alt="SAW 데모 필름 — 청춘"></div>
+  <div class="in wrap">
+    <div class="g rv">청춘</div>
+    <div class="t rv d1">카메라 없이 촬영한, 어느 여름</div>
+    <div class="e rv d2">Demo Film · Scene 02:45 · Made with AI</div>
+  </div>
+</section>
+
+<!-- ══ PIPELINE ══ -->
+<section class="sec" id="pipeline">
+  <div class="wrap">
+    <div class="klabel rv">03 — The Pipeline</div>
+    <h2 class="ktitle rv d1">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
+    <p class="klead rv d2">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
+    <b>세 갈래로 갈라져 동시에</b> 진행한 뒤 최종 믹싱에서 합류합니다.
+    이 병렬 구조가 전체 제작 기간을 단축합니다.</p>
+    <div class="pipe-list">
+      <div class="pipe rv">
+        <div class="n">01</div>
+        <div><h3>데이터 확보<span>Data Acquisition</span></h3></div>
+        <p>인물·의상·장소·소품을 이미지 데이터로 확보합니다. 배우는 레퍼런스 촬영 1회 —
+        이후 전 장면의 기준값이 되는 아이덴티티 데이터셋으로 변환됩니다.</p>
+        <div class="ph"><img src="images/mk_green_view.jpg" alt="배우 멀티앵글 레퍼런스 촬영"></div>
+      </div>
+      <div class="pipe rv">
+        <div class="n">02</div>
+        <div><h3>미장센 구축<span>Mise-en-scène</span></h3></div>
+        <p>단 한 프레임도 생성되기 전에, 작품의 시각 언어가 먼저 정해집니다.
+        컬러와 조명의 방향을 확정하고 스토리보드를 작업합니다.</p>
+        <div class="ph"><img src="images/mk_f1_3d.jpg" alt="3D 에셋 구축"></div>
+      </div>
+      <div class="pipe rv">
+        <div class="n">03</div>
+        <div><h3>AI 제작 — 러프 컷<span>Rough Cut</span></h3></div>
+        <p>수십 개의 AI 엔진이 동시에 컷을 생성하고 편집을 병행합니다.
+        디테일은 뒤로, 흐름을 먼저 — 작품 전체의 형태를 먼저 완결합니다.</p>
+        <div class="ph"><img src="images/mk_rough_girl.jpg" alt="AI 러프 컷"></div>
+      </div>
+      <div class="pipe rv">
+        <div class="n">04</div>
+        <div><h3>실사 · 색 · 음향<span>Parallel Stage</span><span class="tag">세 갈래 동시 진행</span></h3></div>
+        <p>러프 컷 하나를 기준 삼아 실사 촬영·색보정·음향 작업이 동시에 움직입니다.
+        떨어져 진행해도 결과가 어긋나지 않는 구조입니다.</p>
+        <div class="ph"><img src="images/mk_car_split.jpg" alt="생성 컷과 촬영 현장"></div>
+      </div>
+      <div class="pipe rv">
+        <div class="n">05</div>
+        <div><h3>최종 믹싱<span>Final Mix</span></h3></div>
+        <p>세 갈래로 진행된 영상·색·음향이 하나로 합류합니다. 컷 경계·인물·조명의 일관성을
+        프레임 단위로 점검해 생성 컷과 실사 컷의 경계를 지웁니다.</p>
+        <div class="ph"><img src="images/war.jpg" alt="최종 완성 장면"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FLOWMARK ══ -->
+<section class="flowmark grain" id="infra">
+  <div class="bg"><img src="images/flowmark_hero.jpg" alt="Flowmark 워크플로우 시스템"></div>
+  <div class="in wrap">
+    <div class="fm-k rv">04 — Infrastructure · Proprietary System</div>
+    <div class="fm-t rv d1">FLOWMARK</div>
+    <p class="fm-s rv d2"><b>기다리지 않고, 직접 만들었습니다.</b>
+    흩어져 있는 전 세계의 AI 엔진을 하나의 캔버스로 모아 —
+    나란히, 동시에 지휘하는 노드 기반 워크플로우 시스템입니다.</p>
+    <div class="fm-feats">
+      <div class="rv d1"><b>멀티 엔진 오케스트레이션</b><span>15종+ 엔진을 목적별로 조합 — 특정 엔진에 종속되지 않는 구조</span></div>
+      <div class="rv d2"><b>영화 제작 특화 모듈</b><span>씬 분할 · 캐릭터 시트 · 톤시트 · 프롬프트 빌더 · 캐릭터 라이브러리</span></div>
+      <div class="rv d3"><b>일관성 있는 장면 생성</b><span>인물·의상·장소 데이터 기준값으로 컷 간 연속성을 유지</span></div>
+      <div class="rv d4"><b>프로덕션급 운영</b><span>이력 영속화 · 중단 시 자동 복원 · 프로젝트 단위 이전</span></div>
+    </div>
+    <p class="fm-note rv">개별 엔진의 구성과 조합 로직은 SAW의 <b>핵심 영업기밀</b>로, 상세 기술 사양은 NDA 체결 후 공개합니다.</p>
+  </div>
+</section>
+
+<!-- ══ SCRIPTURE ENGINE ══ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="klabel rv">Scripture Engine</div>
+    <h2 class="ktitle rv d1">웹소설이 <em>대본</em>이 되기까지,<br>손을 거치지 않습니다</h2>
+    <div class="scrip-grid">
+      <div>
+        <p class="klead rv d2">비정형 텍스트를 <b>즉시 촬영 가능한 표준 대본</b>으로 자동 변환하는
+        시스템입니다. 요약·생성이 아니라 <b>구조 변환</b> — 원작의 내용을 지어내거나 줄이지 않고,
+        극작 이론에 따라 재구성합니다.</p>
+        <div class="scrip-steps rv d3" style="margin-top:38px">
+          <div class="st"><i>01</i><div><b>Story Bible — 기준 데이터 구축</b>
+            <span>인물·관계·세계관·고유명사를 추출해 작품의 일관성을 지킬 기준 데이터셋을 만듭니다.</span></div></div>
+          <div class="st"><i>02</i><div><b>Standardization — 구조 분해</b>
+            <span>본문을 의미 단위로 나누고 대사·행동·지문·내면을 분류 태깅해 데이터로 변환합니다.</span></div></div>
+          <div class="st"><i>03</i><div><b>Script Conversion — 대본 생성</b>
+            <span>씬 헤더를 만들고 내면 묘사를 시각적 행동으로 치환해 표준 대본 포맷으로 출력합니다.</span></div></div>
+        </div>
+      </div>
+      <div class="page-demo rv d2">
+        <span class="lb">Input — 웹소설 원문</span>
+        <div class="src">차가운 밤바람이 목덜미를 파고들었다. 서연은 난간을 붙잡은 채
+        도시의 불빛을 내려다보았다. 심장 뛰는 소리가 귓가를 채울 무렵 —
+        등 뒤에서 낮은 목소리가 들려왔다. “여기서 끝낼 거야?”</div>
+        <div class="arr">Scripture Engine — 구조 변환</div>
+        <span class="lb">Output — 표준 대본</span>
+        <div class="dst"><b>S#42. 옥상 (밤)</b>
+
+난간을 붙잡은 서연, 도시의 불빛을 내려다본다.
+가쁜 숨. 등 뒤 — 철문 열리는 소리.
+
+<b>지호</b>   (낮게) 여기서 끝낼 거야?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STUDIO ══ -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">Easteregg Studio</div>
+    <h2 class="ktitle rv d1">데이터가 촬영되는 곳,<br>전용 <em>스튜디오</em></h2>
+    <div class="studio-grid">
+      <div>
+        <p class="klead rv d2">2개 층, 2개 호리존트를 갖춘 전용 스튜디오를 상시 사용합니다.
+        인물·의상 데이터 촬영부터 크로마키 실사 촬영까지 <b>외부 대관 없이 자체 일정으로</b> 진행합니다.</p>
+        <div class="studio-facts rv d3" style="margin-top:36px">
+          <div class="row"><span>Stage 1</span><div><b>크로마키 호리존트</b> — 15 × 10 m · 높이 7 m (1F)</div></div>
+          <div class="row"><span>Stage 2</span><div><b>화이트 호리존트</b> — 15 × 10 m · 높이 5 m (2F)</div></div>
+          <div class="row"><span>설비</span><div>천장 조명 그리드 · 촬영 장비 · 대기·운영 공간</div></div>
+          <div class="row"><span>위치</span><div>경기 고양</div></div>
+        </div>
+      </div>
+      <div class="studio-photos rv d2">
+        <figure><img src="images/studio_3d_stage1.jpg" alt="Stage 1 공간 모델"><figcaption>Stage 1 — 공간 모델</figcaption></figure>
+        <figure><img src="images/studio_3d_stage2.jpg" alt="Stage 2 공간 모델"><figcaption>Stage 2 — 공간 모델</figcaption></figure>
+        <figure><img src="images/studio_green.jpg" alt="크로마키 호리존트"><figcaption>크로마키 호리존트</figcaption></figure>
+        <figure><img src="images/studio_white_shoot.jpg" alt="화이트 촬영 현장"><figcaption>화이트 촬영 현장</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BAND — 액션 ══ -->
+<section class="band grain">
+  <div class="bg"><img src="images/still_fire.jpg" alt="SAW 데모 필름 — 액션"></div>
+  <div class="in wrap">
+    <div class="g rv">액션</div>
+    <div class="t rv d1">이 불꽃은 전부 데이터였습니다</div>
+    <div class="e rv d2">Demo Film · Scene 01:30 · Made with AI</div>
+  </div>
+</section>
+
+<!-- ══ SHOWREEL ══ -->
+<section class="sec" id="showreel">
+  <div class="wrap">
+    <div class="reel-head">
+      <div>
+        <div class="klabel rv">05 — Showreel</div>
+        <h2 class="ktitle rv d1">하나의 파이프라인,<br><em>모든 장르</em></h2>
+      </div>
+      <p class="klead rv d2" style="max-width:420px;margin-top:0">SF·레이싱·액션·청춘·광고까지 —
+      대규모 세트·로케이션·군중 없이, 전 컷을 자체 데이터와 Flowmark 파이프라인으로 완성했습니다.</p>
+    </div>
+    <div class="reel-grid">
+      <div class="reel wide rv"><img src="images/sf_whale.jpg" alt="SF 장면"><span class="cn">SF</span></div>
+      <div class="reel rv d1"><img src="images/helmet_demo.jpg" alt="레이싱 장면"><span class="cn">레이싱</span></div>
+      <div class="reel rv"><img src="images/fire.jpg" alt="액션 장면"><span class="cn">액션</span></div>
+      <div class="reel rv d1"><img src="images/youth_train.jpg" alt="청춘 장면"><span class="cn">청춘</span></div>
+      <div class="reel rv d2"><img src="images/youth_pair.jpg" alt="드라마 장면"><span class="cn">드라마</span></div>
+      <div class="reel rv"><img src="images/cf_drink.jpg" alt="광고 장면"><span class="cn">광고</span></div>
+      <div class="reel rv d1"><img src="images/war.jpg" alt="밀리터리 장면"><span class="cn">밀리터리</span></div>
+      <div class="reel rv d2"><img src="images/ending_saw.jpg" alt="사극 장면"><span class="cn">사극</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TEAM ══ -->
+<section class="sec" id="team" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">06 — Founders</div>
+    <h2 class="ktitle rv d1">기획과 기술이<br><em>창업자 단위</em>에서 결합돼 있습니다</h2>
+    <div class="team-grid">
+      <div class="member rv d1">
+        <div class="role">CEO · Content Strategy</div>
+        <h3>정태우</h3>
+        <div class="en">Jung Taewoo</div>
+        <ul>
+          <li><b>배우 · 콘텐츠 산업 경력 30년+</b>중앙대 연극영화과 · 예술대학원 공연영상학과.
+            KBS 〈태종 이방원〉 〈징비록〉 〈광개토태왕〉 〈대조영〉 등 다수 작품 출연·제작 참여</li>
+          <li><b>콘텐츠 IP 기획·개발</b>웹소설·웹툰 기반 원작 확보와 드라마·영화화 기획.
+            〈칼든 자들의 도시〉 〈재벌을 훔치다〉 등 IP 프로젝트 개발</li>
+          <li><b>프리프로덕션 패키징</b>연출·작가·음악·배우 등 핵심 요소를 선제 구성해
+            제작 가능한 형태로 완성하는 구조를 구축</li>
+        </ul>
+        <p class="now">콘텐츠IP 기획 조직 <b>조이엘리스토리</b>를 함께 운영하며, 보유 IP와 네트워크가 SAW로 이어집니다.</p>
+      </div>
+      <div class="member rv d2">
+        <div class="role">CTO · Tech Direction</div>
+        <h3>공수빈</h3>
+        <div class="en">Kong Subin</div>
+        <ul>
+          <li><b>디지털 아트 디렉터 · 미디어 아티스트</b>오버미디어아트(2017~) · 주식회사 오브이제이(2021~) 대표.
+            기술 기반 연출로 브랜드·패션·전시 영상 다수 제작</li>
+          <li><b>글로벌 브랜드 · 패션 · 전시</b>Google Play · Microsoft · Adidas · Dyson · LG 광고,
+            W Korea · Vogue 패션필름, 두바이 엑스포 · 뉴욕 한국문화원 전시 영상</li>
+          <li><b>AI 제작 파이프라인 설계</b>생성형 AI·3D·인터랙티브를 실제 제작 공정으로 통합.
+            SAW의 워크플로우 시스템 Flowmark 개발 총괄</li>
+        </ul>
+        <p class="now">비주얼 스튜디오 <b>오버미디어아트 · OVJ</b>를 함께 운영하며, 제작 인프라와 기술 자산이 SAW로 이어집니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ROADMAP ══ -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="klabel rv">07 — Roadmap</div>
+    <h2 class="ktitle rv d1">시스템은 완성되어 있습니다.<br>이제 <em>작품으로 증명</em>하는 단계입니다</h2>
+    <div class="road">
+      <div class="rv d1"><div class="y">2026 H1</div><b>설립 · 시스템 구축</b>
+        <p>법인 설립 · Flowmark 인프라 완성 · 데모 필름 제작 · 광고 현장 도입</p></div>
+      <div class="rv d2"><span class="now-tag">Now</span><div class="y">2026 H2</div><b>첫 작품 실행</b>
+        <p>영화 프로젝트 착수 · 광고·브랜드 콘텐츠 수주 확대</p></div>
+      <div class="rv d3"><div class="y">2027</div><b>제작 확장</b>
+        <p>장편·시리즈 라인업 · IP 파트너십 · Scripture Engine 파일럿</p></div>
+      <div class="rv d4"><div class="y">2028</div><b>파이프라인 상용화</b>
+        <p>제작 시스템의 외부 공급 · 글로벌 공동 제작</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section class="contact grain" id="contact">
+  <div class="bg"><img src="images/hist_walk.jpg" alt=""></div>
+  <div class="in wrap">
+    <div class="m rv">The Freedom to Create Without Limits</div>
+    <p class="t rv d1">다음 장면을,<br>함께 만들 준비가 되어 있습니다</p>
+    <a class="mail rv d2" href="mailto:ceo@storyaiworks.com">ceo@storyaiworks.com</a>
+    <p class="addr rv d3">주식회사 스토리에이아이웍스 — 경기도 고양시 일산동구 노첨길24번길 34-3, 1층</p>
+  </div>
+  <div class="footer">
+    <div class="in">
+      <img src="images/saw_logo_white.png" alt="SAW">
+      <div class="ppl">
+        <a href="mailto:ceo@storyaiworks.com">정태우 CEO</a><span>·</span>
+        <a href="mailto:subin.kong@storyaiworks.com">공수빈 CTO</a>
+      </div>
+      <div class="cr">© 2026 Story Ai Works Inc. All rights reserved.</div>
+    </div>
+  </div>
+</section>
+
+<script>
+// 스크롤 리빌
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+// 내비게이션 배경
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 40), { passive: true });
+
+// 모바일 메뉴
+document.getElementById('burger').addEventListener('click', () => nav.classList.toggle('open'));
+document.querySelectorAll('#navlinks a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
+</script>
 </body>
 </html>
