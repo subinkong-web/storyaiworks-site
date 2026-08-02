@@ -191,49 +191,96 @@
 </section>
 
 <!-- ══ PIPELINE (LIGHT) ══ -->
-<section class="sec light" id="pipeline">
+<section class="sec light pipesec" id="pipeline">
+  <div class="pipebg" aria-hidden="true"></div>
   <div class="wrap">
     <div class="klabel rv">04 — The Pipeline</div>
     <h2 class="ktitle rv d1" data-tx="pipe_t">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
     <p class="klead rv d2" data-tx="pipe_lead">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
     <b>세 갈래로 갈라져 동시에</b> 진행한 뒤 최종 믹싱에서 합류합니다.
     이 병렬 구조가 전체 제작 기간을 단축합니다.</p>
-    <div class="pipe-list">
-      <div class="pipe rv">
-        <div class="n">01</div>
-        <div><h3>데이터 확보<span>Data Acquisition</span></h3></div>
-        <p>인물·의상·장소·소품을 이미지 데이터로 확보합니다. 배우는 레퍼런스 촬영 1회 —
-        이후 전 장면의 기준값이 되는 아이덴티티 데이터셋으로 변환됩니다.</p>
-        <div class="ph"><img src="images/mk_green_view.jpg" alt="배우 멀티앵글 레퍼런스 촬영"></div>
-      </div>
-      <div class="pipe rv">
-        <div class="n">02</div>
-        <div><h3>미장센 구축<span>Mise-en-scène</span></h3></div>
-        <p>단 한 프레임도 생성되기 전에, 작품의 시각 언어가 먼저 정해집니다.
-        컬러와 조명의 방향을 확정하고 스토리보드를 작업합니다.</p>
-        <div class="ph"><img src="images/mk_f1_3d.jpg" alt="3D 에셋 구축"></div>
-      </div>
-      <div class="pipe rv">
-        <div class="n">03</div>
-        <div><h3>AI 제작 — 러프 컷<span>Rough Cut</span></h3></div>
-        <p>수십 개의 AI 엔진이 동시에 컷을 생성하고 편집을 병행합니다.
-        디테일은 뒤로, 흐름을 먼저 — 작품 전체의 형태를 먼저 완결합니다.</p>
-        <div class="ph"><img src="images/mk_rough_girl.jpg" alt="AI 러프 컷"></div>
-      </div>
-      <div class="pipe rv">
-        <div class="n">04</div>
-        <div><h3>실사 · 색 · 음향<span>Parallel Stage</span><span class="tag">세 갈래 동시 진행</span></h3></div>
-        <p>러프 컷 하나를 기준 삼아 실사 촬영·색보정·음향 작업이 동시에 움직입니다.
-        떨어져 진행해도 결과가 어긋나지 않는 구조입니다.</p>
-        <div class="ph"><img src="images/mk_car_split.jpg" alt="생성 컷과 촬영 현장"></div>
-      </div>
-      <div class="pipe rv">
-        <div class="n">05</div>
-        <div><h3>최종 믹싱<span>Final Mix</span></h3></div>
-        <p>세 갈래로 진행된 영상·색·음향이 하나로 합류합니다. 컷 경계·인물·조명의 일관성을
-        프레임 단위로 점검해 생성 컷과 실사 컷의 경계를 지웁니다.</p>
-        <div class="ph"><img src="images/war.jpg" alt="최종 완성 장면"></div>
-      </div>
+
+    <div class="pflow">
+      <div class="pspine" aria-hidden="true"><i></i></div>
+
+      <article class="pstage rv" data-n="01">
+        <i class="pnode" aria-hidden="true"></i>
+        <div class="ptxt">
+          <div class="pnum">01</div>
+          <h3>데이터 확보<span>Data Acquisition</span></h3>
+          <p>인물·의상·장소·소품을 이미지 데이터로 확보합니다. 배우는 레퍼런스 촬영 1회 —
+          이후 전 장면의 기준값이 되는 아이덴티티 데이터셋으로 변환됩니다.</p>
+        </div>
+        <figure class="pph"><img src="images/pipe_01.jpg" alt="배우 볼류메트릭 캡처 스테이지" loading="lazy"></figure>
+      </article>
+
+      <article class="pstage flip rv" data-n="02">
+        <i class="pnode" aria-hidden="true"></i>
+        <div class="ptxt">
+          <div class="pnum">02</div>
+          <h3>미장센 구축<span>Mise-en-scène</span></h3>
+          <p>단 한 프레임도 생성되기 전에, 작품의 시각 언어가 먼저 정해집니다.
+          컬러와 조명의 방향을 확정하고 스토리보드를 작업합니다.</p>
+        </div>
+        <figure class="pph"><img src="images/pipe_02.jpg" alt="컬러칩과 스토리보드가 펼쳐진 프로덕션 디자인 룸" loading="lazy"></figure>
+      </article>
+
+      <article class="pstage rv" data-n="03">
+        <i class="pnode" aria-hidden="true"></i>
+        <div class="ptxt">
+          <div class="pnum">03</div>
+          <h3>AI 제작 — 러프 컷<span>Rough Cut</span></h3>
+          <p>수십 개의 AI 엔진이 동시에 컷을 생성하고 편집을 병행합니다.
+          디테일은 뒤로, 흐름을 먼저 — 작품 전체의 형태를 먼저 완결합니다.</p>
+        </div>
+        <figure class="pph"><img src="images/pipe_03.jpg" alt="수십 개의 컷이 떠 있는 편집 월" loading="lazy"></figure>
+      </article>
+
+      <article class="pstage psplit rv" data-n="04">
+        <i class="pnode" aria-hidden="true"></i>
+        <header class="pshead">
+          <div class="pnum">04</div>
+          <h3>실사 · 색 · 음향<span>Parallel Stage</span></h3>
+          <span class="ptag">세 갈래 동시 진행</span>
+          <p>러프 컷 하나를 기준 삼아 실사 촬영·색보정·음향 작업이 동시에 움직입니다.
+          떨어져 진행해도 결과가 어긋나지 않는 구조입니다.</p>
+        </header>
+        <svg class="pfork" viewBox="0 0 1000 110" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M500 0 C500 60 167 50 167 110" pathLength="1"/>
+          <path d="M500 0 L500 110" pathLength="1"/>
+          <path d="M500 0 C500 60 833 50 833 110" pathLength="1"/>
+        </svg>
+        <div class="pbranches">
+          <figure class="pbranch">
+            <img src="images/pipe_04a.jpg" alt="야간 실사 촬영 현장" loading="lazy">
+            <figcaption><b>실사 촬영</b><span>Live Action</span></figcaption>
+          </figure>
+          <figure class="pbranch">
+            <img src="images/pipe_04b.jpg" alt="컬러 그레이딩 룸" loading="lazy">
+            <figcaption><b>색보정</b><span>Color Grading</span></figcaption>
+          </figure>
+          <figure class="pbranch">
+            <img src="images/pipe_04c.jpg" alt="사운드 스튜디오 믹싱 콘솔" loading="lazy">
+            <figcaption><b>음향</b><span>Sound</span></figcaption>
+          </figure>
+        </div>
+        <svg class="pmerge" viewBox="0 0 1000 110" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M167 0 C167 60 500 50 500 110" pathLength="1"/>
+          <path d="M500 0 L500 110" pathLength="1"/>
+          <path d="M833 0 C833 60 500 50 500 110" pathLength="1"/>
+        </svg>
+      </article>
+
+      <article class="pstage pfinal rv" data-n="05">
+        <i class="pnode" aria-hidden="true"></i>
+        <div class="pfhead">
+          <div class="pnum">05</div>
+          <h3>최종 믹싱<span>Final Mix</span></h3>
+          <p>세 갈래로 진행된 영상·색·음향이 하나로 합류합니다. 컷 경계·인물·조명의 일관성을
+          프레임 단위로 점검해 생성 컷과 실사 컷의 경계를 지웁니다.</p>
+        </div>
+        <figure class="pph wide"><img src="images/pipe_05.jpg" alt="완성작이 상영되는 시사실" loading="lazy"></figure>
+      </article>
     </div>
   </div>
 </section>
@@ -686,6 +733,34 @@ const io = new IntersectionObserver(es => {
   });
 }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+// 파이프라인 — 스크롤에 따라 스파인이 차오르고, 지나간 노드의 스테이지가 점등
+const pflow = document.querySelector('.pflow');
+if (pflow) {
+  const stages = [...pflow.querySelectorAll('.pstage')];
+  if (reduced) {
+    pflow.style.setProperty('--sp', 1);
+    stages.forEach(s => s.classList.add('lit'));
+  } else {
+    let ticking = false;
+    const upd = () => {
+      ticking = false;
+      const r = pflow.getBoundingClientRect();
+      const f = Math.min(1, Math.max(0, (innerHeight * .64 - r.top) / r.height));
+      pflow.style.setProperty('--sp', f.toFixed(4));
+      const fy = r.top + r.height * f;
+      stages.forEach(s => {
+        const ny = s.querySelector('.pnode').getBoundingClientRect().top;
+        if (fy >= ny + 8) s.classList.add('lit');
+        else s.classList.remove('lit');
+      });
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(upd); } };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    upd();
+  }
+}
 
 // 히어로 데이터 파티클 필드 — 커서 근처의 입자가 밀리고, 연결선이 생긴다
 const cv = document.getElementById('herofx');

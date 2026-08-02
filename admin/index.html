@@ -236,6 +236,8 @@ const SPEC = {
   'race_suit.jpg':[1000,1150],'hist.jpg':[900,1230],'mk_hanbok_sheet.jpg':[900,1230],
   'cf_can.jpg':[900,1230],'mk_nodes_clean.jpg':[900,1230],
   'mk_green_view.jpg':[1200,720],'mk_f1_3d.jpg':[1200,720],'mk_rough_girl.jpg':[1200,720],'mk_car_split.jpg':[1200,720],
+  'pipe_01.jpg':[1600,900],'pipe_02.jpg':[1600,900],'pipe_03.jpg':[1600,900],
+  'pipe_04a.jpg':[900,1200],'pipe_04b.jpg':[900,1200],'pipe_04c.jpg':[900,1200],'pipe_05.jpg':[2000,857],
   'studio_3d_stage1.jpg':[1200,790],'studio_3d_stage2.jpg':[1200,790],'studio_green_crew.jpg':[1200,790],'studio_white_shoot.jpg':[1200,790],
   'mk_green_face.jpg':[1280,800],'mk_boat3d.jpg':[1280,800],'storm.jpg':[1280,800],'sf_man.jpg':[1280,800],
   'mk_sniper.jpg':[1280,800],'div_tank.jpg':[1280,800],'still_fire.jpg':[1280,800],'mk_edit_multi.jpg':[1280,800],
@@ -440,8 +442,8 @@ function renderMirror() {
     ${X('pipe_t', '섹션 제목', 2)}
     ${X('pipe_lead', '리드 문단', 3)}
     <div style="height:14px"></div>
-    ${[['01','데이터 확보','mk_green_view.jpg'],['02','미장센 구축','mk_f1_3d.jpg'],['03','AI 제작 — 러프 컷','mk_rough_girl.jpg'],['04','실사·색·음향','mk_car_split.jpg'],['05','최종 믹싱','war.jpg']]
-      .map(([n, t, f]) => `<div class="pipe-mini"><span class="pn">${n}</span><b>${t}</b><span></span>${T(f, '16/9.5')}</div>`).join('')}
+    ${[['01','데이터 확보','pipe_01.jpg','16/9'],['02','미장센 구축','pipe_02.jpg','16/9'],['03','AI 제작 — 러프 컷','pipe_03.jpg','16/9'],['04a','실사 촬영','pipe_04a.jpg','3/4'],['04b','색보정','pipe_04b.jpg','3/4'],['04c','음향','pipe_04c.jpg','3/4'],['05','최종 믹싱','pipe_05.jpg','21/9']]
+      .map(([n, t, f, ar]) => `<div class="pipe-mini"><span class="pn">${n}</span><b>${t}</b><span></span>${T(f, ar)}</div>`).join('')}
   </div>
 
   <div class="msec">
