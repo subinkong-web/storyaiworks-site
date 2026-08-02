@@ -395,7 +395,7 @@ body.hascur .cring{opacity:1}
 .pph img{width:100%;aspect-ratio:16/9;object-fit:cover;opacity:.94;transition:transform 1.2s ease,opacity .6s}
 .pph::before{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:rgba(124,88,182,.24);mix-blend-mode:color;
+  background:rgba(124,88,182,.14);mix-blend-mode:color;
 }
 .pph::after{
   content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
@@ -435,7 +435,7 @@ body.hascur .cring{opacity:1}
 .pbranch img{width:100%;aspect-ratio:3/4;object-fit:cover;opacity:.92;transition:transform 1.2s ease,opacity .6s}
 .pbranch::before{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:rgba(124,88,182,.24);mix-blend-mode:color;
+  background:rgba(124,88,182,.14);mix-blend-mode:color;
 }
 .pbranch::after{
   content:"";position:absolute;inset:0;pointer-events:none;
