@@ -173,7 +173,7 @@
     <h2>GitHub 토큰 연결</h2>
     <p class="sub">사이트 수정은 GitHub 저장소에 직접 커밋됩니다. <b>최초 1회</b>만 등록하면 이 브라우저에서 계속 사용됩니다.</p>
     <div style="display:flex;gap:10px">
-      <input id="tk" type="password" placeholder="github_pat_... 또는 ghp_...">
+      <input id="tk" type="password" placeholder="github_pat_... 또는 ghp_..." autocomplete="new-password">
       <button class="btn" id="tk-save" style="flex:none">저장</button>
     </div>
     <div class="note" id="tk-st"></div>
@@ -278,6 +278,10 @@ $('#logout').addEventListener('click', () => { sessionStorage.removeItem('saw_ad
 $('#tk-save').addEventListener('click', async () => {
   const t = $('#tk').value.trim();
   if (!t) return;
+  if (!/^(github_pat_|ghp_)[\w]{20,}/.test(t)) {
+    $('#tk-st').innerHTML = '❌ GitHub 토큰 형식이 아닙니다 (github_pat_… 또는 ghp_…로 시작). 기존 토큰은 그대로 유지됩니다.';
+    return;
+  }
   localStorage.setItem('saw_gh_token', t); $('#tk').value = '';
   await checkToken();
 });
