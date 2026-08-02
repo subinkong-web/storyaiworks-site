@@ -106,13 +106,27 @@
     text-transform:uppercase;margin-top:3px;
   }
   .msec.light .tin .tag{color:#131316;border-color:rgba(0,0,0,.4)}
-  .tin input,.tin textarea{
-    width:100%;background:var(--panel2);border:1px solid var(--hair);color:var(--ink);
-    padding:9px 11px;font:inherit;font-size:12.5px;line-height:1.55;resize:vertical;border-radius:0;
+  .tin .ed{
+    flex:1;min-width:0;background:var(--panel2);border:1px solid var(--hair);color:var(--ink);
+    padding:9px 11px;font:inherit;font-size:12.5px;line-height:1.6;
+    white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;cursor:text;
   }
-  .tin textarea{min-height:0}
-  .tin input:focus,.tin textarea:focus{outline:none;border-color:rgba(158,127,214,.5)}
-  .msec.light .tin input,.msec.light .tin textarea{background:#fff;border-color:rgba(0,0,0,.15);color:#131316}
+  .tin .ed:focus{outline:none;border-color:rgba(158,127,214,.5)}
+  .tin .ed:empty::before{content:"(비어 있음 — 기본 문구가 표시됩니다)";color:var(--dim);pointer-events:none}
+  .tin .ed b,.tin .ed strong{font-weight:800}
+  .tin .ed em,.tin .ed i{font-style:normal;color:#B49BE2;font-family:"Noto Serif KR",Georgia,serif}
+  .msec.light .tin .ed{background:#fff;border-color:rgba(0,0,0,.15);color:#131316}
+  .msec.light .tin .ed em,.msec.light .tin .ed i{color:#674498}
+  /* 드래그 선택 시 나타나는 서식 바 */
+  #fmtbar{
+    position:absolute;z-index:200;display:flex;gap:2px;padding:4px;
+    background:#1b1b1f;border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(0,0,0,.5);
+    transform:translate(-50%,-100%);margin-top:-8px;
+  }
+  #fmtbar button{background:none;border:0;color:#E8E7E3;font:inherit;font-size:11.5px;font-weight:700;padding:5px 10px;cursor:pointer}
+  #fmtbar button:hover{background:rgba(158,127,214,.25)}
+  #fmtbar .bb{font-weight:900}
+  #fmtbar .be{color:#B49BE2;font-family:"Noto Serif KR",serif}
 
   /* 레이아웃 미니어처 */
   .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -202,8 +216,9 @@
   <div class="card" style="margin-bottom:14px">
     <h2>사이트 미러 — 아래 구조는 실제 홈페이지 순서와 동일합니다</h2>
     <p class="sub" style="margin-bottom:0">🖼 <b>이미지</b>: 해당 자리를 클릭해 교체 (호버하면 권장 해상도 표시) ·
-    ▶ <b>영상</b>: 유튜브 URL 붙여넣기 · T <b>텍스트</b>: 문구 직접 수정 —
-    영상·텍스트는 하단 저장바로 일괄 배포됩니다. 텍스트에서 <b>&lt;br&gt;</b>=줄바꿈, <b>&lt;em&gt;…&lt;/em&gt;</b>=보라 강조, <b>&lt;b&gt;…&lt;/b&gt;</b>=굵게 이며 비우면 기본 문구로 복원됩니다.</p>
+    ▶ <b>영상</b>: 유튜브 URL 붙여넣기 · T <b>텍스트</b>: 그냥 글 쓰듯 수정 —
+    <b>엔터</b>로 줄을 바꾸고, 텍스트를 <b>드래그하면 [굵게 · 보라 강조] 버튼</b>이 나타납니다.
+    전부 지우면 기본 문구로 복원되며, 영상·텍스트는 하단 저장바로 일괄 배포됩니다.</p>
   </div>
 
   <div class="mirror" id="mirror"><!-- JS 렌더 --></div>
@@ -242,8 +257,8 @@ const SPEC = {
   'mk_green_face.jpg':[1280,800],'mk_boat3d.jpg':[1280,800],'storm.jpg':[1280,800],'sf_man.jpg':[1280,800],
   'mk_sniper.jpg':[1280,800],'div_tank.jpg':[1280,800],'still_fire.jpg':[1280,800],'mk_edit_multi.jpg':[1280,800],
   'mk_turn_rain.jpg':[1280,800],'hist_gallop.jpg':[1280,800],'studio_blue.jpg':[1280,800],
-  'mk_viewer_city.jpg':[1280,800],'race_car.jpg':[1280,800],'mk_war_multi.jpg':[1280,800],'studio_white_shoot.jpg':[1200,790],
-  'saw_logo_white.png':[600,180],
+  'mk_viewer_city.jpg':[1280,800],'race_car.jpg':[1280,800],'mk_war_multi.jpg':[1280,800],
+  'saw_logo_white.png':[1200,496],
 };
 /* 쇼릴 모달 스틸 (사이트 PROJECTS와 동일) */
 const PJ = {
@@ -347,7 +362,7 @@ const T = (file, ar, extra = '') => {
 const V = (key, label) => `<div class="vin"><span class="tag">▶ ${label}</span>
   <input type="text" data-vkey="${key}" value="${(config.videos && config.videos[key]) || ''}" placeholder="유튜브 URL 붙여넣기 (비우면 Coming Soon)"></div>`;
 const X = (key, label, rows = 1) => `<div class="tin"><span class="tag">T ${label}</span>
-  ${rows > 1 ? `<textarea data-tkey="${key}" rows="${rows}"></textarea>` : `<input type="text" data-tkey="${key}">`}</div>`;
+  <div class="ed" contenteditable="true" data-tkey="${key}"${rows === 1 ? ' data-one="1"' : ''} style="min-height:${rows === 1 ? 37 : 19 + rows * 20}px"></div></div>`;
 
 /* 기본 문구 — 실제 사이트 HTML에서 추출 + 모달 기본값 */
 const DEF = {};
@@ -372,9 +387,68 @@ async function loadDefaults() {
 function fillTexts() {
   document.querySelectorAll('[data-tkey]').forEach(el => {
     const k = el.dataset.tkey;
-    el.value = (config.texts && config.texts[k]) || DEF[k] || '';
+    el.innerHTML = (config.texts && config.texts[k]) || DEF[k] || '';
   });
 }
+
+/* ── 서식 있는 편집기 — 엔터=줄바꿈, 드래그 시 서식 바, 저장 시 b/em/br만 남기고 정리 ── */
+const escT = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function edHTML(el) {
+  const walk = n => {
+    if (n.nodeType === 3) return escT(n.nodeValue).replace(/\n/g, '<br>');   // pre-wrap 편집기의 개행문자도 줄바꿈으로
+    if (n.nodeType !== 1) return '';
+    if (n.tagName === 'BR') return '<br>';
+    const inner = [...n.childNodes].map(walk).join('');
+    if (n.tagName === 'B' || n.tagName === 'STRONG') return inner ? '<b>' + inner + '</b>' : '';
+    if (n.tagName === 'I' || n.tagName === 'EM') return inner ? '<em>' + inner + '</em>' : '';
+    if (/^(DIV|P)$/.test(n.tagName)) return '<br>' + inner;   // 블록 = 줄바꿈
+    return inner;                                             // 그 외 태그는 서식 버리고 내용만
+  };
+  return [...el.childNodes].map(walk).join('')
+    .replace(/ /g, ' ')
+    .replace(/^(\s*<br>\s*)+/, '').replace(/(\s*<br>\s*)+$/, '')
+    .replace(/(<br>\s*){3,}/g, '<br><br>')
+    .trim();
+}
+const canonT = s => (s || '').replace(/<br\s*\/?>/gi, '<br>').replace(/\s+/g, ' ').trim();
+
+function initEditors() {
+  document.execCommand('styleWithCSS', false, false);
+  document.querySelectorAll('.ed').forEach(ed => {
+    ed.addEventListener('paste', e => {
+      e.preventDefault();
+      document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
+    });
+    ed.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      if (!ed.dataset.one) document.execCommand('insertLineBreak');
+    });
+  });
+}
+
+const fmtbar = document.createElement('div');
+fmtbar.id = 'fmtbar';
+fmtbar.className = 'hidden';
+fmtbar.innerHTML = `<button data-cmd="bold" class="bb">굵게</button>
+<button data-cmd="italic" class="be">보라 강조</button>
+<button data-cmd="removeFormat">서식 지우기</button>`;
+document.body.appendChild(fmtbar);
+fmtbar.querySelectorAll('button').forEach(b => b.addEventListener('mousedown', e => {
+  e.preventDefault();
+  document.execCommand(b.dataset.cmd, false, null);
+}));
+document.addEventListener('selectionchange', () => {
+  const sel = getSelection();
+  const node = sel.anchorNode;
+  const ed = node && (node.nodeType === 1 ? node : node.parentElement)?.closest?.('.ed');
+  if (!ed || sel.isCollapsed || !sel.rangeCount) { fmtbar.classList.add('hidden'); return; }
+  const r = sel.getRangeAt(0).getBoundingClientRect();
+  if (!r.width && !r.height) { fmtbar.classList.add('hidden'); return; }
+  fmtbar.style.left = (r.left + r.width / 2 + scrollX) + 'px';
+  fmtbar.style.top = (r.top + scrollY) + 'px';
+  fmtbar.classList.remove('hidden');
+});
 
 function renderMirror() {
   const m = $('#mirror');
@@ -520,11 +594,12 @@ function renderMirror() {
 
   <div class="msec">
     <div class="mlabel">로고 (내비게이션·푸터 공용 — 투명 PNG)</div>
-    <div class="logo-mini">${T('saw_logo_white.png', '10/3')}</div>
+    <div class="logo-mini">${T('saw_logo_white.png', '12/5')}</div>
   </div>`;
 
   m.querySelectorAll('[data-up]').forEach(inp => inp.addEventListener('change', () => handleUpload(inp)));
   fillTexts();
+  initEditors();
   $('#savebar').classList.remove('hidden');
 }
 
@@ -582,7 +657,11 @@ $('#v-save').addEventListener('click', async () => {
     inp.value = id;
   }
   const texts = { ...(config.texts || {}) };
-  document.querySelectorAll('[data-tkey]').forEach(el => { texts[el.dataset.tkey] = el.value.trim(); });
+  document.querySelectorAll('[data-tkey]').forEach(el => {
+    const v = edHTML(el);
+    // 기본 문구와 동일하면 빈 값으로 저장 → 사이트 HTML 기본 문구를 계속 따라감
+    texts[el.dataset.tkey] = canonT(v) === canonT(DEF[el.dataset.tkey] || '') ? '' : v;
+  });
   try {
     config.videos = videos;
     config.texts = texts;
