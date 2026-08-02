@@ -258,6 +258,7 @@ const SPEC = {
   'mk_sniper.jpg':[1280,800],'div_tank.jpg':[1280,800],'still_fire.jpg':[1280,800],'mk_edit_multi.jpg':[1280,800],
   'mk_turn_rain.jpg':[1280,800],'hist_gallop.jpg':[1280,800],'studio_blue.jpg':[1280,800],
   'mk_viewer_city.jpg':[1280,800],'race_car.jpg':[1280,800],'mk_war_multi.jpg':[1280,800],
+  'rm_before.jpg':[1376,768],'rm_after.jpg':[1376,768],'rm_card.jpg':[896,1200],
   'saw_logo_white.png':[1200,496],
 };
 /* 쇼릴 모달 스틸 (사이트 PROJECTS와 동일) */
@@ -496,10 +497,10 @@ function renderMirror() {
   </div>
 
   <div class="msec">
-    <div class="mlabel">03 — What We Do (사업영역 4카드)</div>
+    <div class="mlabel">03 — What We Do (사업영역 5카드)</div>
     ${X('work_t', '섹션 제목', 2)}
-    <div class="g4" style="margin-top:14px">
-      ${T('hist.jpg', '3/4.1')}${T('mk_hanbok_sheet.jpg', '3/4.1')}${T('cf_can.jpg', '3/4.1')}${T('mk_nodes_clean.jpg', '3/4.1')}
+    <div class="g5" style="margin-top:14px">
+      ${T('hist.jpg', '3/4.1')}${T('mk_hanbok_sheet.jpg', '3/4.1')}${T('cf_can.jpg', '3/4.1')}${T('mk_nodes_clean.jpg', '3/4.1')}${T('rm_card.jpg', '3/4.1')}
     </div>
   </div>
 
@@ -521,7 +522,7 @@ function renderMirror() {
   </div>
 
   <div class="msec">
-    <div class="mlabel">05 — Flowmark (섹션 배경)</div>
+    <div class="mlabel">Flowmark (섹션 배경)</div>
     ${T('flowmark_hero.jpg', '16/6')}
     ${X('fm_s', '선언 문장', 3)}
   </div>
@@ -558,6 +559,30 @@ function renderMirror() {
     </div>
     ${X('wipe_t', '카피 문구')}
     ${X('wipe_e', '안내 소문구')}
+  </div>
+
+  <div class="msec light">
+    <div class="mlabel">05 — Broadcast VFX (AI 리무빙 · 전후 비교)</div>
+    ${X('rm_t', '섹션 제목', 2)}
+    ${X('rm_lead', '리드 문단', 4)}
+    <div class="mhint" style="margin-top:14px">왼쪽 = 리무빙 후(After) · 오른쪽 = 리무빙 전(Before). <b>두 장은 같은 프레임이어야</b> 슬라이더가 자연스럽습니다.</div>
+    <div class="wipe-mini">
+      <div>${T('rm_after.jpg', '16/9')}<div class="wtag-mini">After — Removed</div></div>
+      <div>${T('rm_before.jpg', '16/9')}<div class="wtag-mini" style="text-align:right">Before — On Set</div></div>
+    </div>
+    ${X('rm_note', '비교 이미지 주석')}
+    <div class="g4" style="margin-top:18px">
+      <div>${X('rm_c1_h', '01 제목')}${X('rm_c1_p', '01 설명', 3)}</div>
+      <div>${X('rm_c2_h', '02 제목')}${X('rm_c2_p', '02 설명', 3)}</div>
+      <div>${X('rm_c3_h', '03 제목')}${X('rm_c3_p', '03 설명', 3)}</div>
+      <div>${X('rm_c4_h', '04 제목')}${X('rm_c4_p', '04 설명', 3)}</div>
+    </div>
+    <div class="g4" style="margin-top:18px;grid-template-columns:repeat(3,1fr)">
+      <div>${X('rm_w1_t', '포인트 1 제목')}${X('rm_w1_p', '포인트 1 설명', 3)}</div>
+      <div>${X('rm_w2_t', '포인트 2 제목')}${X('rm_w2_p', '포인트 2 설명', 3)}</div>
+      <div>${X('rm_w3_t', '포인트 3 제목')}${X('rm_w3_p', '포인트 3 설명', 3)}</div>
+    </div>
+    ${X('rm_cta', '문의 버튼 문구')}
   </div>
 
   <div class="msec">

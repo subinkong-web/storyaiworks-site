@@ -30,6 +30,7 @@
     <li><a href="#infra">Flowmark</a></li>
     <li><a href="#scripture">Scripture</a></li>
     <li><a href="#studio">Studio</a></li>
+    <li><a href="#removal">VFX</a></li>
     <li><a href="#showreel">Showreel</a></li>
     <li><a href="#team">Team</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -137,7 +138,7 @@
 <section class="sec" id="work">
   <div class="wrap">
     <div class="klabel rv">03 — What We Do</div>
-    <h2 class="ktitle rv d1" data-tx="work_t">IP의 발굴부터 영상의 완성까지,<br>네 영역이 <em>한 파이프라인</em> 안에서</h2>
+    <h2 class="ktitle rv d1" data-tx="work_t">IP의 발굴부터 영상의 완성까지,<br>다섯 영역이 <em>한 파이프라인</em> 안에서</h2>
     <div class="biz-grid">
       <div class="biz rv d1">
         <img src="images/hist.jpg" alt="AI 영화·드라마 제작">
@@ -173,6 +174,15 @@
           <h3>제작 시스템 개발</h3>
           <div class="e">Production Tech</div>
           <p>워크플로우 시스템 Flowmark, 대본 자동화 Scripture Engine 등 제작 기술을 직접 개발·자산화합니다.</p>
+        </div>
+      </div>
+      <div class="biz rv d4">
+        <img src="images/rm_card.jpg" alt="방송 후반 AI 리무빙">
+        <div class="in">
+          <div class="n">05</div>
+          <h3>방송 후반 AI 리무빙</h3>
+          <div class="e">Broadcast VFX</div>
+          <p>화면에 잡힌 카메라·장비·제작진을 AI로 지우고 배경을 복원합니다. 예능·드라마 후반작업 서비스입니다.</p>
         </div>
       </div>
     </div>
@@ -560,6 +570,77 @@
     <div class="g rv">Interactive</div>
     <div class="t rv d1" data-tx="wipe_t">모든 컷의 아래에는, 데이터가 있습니다</div>
     <div class="e rv d2" data-tx="wipe_e">좌우로 움직여 보세요 — Chroma Data ⇄ Final Cut</div>
+  </div>
+</section>
+
+<!-- ══ 05 BROADCAST VFX — AI 오브젝트 리무빙 (LIGHT) ══ -->
+<section class="sec light" id="removal">
+  <div class="wrap">
+    <div class="klabel rv">05 — Broadcast VFX</div>
+    <h2 class="ktitle rv d1" data-tx="rm_t">화면에 들어온 카메라와 장비를,<br><em>흔적 없이</em> 지웁니다</h2>
+    <p class="klead rv d2" data-tx="rm_lead">여러 대의 카메라가 동시에 도는 현장에서는 서로가 서로의 화면에 잡힙니다.
+    지미집과 조명 스탠드, 붐마이크, 바닥의 케이블, 그리고 제작진까지 —
+    <b>SAW는 AI 기반 오브젝트 리무빙으로 이 요소들을 프레임 단위로 제거하고,</b>
+    가려져 있던 배경을 복원해 완성된 화면으로 넘겨드립니다.
+    컷마다 사람이 마스크를 그려 지우던 공정을 대체하는 방식입니다.</p>
+
+    <!-- 전후 비교 — clip-path(--cx) 위에 투명 range를 겹쳐 마우스·터치·키보드 모두 받는다 -->
+    <div class="cmp rv d2" style="--cx:56%">
+      <div class="cl base"><img src="images/rm_before.jpg" alt="리무빙 전 — 카메라와 촬영 장비, 제작진이 프레임에 그대로 노출된 상태" loading="lazy"></div>
+      <div class="cl top"><img src="images/rm_after.jpg" alt="리무빙 후 — 장비와 제작진이 제거되고 가려졌던 배경까지 복원된 상태" loading="lazy"></div>
+      <span class="ctag l">After — Removed</span>
+      <span class="ctag r">Before — On Set</span>
+      <div class="cdiv" aria-hidden="true"><span class="ch"></span></div>
+      <input class="crange" type="range" min="4" max="96" value="56" step="0.5" aria-label="리무빙 전후 비교 — 좌우로 움직여 보세요">
+    </div>
+    <p class="cmp-note rv" data-tx="rm_note">비교 이미지는 서비스 설명을 위해 자체 제작한 재현 컷입니다 — 실제 작업 소재는 공개하지 않습니다.</p>
+
+    <div class="rmg">
+      <div class="rv d1">
+        <div class="n">01</div>
+        <h3 data-tx="rm_c1_h">카메라 · 촬영 장비</h3>
+        <div class="e">Equipment</div>
+        <p data-tx="rm_c1_p">프레임에 들어온 방송용 카메라와 페데스털, 지미집, 트라이포드, 조명 스탠드, 붐마이크, 바닥 케이블과 장비 카트까지 지웁니다.</p>
+      </div>
+      <div class="rv d2">
+        <div class="n">02</div>
+        <h3 data-tx="rm_c2_h">제작진 · 인물</h3>
+        <div class="e">Crew &amp; People</div>
+        <p data-tx="rm_c2_p">화면 가장자리에 걸린 카메라 감독·FD·오디오 등 제작진과, 의도치 않게 함께 잡힌 인물을 제거합니다.</p>
+      </div>
+      <div class="rv d3">
+        <div class="n">03</div>
+        <h3 data-tx="rm_c3_h">로고 · 상표 마스킹</h3>
+        <div class="e">Brand Masking</div>
+        <p data-tx="rm_c3_p">권리 문제가 되는 브랜드 로고와 간판, 제품 상표를 제거하거나 어색하지 않은 대체물로 바꿔 넣습니다.</p>
+      </div>
+      <div class="rv d4">
+        <div class="n">04</div>
+        <h3 data-tx="rm_c4_h">배경 복원</h3>
+        <div class="e">Inpainting</div>
+        <p data-tx="rm_c4_p">와이어·리깅을 걷어낸 자리를 주변 텍스처와 원근에 맞춰 다시 그립니다. 지운 티가 남지 않아야 완료입니다.</p>
+      </div>
+    </div>
+
+    <div class="rmwhy">
+      <div class="rv d1">
+        <div class="lb">Temporal Consistency</div>
+        <b data-tx="rm_w1_t">컷 전체를 하나로 봅니다</b>
+        <p data-tx="rm_w1_p">프레임을 한 장씩 따로 지우면 경계가 떨리고 지워진 자리가 깜빡입니다. 샷 전체를 하나의 시퀀스로 추적해 시간축에서 흔들리지 않게 유지합니다.</p>
+      </div>
+      <div class="rv d2">
+        <div class="lb">Volume</div>
+        <b data-tx="rm_w2_t">회차 단위 물량을 감당합니다</b>
+        <p data-tx="rm_w2_p">대상 오브젝트를 자동으로 검출·추적해 일괄 처리하고, 사람은 최종 검수와 까다로운 컷에 집중합니다. 컷 수가 늘어도 일정이 무너지지 않습니다.</p>
+      </div>
+      <div class="rv d3">
+        <div class="lb">No Rotoscoping</div>
+        <b data-tx="rm_w3_t">로토 공정을 걷어냅니다</b>
+        <p data-tx="rm_w3_p">기존 방식은 컷마다 손으로 마스크를 그리는 로토스코핑에 대부분의 시간이 들어갑니다. 그 단계를 없애면 납기와 단가를 다시 계산할 수 있습니다.</p>
+      </div>
+    </div>
+
+    <a class="rmcta rv d2" href="#contact" data-tx="rm_cta">리무빙 작업 문의</a>
   </div>
 </section>
 
@@ -951,6 +1032,32 @@ document.querySelectorAll('.band.wipe').forEach(band => {
       requestAnimationFrame(idle);
     })(t0);
   }
+});
+
+// 리무빙 전후 비교 — 겹쳐 둔 range 값이 곧 클립 경계. 처음 보일 때 한 번만 스스로 훑어 조작 가능함을 알린다
+document.querySelectorAll('.cmp').forEach(cmp => {
+  const rg = cmp.querySelector('.crange');
+  if (!rg) return;
+  const sync = () => cmp.style.setProperty('--cx', rg.value + '%');
+  const touch = () => { cmp.dataset.touched = '1'; };
+  rg.addEventListener('input', () => { sync(); });
+  rg.addEventListener('pointerdown', touch);
+  rg.addEventListener('keydown', touch);
+  sync();
+  if (reduced) return;
+  new IntersectionObserver((es, ob) => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    ob.unobserve(e.target);
+    const from = +rg.value, to = 20, t0 = performance.now();
+    (function sweep(t) {
+      if (cmp.dataset.touched) return;
+      const p = Math.min(1, (t - t0) / 2400);
+      const e2 = p < .5 ? p * 2 : (1 - p) * 2;                       // 갔다가 되돌아온다
+      rg.value = (from + (to - from) * (e2 * e2 * (3 - 2 * e2))).toFixed(1);
+      sync();
+      if (p < 1) requestAnimationFrame(sweep);
+    })(t0);
+  }), { threshold: .45 }).observe(cmp);
 });
 
 // 컨택트 배경 패럴랙스 (밴드는 자체 효과가 있어 제외)
