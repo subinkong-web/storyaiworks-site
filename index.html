@@ -45,8 +45,8 @@
   <canvas id="herofx" aria-hidden="true"></canvas>
   <div class="hero-in wrap">
     <div class="hero-k rv">AI-Native Film Studio</div>
-    <h1 class="hero-t rv d1">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
-    <p class="hero-d rv d2">폭풍의 바다, 불타는 공장, 미래의 도시 — 물리적 한계가 지워온 장면들을
+    <h1 class="hero-t rv d1" data-tx="hero_t">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
+    <p class="hero-d rv d2" data-tx="hero_d">폭풍의 바다, 불타는 공장, 미래의 도시 — 물리적 한계가 지워온 장면들을
     SAW는 데이터와 AI 파이프라인으로 만듭니다.</p>
     <div class="hero-meta rv d3">
       <div>Company<b>주식회사 스토리에이아이웍스</b></div>
@@ -61,8 +61,8 @@
 <section class="statement">
   <div class="wrap">
     <div class="k rv">Our Statement</div>
-    <p class="t rv d1">촬영 없이 시작해서,<br><b>촬영으로 완성합니다.</b></p>
-    <p class="d rv d2">데이터 확보부터 최종 믹싱까지 — 전 공정을 자체 파이프라인으로 수행하고,
+    <p class="t rv d1" data-tx="stmt_t">촬영 없이 시작해서,<br><b>촬영으로 완성합니다.</b></p>
+    <p class="d rv d2" data-tx="stmt_d">데이터 확보부터 최종 믹싱까지 — 전 공정을 자체 파이프라인으로 수행하고,
     그 파이프라인을 구동하는 제작 시스템을 직접 개발합니다.
     이것은 구호가 아니라, 이미 광고 제작 현장에서 구동 중인 작동 방식입니다.</p>
   </div>
@@ -79,7 +79,7 @@
 <section class="sec" id="films">
   <div class="wrap">
     <div class="klabel rv">01 — Films</div>
-    <h2 class="ktitle rv d1">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
+    <h2 class="ktitle rv d1" data-tx="films_t">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
     <div class="film-grid">
       <!-- data-yt에 유튜브 영상 ID(예: dQw4w9WgXcQ)를 넣으면 재생 가능 -->
       <figure class="film rv d1" data-yt="65sRoCflCuo" data-slot="film_demo">
@@ -87,14 +87,14 @@
           <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
           <div class="play"></div>
         </div>
-        <figcaption><b>데모 필름</b><span>Demo Film · 전 컷 AI 제작</span></figcaption>
+        <figcaption><b data-tx="film_demo_ct">데모 필름</b><span data-tx="film_demo_cs">Demo Film · 전 컷 AI 제작</span></figcaption>
       </figure>
       <figure class="film rv d2" data-yt="poNytRVqcjs" data-slot="film_making">
         <div class="ph">
           <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지">
           <div class="play"></div>
         </div>
-        <figcaption><b>메이킹 필름</b><span>Making Film · 데이터가 컷이 되는 과정</span></figcaption>
+        <figcaption><b data-tx="film_mk_ct">메이킹 필름</b><span data-tx="film_mk_cs">Making Film · 데이터가 컷이 되는 과정</span></figcaption>
       </figure>
     </div>
   </div>
@@ -104,10 +104,10 @@
 <section class="sec light" id="about">
   <div class="wrap">
     <div class="klabel rv">02 — Company</div>
-    <h2 class="ktitle rv d1">AI로 영화를 만드는<br><em>제작사</em>입니다</h2>
+    <h2 class="ktitle rv d1" data-tx="about_t">AI로 영화를 만드는<br><em>제작사</em>입니다</h2>
     <div class="about-grid">
       <div>
-        <p class="klead rv d2">SAW는 <b>AI로 영화를 만드는 제작사</b>입니다.
+        <p class="klead rv d2" data-tx="about_lead">SAW는 <b>AI로 영화를 만드는 제작사</b>입니다.
         데이터 확보부터 최종 믹싱까지의 전 공정을 자체 파이프라인으로 수행하고,
         그 파이프라인을 구동하는 <b>제작 시스템을 직접 개발</b>합니다.</p>
         <div class="about-facts rv d3" style="margin-top:38px">
@@ -137,7 +137,7 @@
 <section class="sec" id="work">
   <div class="wrap">
     <div class="klabel rv">03 — What We Do</div>
-    <h2 class="ktitle rv d1">IP의 발굴부터 영상의 완성까지,<br>네 영역이 <em>한 파이프라인</em> 안에서</h2>
+    <h2 class="ktitle rv d1" data-tx="work_t">IP의 발굴부터 영상의 완성까지,<br>네 영역이 <em>한 파이프라인</em> 안에서</h2>
     <div class="biz-grid">
       <div class="biz rv d1">
         <img src="images/hist.jpg" alt="AI 영화·드라마 제작">
@@ -184,9 +184,9 @@
   <div class="bg"><img src="images/still_youth.jpg" alt="SAW 데모 필름 — 청춘"></div>
   <div class="leak" aria-hidden="true"></div>
   <div class="in wrap">
-    <div class="g rv">청춘</div>
-    <div class="t rv d1">카메라 없이 촬영한, 어느 여름</div>
-    <div class="e rv d2">Demo Film · Scene 02:45 · Made with AI</div>
+    <div class="g rv" data-tx="band1_g">청춘</div>
+    <div class="t rv d1" data-tx="band1_t">카메라 없이 촬영한, 어느 여름</div>
+    <div class="e rv d2" data-tx="band1_e">Demo Film · Scene 02:45 · Made with AI</div>
   </div>
 </section>
 
@@ -194,8 +194,8 @@
 <section class="sec light" id="pipeline">
   <div class="wrap">
     <div class="klabel rv">04 — The Pipeline</div>
-    <h2 class="ktitle rv d1">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
-    <p class="klead rv d2">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
+    <h2 class="ktitle rv d1" data-tx="pipe_t">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
+    <p class="klead rv d2" data-tx="pipe_lead">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
     <b>세 갈래로 갈라져 동시에</b> 진행한 뒤 최종 믹싱에서 합류합니다.
     이 병렬 구조가 전체 제작 기간을 단축합니다.</p>
     <div class="pipe-list">
@@ -244,7 +244,7 @@
   <div class="in wrap">
     <div class="fm-k rv">05 — Infrastructure · Proprietary System 01</div>
     <div class="fm-t rv d1">FLOWMARK</div>
-    <p class="fm-s rv d2"><b>기다리지 않고, 직접 만들었습니다.</b>
+    <p class="fm-s rv d2" data-tx="fm_s"><b>기다리지 않고, 직접 만들었습니다.</b>
     흩어져 있는 전 세계의 AI 엔진을 하나의 캔버스로 모아 —
     나란히, 동시에 지휘하는 노드 기반 워크플로우 시스템입니다.</p>
     <div class="fm-feats">
@@ -394,7 +394,7 @@
   <div class="wrap">
     <div class="fm-k rv">Infrastructure · Proprietary System 02</div>
     <div class="prod-t rv d1">SCRIPTURE<br>ENGINE</div>
-    <p class="fm-s rv d2"><b>웹소설이 대본이 되기까지, 손을 거치지 않습니다.</b>
+    <p class="fm-s rv d2" data-tx="se_s"><b>웹소설이 대본이 되기까지, 손을 거치지 않습니다.</b>
     비정형 텍스트를 즉시 촬영 가능한 표준 대본으로 자동 변환 — 요약·생성이 아니라
     극작 이론에 따른 구조 변환입니다.</p>
     <div class="scrip-grid">
@@ -483,7 +483,7 @@
   <div class="in wrap">
     <div class="fm-k rv">Infrastructure · Production Facility</div>
     <div class="prod-t rv d1">EASTEREGG<br>STUDIO</div>
-    <p class="fm-s rv d2"><b>데이터가 촬영되는 곳 — 전용 스튜디오를 상시 사용합니다.</b>
+    <p class="fm-s rv d2" data-tx="st_s"><b>데이터가 촬영되는 곳 — 전용 스튜디오를 상시 사용합니다.</b>
     인물·의상 데이터 촬영부터 크로마키 실사 촬영까지,
     외부 대관 없이 자체 일정으로 진행합니다.</p>
     <div class="fm-feats">
@@ -511,8 +511,8 @@
   <span class="wtag r">Production Data</span>
   <div class="in wrap">
     <div class="g rv">Interactive</div>
-    <div class="t rv d1">모든 컷의 아래에는, 데이터가 있습니다</div>
-    <div class="e rv d2">좌우로 움직여 보세요 — Chroma Data ⇄ Final Cut</div>
+    <div class="t rv d1" data-tx="wipe_t">모든 컷의 아래에는, 데이터가 있습니다</div>
+    <div class="e rv d2" data-tx="wipe_e">좌우로 움직여 보세요 — Chroma Data ⇄ Final Cut</div>
   </div>
 </section>
 
@@ -522,7 +522,7 @@
     <div class="reel-head">
       <div>
         <div class="klabel rv">06 — Showreel</div>
-        <h2 class="ktitle rv d1">하나의 파이프라인,<br><em>모든 장르</em></h2>
+        <h2 class="ktitle rv d1" data-tx="reel_t">하나의 파이프라인,<br><em>모든 장르</em></h2>
       </div>
       <p class="klead rv d2" style="max-width:420px;margin-top:0">SF·레이싱·액션·청춘·광고까지 —
       대규모 세트·로케이션·군중 없이, 전 컷을 자체 데이터와 Flowmark 파이프라인으로 완성했습니다.</p>
@@ -609,8 +609,8 @@
 <section class="contact grain" id="contact">
   <div class="bg"><img src="images/hist_walk.jpg" alt=""></div>
   <div class="in wrap">
-    <div class="m rv">The Freedom to Create Without Limits</div>
-    <p class="t rv d1">다음 장면을,<br>함께 만들 준비가 되어 있습니다</p>
+    <div class="m rv" data-tx="contact_m">The Freedom to Create Without Limits</div>
+    <p class="t rv d1" data-tx="contact_t">다음 장면을,<br>함께 만들 준비가 되어 있습니다</p>
     <div class="cpeople rv d2">
       <div class="card">
         <div class="role">CEO · Content Strategy</div>
@@ -785,18 +785,20 @@ addEventListener('scroll', () => {
   prog.style.width = (scrollY / (h.scrollHeight - innerHeight) * 100) + '%';
 }, { passive: true });
 
-// 밴드 타이틀 — 글자별 상승 등장
-document.querySelectorAll('.band .t').forEach(t => {
-  const txt = t.textContent;
-  t.textContent = '';
-  t.classList.add('kt');
-  [...txt].forEach((ch, i) => {
-    const s = document.createElement('span');
-    s.textContent = ch;
-    s.style.transitionDelay = (i * 26) + 'ms';
-    t.appendChild(s);
+// 밴드 타이틀 — 글자별 상승 등장 (설정 텍스트 반영 이후 실행)
+function ktSplit() {
+  document.querySelectorAll('.band .t').forEach(t => {
+    const txt = t.textContent;
+    t.textContent = '';
+    t.classList.add('kt');
+    [...txt].forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.textContent = ch;
+      s.style.transitionDelay = (i * 26) + 'ms';
+      t.appendChild(s);
+    });
   });
-});
+}
 
 // 청춘 밴드 — 떠다니는 빛 입자 (더스트)
 (() => {
@@ -1049,9 +1051,18 @@ fetch('site-config.json', { cache: 'no-store' })
     Object.keys(PROJECTS).forEach(k => {
       if (v['pj_' + k] !== undefined) PROJECTS[k].yt = v['pj_' + k];
     });
+    // 텍스트 반영 — 어드민에서 수정한 문구가 있으면 기본값을 덮어쓴다
+    const tx = (cfg && cfg.texts) || {};
+    document.querySelectorAll('[data-tx]').forEach(el => {
+      if (tx[el.dataset.tx] !== undefined && tx[el.dataset.tx] !== '') el.innerHTML = tx[el.dataset.tx];
+    });
+    Object.keys(PROJECTS).forEach(k => {
+      if (tx['pj_' + k + '_t']) PROJECTS[k].t = tx['pj_' + k + '_t'];
+      if (tx['pj_' + k + '_d']) PROJECTS[k].d = tx['pj_' + k + '_d'];
+    });
   })
   .catch(() => {})
-  .finally(initPlayers);
+  .finally(() => { ktSplit(); initPlayers(); });
 
 </script>
 </body>

@@ -33,7 +33,7 @@
   header .hr{display:flex;gap:10px;align-items:center}
   header span{font-size:11px;letter-spacing:.28em;color:var(--dim2);text-transform:uppercase}
 
-  .card{background:var(--panel);border:1px solid var(--hair);padding:24px 24px 26px;margin-bottom:22px}
+  .card{background:var(--panel);border:2px solid rgba(255,255,255,.14);padding:24px 24px 26px;margin-bottom:22px}
   .card h2{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px}
   .card .sub{font-size:12.5px;color:var(--dim);margin-bottom:16px}
   .card .sub b{color:var(--txt)}
@@ -48,17 +48,19 @@
   #login .msg{margin-top:12px;font-size:12px;color:var(--err);min-height:18px}
 
   /* ══ 사이트 미러 ══ */
-  .mirror{border:1px solid var(--hair);margin-bottom:22px}
-  .msec{padding:34px clamp(18px,4vw,44px) 40px;border-bottom:1px solid var(--hair);position:relative}
+  .mirror{border:2px solid rgba(255,255,255,.22);margin-bottom:22px}
+  .msec{padding:34px clamp(18px,4vw,44px) 44px;border-bottom:2px solid rgba(255,255,255,.18);position:relative}
   .msec.light{background:#F2F1EE}
   .msec:last-child{border-bottom:0}
   .mlabel{
-    display:flex;align-items:center;gap:12px;margin-bottom:18px;
+    display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;
+    border-bottom:1px solid rgba(255,255,255,.15);
     font-size:10.5px;font-weight:800;letter-spacing:.3em;color:var(--acc);text-transform:uppercase;
   }
   .mlabel::before{content:"";width:26px;height:1px;background:rgba(158,127,214,.5)}
   .msec.light .mlabel{color:#674498}
   .msec.light .mlabel::before{background:rgba(103,68,152,.45)}
+  .msec.light .mlabel{border-bottom-color:rgba(0,0,0,.15)}
   .mhint{font-size:11.5px;color:var(--dim2);margin:-12px 0 16px}
   .msec.light .mhint{color:#9B9BA2}
   .mnone{font-size:12px;color:var(--dim2);border:1px dashed var(--hair);padding:14px 18px}
@@ -95,6 +97,22 @@
   }
   .vin input{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;padding:8px 10px}
   .msec.light .vin input{background:#fff;border-color:rgba(0,0,0,.15);color:#131316}
+
+  /* 텍스트 편집 필드 */
+  .tin{display:flex;gap:8px;align-items:flex-start;margin-top:10px}
+  .tin .tag{
+    flex:none;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:800;
+    letter-spacing:.12em;color:#E8E7E3;border:1px solid rgba(255,255,255,.45);padding:4px 8px;
+    text-transform:uppercase;margin-top:3px;
+  }
+  .msec.light .tin .tag{color:#131316;border-color:rgba(0,0,0,.4)}
+  .tin input,.tin textarea{
+    width:100%;background:var(--panel2);border:1px solid var(--hair);color:var(--ink);
+    padding:9px 11px;font:inherit;font-size:12.5px;line-height:1.55;resize:vertical;border-radius:0;
+  }
+  .tin textarea{min-height:0}
+  .tin input:focus,.tin textarea:focus{outline:none;border-color:rgba(158,127,214,.5)}
+  .msec.light .tin input,.msec.light .tin textarea{background:#fff;border-color:rgba(0,0,0,.15);color:#131316}
 
   /* 레이아웃 미니어처 */
   .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -133,7 +151,7 @@
   /* 하단 고정 저장바 */
   .savebar{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
-    background:rgba(11,11,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--hair);
+    background:rgba(11,11,12,.94);backdrop-filter:blur(12px);border-top:2px solid rgba(255,255,255,.22);
   }
   .savebar .in{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between}
   .savebar .st{font-size:12px;min-height:18px}
@@ -184,7 +202,8 @@
   <div class="card" style="margin-bottom:14px">
     <h2>사이트 미러 — 아래 구조는 실제 홈페이지 순서와 동일합니다</h2>
     <p class="sub" style="margin-bottom:0">🖼 <b>이미지</b>: 해당 자리를 클릭해 교체 (호버하면 권장 해상도 표시) ·
-    ▶ <b>영상</b>: 보라색 입력칸에 유튜브 URL 붙여넣기 → 하단 저장바로 일괄 배포 · 반영은 커밋 후 1~2분.</p>
+    ▶ <b>영상</b>: 유튜브 URL 붙여넣기 · T <b>텍스트</b>: 문구 직접 수정 —
+    영상·텍스트는 하단 저장바로 일괄 배포됩니다. 텍스트에서 <b>&lt;br&gt;</b>=줄바꿈, <b>&lt;em&gt;…&lt;/em&gt;</b>=보라 강조, <b>&lt;b&gt;…&lt;/b&gt;</b>=굵게 이며 비우면 기본 문구로 복원됩니다.</p>
   </div>
 
   <div class="mirror" id="mirror"><!-- JS 렌더 --></div>
@@ -198,8 +217,8 @@
 <!-- 하단 저장바 -->
 <div class="savebar hidden" id="savebar">
   <div class="in">
-    <span class="st" id="v-st">유튜브 링크를 수정한 뒤 저장하세요.</span>
-    <button class="btn" id="v-save">유튜브 링크 저장 → 배포</button>
+    <span class="st" id="v-st">영상·텍스트를 수정한 뒤 저장하세요.</span>
+    <button class="btn" id="v-save">변경사항 저장 → 배포</button>
   </div>
 </div>
 
@@ -325,6 +344,35 @@ const T = (file, ar, extra = '') => {
 };
 const V = (key, label) => `<div class="vin"><span class="tag">▶ ${label}</span>
   <input type="text" data-vkey="${key}" value="${(config.videos && config.videos[key]) || ''}" placeholder="유튜브 URL 붙여넣기 (비우면 Coming Soon)"></div>`;
+const X = (key, label, rows = 1) => `<div class="tin"><span class="tag">T ${label}</span>
+  ${rows > 1 ? `<textarea data-tkey="${key}" rows="${rows}"></textarea>` : `<input type="text" data-tkey="${key}">`}</div>`;
+
+/* 기본 문구 — 실제 사이트 HTML에서 추출 + 모달 기본값 */
+const DEF = {};
+const PJTXT = {
+  sf: ['도시 위를 헤엄치는 고래', '실존하지 않는 장면은 데이터에서 시작됩니다. 도시의 공간 데이터와 3D 에셋을 결합해 Flowmark 파이프라인에서 생성한 컷입니다. 조명과 안개의 방향은 미장센 단계에서 확정한 기준값을 따르고, 세트·로케이션·CG 외주 없이 완성했습니다.'],
+  racing: ['존재하지 않는 서킷의 야간 레이스', '레이싱 슈트와 헬멧은 스튜디오에서 데이터로 확보했습니다. 차량과 서킷은 3D 에셋과 생성 컷의 조합입니다. 배우는 단 한 번의 레퍼런스 촬영으로 전 장면에 등장하며, 야간 서킷의 조명까지 러프 컷 기준으로 정렬돼 있습니다.'],
+  action: ['이 불꽃은 전부 데이터였습니다', '불타는 공장, 총구의 섬광 — 물리적으로 위험한 장면일수록 AI 파이프라인의 가치가 커집니다. 크로마키 실사와 생성 컷을 같은 러프 컷 기준으로 합성해, 배우의 안전과 장면의 스케일을 동시에 확보했습니다.'],
+  youth: ['카메라 없이 촬영한, 어느 여름', '여름 햇살, 바닷가 건널목, 스쳐 가는 전철 — 로케이션 헌팅 없이 만든 계절입니다. 인물의 아이덴티티 데이터셋을 기준으로 전 컷에서 동일한 얼굴과 톤을 유지하며, 러프 컷과 편집을 병행해 흐름을 먼저 완성했습니다.'],
+  drama: ['감정이 머무는 컷', '드라마의 핵심은 스펙터클이 아니라 표정의 연속성입니다. 배우 레퍼런스 촬영에서 확보한 표정 데이터가 전 장면의 기준값이 되어, 클로즈업이 이어져도 인물이 흔들리지 않습니다. 대사와 호흡은 실사 촬영으로 완성합니다.'],
+  cf: ['이미 광고 현장에서 구동 중입니다', '영화에서 검증한 파이프라인을 그대로 광고에 적용했습니다. 제품 촬영과 모델 데이터 확보 후, 배경·연출·버전 변경을 데이터에서 재생성합니다. 시안 단계에서 완성 수준의 컷을 보여줄 수 있는 것이 가장 큰 차이입니다.'],
+  military: ['군중도, 전장도, 세트 없이', '대규모 병력과 장비가 등장하는 장면은 전통 제작에서 가장 비싼 컷입니다. SAW는 소수의 배우 데이터와 3D 에셋으로 전장의 스케일을 만들고, 연속성 검증 단계에서 컷 간 정합성을 프레임 단위로 점검합니다.'],
+  hist: ['한 벌의 한복에서 시작된 사극', '의상 한 벌을 3면 데이터로 확보하면, 시대극의 전 장면에서 같은 옷이 살아 움직입니다. 말을 타고 달리는 컷도, 갈대밭을 걷는 엔딩도 같은 데이터 자산에서 나왔습니다. 고증 수정도 재촬영 없이 데이터에서 이뤄집니다.'],
+};
+Object.entries(PJTXT).forEach(([k, [t, d]]) => { DEF['pj_' + k + '_t'] = t; DEF['pj_' + k + '_d'] = d; });
+async function loadDefaults() {
+  try {
+    const html = await (await fetch(SITE + '/?admin=' + Date.now(), { cache: 'no-store' })).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('[data-tx]').forEach(el => { DEF[el.dataset.tx] = el.innerHTML.trim().replace(/\s+/g, ' '); });
+  } catch { log('기본 문구 로드 실패 — 빈 칸은 기본값 유지로 동작합니다.'); }
+}
+function fillTexts() {
+  document.querySelectorAll('[data-tkey]').forEach(el => {
+    const k = el.dataset.tkey;
+    el.value = (config.texts && config.texts[k]) || DEF[k] || '';
+  });
+}
 
 function renderMirror() {
   const m = $('#mirror');
@@ -332,26 +380,40 @@ function renderMirror() {
   <div class="msec">
     <div class="mlabel">Hero — 첫 화면</div>
     ${T('sf_whale.jpg', '16/6')}
-    <div class="caption">영화의 크기를 정하는 것은 예산이 아니라, 상상력입니다</div>
+    ${X('hero_t', '헤드라인', 2)}
+    ${X('hero_d', '설명 문장', 2)}
+  </div>
+
+  <div class="msec">
+    <div class="mlabel">Statement — 선언 문구</div>
+    ${X('stmt_t', '큰 문구', 2)}
+    ${X('stmt_d', '보조 설명', 3)}
   </div>
 
   <div class="msec">
     <div class="mlabel">01 — Films (영상 2개 + 썸네일)</div>
-    <div class="g2">
+    ${X('films_t', '섹션 제목', 2)}
+    <div class="g2" style="margin-top:14px">
       <div>
         ${T('thumb_demo.jpg', '16/9')}
         ${V('film_demo', '데모 필름')}
+        ${X('film_demo_ct', '캡션 제목')}
+        ${X('film_demo_cs', '캡션 부제')}
       </div>
       <div>
         ${T('thumb_making.jpg', '16/9')}
         ${V('film_making', '메이킹 필름')}
+        ${X('film_mk_ct', '캡션 제목')}
+        ${X('film_mk_cs', '캡션 부제')}
       </div>
     </div>
   </div>
 
   <div class="msec light">
     <div class="mlabel">02 — Company (회사소개)</div>
-    <div class="about-mini">
+    ${X('about_t', '섹션 제목', 2)}
+    ${X('about_lead', '리드 문단', 3)}
+    <div class="about-mini" style="margin-top:14px">
       <div class="ghost-txt"><i></i><i></i><i></i><i></i></div>
       ${T('race_suit.jpg', '4/4.6')}
     </div>
@@ -359,7 +421,8 @@ function renderMirror() {
 
   <div class="msec">
     <div class="mlabel">03 — What We Do (사업영역 4카드)</div>
-    <div class="g4">
+    ${X('work_t', '섹션 제목', 2)}
+    <div class="g4" style="margin-top:14px">
       ${T('hist.jpg', '3/4.1')}${T('mk_hanbok_sheet.jpg', '3/4.1')}${T('cf_can.jpg', '3/4.1')}${T('mk_nodes_clean.jpg', '3/4.1')}
     </div>
   </div>
@@ -367,11 +430,16 @@ function renderMirror() {
   <div class="msec">
     <div class="mlabel">청춘 밴드 (빛 파티클)</div>
     ${T('still_youth.jpg', '16/6')}
-    <div class="caption">카메라 없이 촬영한, 어느 여름</div>
+    ${X('band1_g', '장르 라벨')}
+    ${X('band1_t', '카피 문구')}
+    ${X('band1_e', '하단 소문구')}
   </div>
 
   <div class="msec light">
     <div class="mlabel">04 — Pipeline (5단계)</div>
+    ${X('pipe_t', '섹션 제목', 2)}
+    ${X('pipe_lead', '리드 문단', 3)}
+    <div style="height:14px"></div>
     ${[['01','데이터 확보','mk_green_view.jpg'],['02','미장센 구축','mk_f1_3d.jpg'],['03','AI 제작 — 러프 컷','mk_rough_girl.jpg'],['04','실사·색·음향','mk_car_split.jpg'],['05','최종 믹싱','war.jpg']]
       .map(([n, t, f]) => `<div class="pipe-mini"><span class="pn">${n}</span><b>${t}</b><span></span>${T(f, '16/9.5')}</div>`).join('')}
   </div>
@@ -379,6 +447,7 @@ function renderMirror() {
   <div class="msec">
     <div class="mlabel">05 — Flowmark (섹션 배경)</div>
     ${T('flowmark_hero.jpg', '16/6')}
+    ${X('fm_s', '선언 문장', 3)}
   </div>
 
   <div class="msec">
@@ -392,12 +461,14 @@ function renderMirror() {
 
   <div class="msec light">
     <div class="mlabel">Scripture Engine (3개 장)</div>
-    <div class="mnone">텍스트·다이어그램 섹션 — 교체할 이미지가 없습니다.</div>
+    ${X('se_s', '선언 문장', 3)}
+    <div class="mnone" style="margin-top:14px">이미지 없음 — 다이어그램·표 문구 수정은 개발자에게 요청하세요.</div>
   </div>
 
   <div class="msec">
     <div class="mlabel">Easteregg Studio (배경 + 사진 4장)</div>
     ${T('studio_green.jpg', '16/6')}
+    ${X('st_s', '선언 문장', 2)}
     <div class="g4" style="margin-top:10px">
       ${T('studio_3d_stage1.jpg', '16/10.5')}${T('studio_3d_stage2.jpg', '16/10.5')}${T('studio_green_crew.jpg', '16/10.5')}${T('studio_white_shoot.jpg', '16/10.5')}
     </div>
@@ -409,10 +480,14 @@ function renderMirror() {
       <div>${T('race_helmet.jpg', '16/8')}<div class="wtag-mini">Final Cut</div></div>
       <div>${T('mk_green_helmet.jpg', '16/8')}<div class="wtag-mini" style="text-align:right">Production Data</div></div>
     </div>
+    ${X('wipe_t', '카피 문구')}
+    ${X('wipe_e', '안내 소문구')}
   </div>
 
   <div class="msec">
     <div class="mlabel">06 — Showreel (대표작 + 장르 그리드 8)</div>
+    ${X('reel_t', '섹션 제목', 2)}
+    <div style="height:14px"></div>
     ${T('thumb_demo.jpg', '16/7')}
     ${V('showreel_featured', '대표작 영상')}
     <div class="reel-mini">
@@ -421,6 +496,8 @@ function renderMirror() {
           ${T(p.grid, '16/9')}
           <div class="genre">${p.name} — 모달</div>
           ${V('pj_' + k, '영상')}
+          ${X('pj_' + k + '_t', '제목')}
+          ${X('pj_' + k + '_d', '설명', 3)}
           <div class="stills-mini">${p.stills.map(s => T(s + '.jpg', '16/10')).join('')}</div>
         </div>`).join('')}
     </div>
@@ -435,6 +512,8 @@ function renderMirror() {
   <div class="msec">
     <div class="mlabel">Contact (배경)</div>
     ${T('hist_walk.jpg', '16/6')}
+    ${X('contact_m', '상단 영문 라벨')}
+    ${X('contact_t', '카피 문구', 2)}
   </div>
 
   <div class="msec">
@@ -443,6 +522,7 @@ function renderMirror() {
   </div>`;
 
   m.querySelectorAll('[data-up]').forEach(inp => inp.addEventListener('change', () => handleUpload(inp)));
+  fillTexts();
   $('#savebar').classList.remove('hidden');
 }
 
@@ -499,10 +579,13 @@ $('#v-save').addEventListener('click', async () => {
     videos[inp.dataset.vkey] = id;
     inp.value = id;
   }
+  const texts = { ...(config.texts || {}) };
+  document.querySelectorAll('[data-tkey]').forEach(el => { texts[el.dataset.tkey] = el.value.trim(); });
   try {
     config.videos = videos;
+    config.texts = texts;
     const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2) + '\n')));
-    await ghPut('site-config.json', b64, 'admin: update video links');
+    await ghPut('site-config.json', b64, 'admin: update videos & texts');
     st.className = 'st ok'; st.textContent = '✅ 커밋 완료 — 1~2분 후 사이트 반영';
     log('유튜브 링크 저장 완료.');
   } catch (e) { st.className = 'st err'; st.textContent = '❌ ' + e.message; log('영상 저장 실패: ' + e.message); }
@@ -514,6 +597,7 @@ async function boot() {
   $('#app').classList.remove('hidden');
   await checkToken();
   await loadConfig();
+  await loadDefaults();
   renderMirror();
 }
 if (sessionStorage.getItem('saw_admin') === '1') boot();
