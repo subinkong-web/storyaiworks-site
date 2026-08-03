@@ -186,7 +186,7 @@
     <h1>SAW Board</h1>
     <p class="sub">주식회사 스토리에이아이웍스 내부 화이트보드입니다. 사내 인원만 이용해 주세요.</p>
     <label>아이디</label>
-    <input class="fld" id="g-id" placeholder="영문 이름" autocomplete="username">
+    <input class="fld" id="g-id" placeholder="이름 (예: 정태우)" autocomplete="username">
     <label>비밀번호</label>
     <input class="fld" id="g-pw" type="password" autocomplete="current-password">
     <button class="btn wide" id="g-go">입장</button>
@@ -316,14 +316,14 @@
    SAW Board — 내부 화이트보드
    저장소: subinkong-web/saw-board (private)
    ※ 사람이 늘면 아래 USERS 배열에 한 줄 추가하고 다시 배포하면 됩니다.
-      id = 로그인 아이디(영문 이름), alias = 같이 받아줄 다른 표기, name = 화면·커밋에 남을 이름
+      id = 로그인 아이디(한글 이름), alias = 같이 받아줄 영문 표기, name = 화면·커밋에 남을 이름
    ══════════════════════════════════════════════════════════ */
 const REPO = 'subinkong-web/saw-board';
 const PW = '00000';
 const USERS = [
-  { id:'taewoo',  alias:['jungtaewoo','jung.taewoo','jungtw'], name:'정태우' },
-  { id:'subin',   alias:['kongsubin','subin.kong','kongsb'],   name:'공수빈' },
-  { id:'jinyang', alias:['kimjinyang','jinyang.kim','kimjy'],  name:'김진양' },
+  { id:'정태우', alias:['taewoo','jungtaewoo','jung.taewoo'],  name:'정태우' },
+  { id:'공수빈', alias:['subin','kongsubin','subin.kong'],     name:'공수빈' },
+  { id:'김진양', alias:['jinyang','kimjinyang','jinyang.kim'], name:'김진양' },
 ];
 const findUser = v => USERS.find(u => u.id === v || u.alias.includes(v));
 
