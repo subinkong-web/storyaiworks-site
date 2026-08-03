@@ -78,6 +78,34 @@
   /* ── 캔버스 ── */
   #main{position:relative;overflow:hidden;background:#0f0f12}
   #ex{position:absolute;inset:0}
+  /* 도형 도구는 상단 바의 [도형 ▾] 하나로 묶었으므로 기본 툴바에서 감춘다 */
+  .excalidraw .App-toolbar label:has(input[data-testid="toolbar-rectangle"]),
+  .excalidraw .App-toolbar label:has(input[data-testid="toolbar-diamond"]),
+  .excalidraw .App-toolbar label:has(input[data-testid="toolbar-ellipse"]),
+  .excalidraw .App-toolbar label:has(input[data-testid="toolbar-line"]),
+  .excalidraw .App-toolbar label:has(input[data-testid="toolbar-freedraw"]){display:none}
+  /* 텍스트 박스를 놓는 동안 캔버스를 덮는 레이어 */
+  #cardlayer{position:absolute;inset:0;z-index:5;display:none;cursor:crosshair}
+  #cardlayer.on{display:block}
+  #cardghost{position:absolute;border:1.5px dashed var(--acc);background:rgba(180,155,226,.10);display:none}
+  #cardhint{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#000c;color:var(--ink);
+    font-size:12px;padding:7px 14px;border:1px solid var(--hair);white-space:nowrap}
+
+  /* ── 팝오버 ── */
+  .pop{position:fixed;z-index:150;background:var(--panel);border:1px solid var(--hair);padding:8px;
+    display:none;box-shadow:0 14px 38px rgba(0,0,0,.6)}
+  .pop.on{display:block}
+  .pop .row{display:flex;flex-direction:column;gap:2px;min-width:150px}
+  .pop .row button{display:flex;align-items:center;gap:9px;padding:8px 10px;font-size:12.5px;
+    color:var(--txt);border-radius:3px;text-align:left;width:100%}
+  .pop .row button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
+  .pop .row button span.k{margin-left:auto;font-size:10px;color:var(--dim2)}
+  .pop .sws{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .pop .sw{width:28px;height:28px;border-radius:4px;border:2px solid transparent;transition:.14s}
+  .pop .sw:hover{transform:scale(1.09)}
+  .pop .sw.on{border-color:var(--ink)}
+  .swchip{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:5px;
+    border:1px solid rgba(0,0,0,.35)}
   #boot{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim2);font-size:13px;
     text-align:center;padding:24px;word-break:keep-all}
 
@@ -198,6 +226,9 @@
     <img class="logo" src="../images/saw_logo_white.png" alt="SAW">
     <button class="tb" id="b-boards">보드 ▾</button>
     <span class="bname" id="b-name">—</span>
+    <button class="tb pri" id="b-card">＋ 텍스트 박스</button>
+    <button class="tb" id="b-cardcolor" title="텍스트 박스 색"><span class="swchip" id="cc-sw"></span>▾</button>
+    <button class="tb" id="b-shapes">도형 ▾</button>
     <span class="spacer"></span>
     <span class="mini" id="b-state"><span class="dot"></span>저장됨</span>
     <span class="mini" id="b-who"></span>
@@ -208,10 +239,17 @@
   </div>
   <div id="main">
     <div id="ex"></div>
+    <div id="cardlayer">
+      <div id="cardghost"></div>
+      <div id="cardhint">놓을 자리를 클릭하세요 — 드래그하면 크기를 정할 수 있습니다 (Esc 취소)</div>
+    </div>
     <div id="boot">화이트보드를 불러오는 중…</div>
   </div>
 </div>
 <div id="tags"></div>
+
+<div class="pop" id="pop-shape"><div class="row" id="shape-row"></div></div>
+<div class="pop" id="pop-color"><div class="sws" id="color-sws"></div></div>
 
 <div id="drawer">
   <div class="pane" onclick="event.stopPropagation()">
@@ -234,8 +272,12 @@
   <div class="box">
     <h3>사용법</h3>
     <table>
-      <tr><td>도구</td><td>왼쪽 위 툴바 — 선택 · 사각형 · 마름모 · 원 · 화살표 · 선 · 펜 · 텍스트 · 이미지 · 지우개 · 프레임</td></tr>
-      <tr><td>스티키 노트</td><td>사각형(<kbd>R</kbd>)을 그린 뒤 더블클릭해서 글자 입력</td></tr>
+      <tr><td>텍스트 박스</td><td>상단 [＋ 텍스트 박스] → 캔버스를 클릭(또는 드래그해서 크기 지정).
+        제목과 본문이 함께 만들어집니다. <b>제목·본문을 각각 더블클릭</b>해서 글자를 입력하세요.
+        글자는 박스 폭에 맞춰 자동으로 줄바꿈됩니다</td></tr>
+      <tr><td>박스 색</td><td>[＋ 텍스트 박스] 옆 색 버튼으로 다음에 만들 색을 고릅니다.
+        이미 만든 박스는 선택한 뒤 왼쪽 패널의 <b>배경색</b>을 바꾸면 제목·본문이 함께 바뀝니다</td></tr>
+      <tr><td>도형</td><td>상단 [도형 ▾] — 사각형 · 마름모 · 원 · 선 · 화살표 · 펜</td></tr>
       <tr><td>화면 이동 / 확대</td><td>휠·두 손가락 이동, <kbd>⌘</kbd>+휠 확대, <kbd>Space</kbd>+드래그</td></tr>
       <tr><td>이미지</td><td>스크린샷을 <kbd>⌘</kbd><kbd>V</kbd> 로 붙여넣거나 드래그해서 놓기</td></tr>
       <tr><td>실행취소 / 복제</td><td><kbd>⌘</kbd><kbd>Z</kbd> · <kbd>⌘</kbd><kbd>D</kbd> · <kbd>Alt</kbd>+드래그</td></tr>
@@ -552,6 +594,163 @@ $('#b-tags').onclick = () => {
   drawTags();
 };
 addEventListener('resize', drawTags);
+
+/* ══════════ 텍스트 박스 (헤더 + 본문 카드) ══════════
+   사각형 컨테이너 두 개(헤더/본문)를 한 그룹으로 묶는다. 각 컨테이너의 글자는
+   Excalidraw의 bound text라서 폭에 맞춰 자동 줄바꿈되고, 더블클릭으로 바로 고쳐진다.
+   카드를 선택한 뒤 왼쪽 패널의 배경색을 바꾸면 헤더·본문이 함께 바뀐다. */
+const CARD_COLORS = ['#ffec99','#ffd8a8','#ffc9c9','#eebefa','#a5d8ff','#b2f2bb','#e9ecef','#ced4da'];
+const HDR_H = 44, CARD_W = 290, CARD_H = 180;
+let cardColor = localStorage.getItem('saw_board_cardcolor') || CARD_COLORS[0];
+let arming = false, ghostFrom = null;
+
+function paintChip(){ $('#cc-sw').style.background = cardColor; }
+function makeCard(x, y, w, h){
+  w = Math.max(150, w || CARD_W);
+  h = Math.max(HDR_H + 60, h || CARD_H);
+  const g = 'card' + uid();
+  const common = { strokeColor:'#1e1e1e', strokeWidth:1, backgroundColor:cardColor,
+    fillStyle:'solid', roundness:null, groupIds:[g] };
+  const els = Ex.convertToExcalidrawElements([
+    { ...common, type:'rectangle', x, y, width:w, height:HDR_H,
+      label:{ text:'제목', fontSize:18, fontFamily:2, textAlign:'left', verticalAlign:'middle', strokeColor:'#1e1e1e' } },
+    { ...common, type:'rectangle', x, y:y + HDR_H, width:w, height:h - HDR_H, opacity:55,
+      label:{ text:'내용을 입력하세요', fontSize:15, fontFamily:2, textAlign:'left', verticalAlign:'top', strokeColor:'#1e1e1e', opacity:100 } },
+  ]);
+  api.updateScene({ elements: [...api.getSceneElements(), ...els] });
+  const ids = {};
+  els.forEach(e => { ids[e.id] = true; });
+  api.updateScene({ appState: { selectedElementIds: ids, selectedGroupIds: {[g]: true} } });
+  api.setActiveTool({ type:'selection' });
+  hintEdit();
+}
+function hintEdit(){
+  const n = +(localStorage.getItem('saw_board_carhint') || 0);
+  if (n >= 3) return;
+  localStorage.setItem('saw_board_carhint', n + 1);
+  toast('제목이나 본문을 더블클릭하면 글자를 고칠 수 있습니다.');
+}
+
+/* 카드는 제목·본문 두 상자를 한 그룹으로 묶어두는데, 그러면 Excalidraw 기본 동작상
+   첫 더블클릭은 "그룹 안으로 들어가기"에 쓰이고 두 번째에야 글자 편집이 시작된다.
+   그래서 더블클릭을 가로채 그룹 진입 상태(editingGroupId)를 먼저 만들어 두고,
+   같은 자리에 더블클릭을 한 번 다시 흘려보내 한 번에 편집으로 들어가게 한다. */
+let redispatching = false;
+document.addEventListener('dblclick', e => {
+  if (redispatching || !api || !e.target.closest('.excalidraw')) return;
+  const st = api.getAppState();
+  if (st.editingGroupId) return;                       // 이미 그룹 안이면 기본 동작으로 충분
+  const pt = Ex.viewportCoordsToSceneCoords({clientX:e.clientX, clientY:e.clientY}, st);
+  const hit = [...api.getSceneElements()].reverse().find(el =>
+    !el.isDeleted && el.type === 'rectangle' && (el.groupIds || []).some(g => g.startsWith('card')) &&
+    pt.x >= el.x && pt.x <= el.x + el.width && pt.y >= el.y && pt.y <= el.y + el.height);
+  if (!hit) return;
+  e.preventDefault(); e.stopPropagation();
+  api.updateScene({ appState:{
+    editingGroupId: hit.groupIds.find(g => g.startsWith('card')),
+    selectedElementIds: {[hit.id]: true}, selectedGroupIds: {},
+  }});
+  redispatching = true;
+  const cx = e.clientX, cy = e.clientY;
+  setTimeout(() => {
+    try {
+      const cv = document.querySelector('.excalidraw canvas.interactive');
+      const base = { clientX:cx, clientY:cy, bubbles:true, cancelable:true, view:window,
+        button:0, buttons:1, pointerId:1, pointerType:'mouse', isPrimary:true };
+      for (const d of [1,2]){
+        cv.dispatchEvent(new PointerEvent('pointerdown', {...base, detail:d}));
+        cv.dispatchEvent(new PointerEvent('pointerup',   {...base, buttons:0, detail:d}));
+        cv.dispatchEvent(new MouseEvent('click',         {...base, buttons:0, detail:d}));
+      }
+      cv.dispatchEvent(new MouseEvent('dblclick', {...base, buttons:0, detail:2}));
+    } catch(err){}
+    setTimeout(() => {
+      redispatching = false;
+      const ta = document.querySelector('textarea.excalidraw-wysiwyg');
+      if (ta){ ta.focus(); ta.select(); }              // 기본 문구를 덮어쓸 수 있게 전체 선택
+    }, 90);
+  }, 30);
+}, true);
+function armCard(){
+  arming = true;
+  $('#cardlayer').classList.add('on');
+  $('#b-card').classList.add('on');
+  closePops();
+}
+function disarm(){
+  arming = false; ghostFrom = null;
+  $('#cardlayer').classList.remove('on');
+  $('#b-card').classList.remove('on');
+  $('#cardghost').style.display = 'none';
+}
+$('#b-card').onclick = () => arming ? disarm() : armCard();
+
+const layer = $('#cardlayer'), ghost = $('#cardghost');
+layer.addEventListener('pointerdown', e => {
+  ghostFrom = {x:e.clientX, y:e.clientY};
+  layer.setPointerCapture(e.pointerId);
+});
+layer.addEventListener('pointermove', e => {
+  if (!ghostFrom) return;
+  const r = layer.getBoundingClientRect();
+  const x0 = Math.min(ghostFrom.x, e.clientX) - r.left, y0 = Math.min(ghostFrom.y, e.clientY) - r.top;
+  ghost.style.cssText = `display:block;left:${x0}px;top:${y0}px;` +
+    `width:${Math.abs(e.clientX-ghostFrom.x)}px;height:${Math.abs(e.clientY-ghostFrom.y)}px`;
+});
+layer.addEventListener('pointerup', e => {
+  if (!ghostFrom || !api) return disarm();
+  const st = api.getAppState();
+  const a = Ex.viewportCoordsToSceneCoords({clientX:Math.min(ghostFrom.x,e.clientX), clientY:Math.min(ghostFrom.y,e.clientY)}, st);
+  const b = Ex.viewportCoordsToSceneCoords({clientX:Math.max(ghostFrom.x,e.clientX), clientY:Math.max(ghostFrom.y,e.clientY)}, st);
+  const w = b.x - a.x, h = b.y - a.y;
+  const drag = w > 60 && h > 60;
+  disarm();
+  makeCard(drag ? a.x : a.x - CARD_W/2, drag ? a.y : a.y - CARD_H/2, drag ? w : CARD_W, drag ? h : CARD_H);
+});
+addEventListener('keydown', e => { if (e.key === 'Escape' && arming) disarm(); });
+
+/* ── 팝오버: 카드 색 / 도형 ── */
+function closePops(){ document.querySelectorAll('.pop').forEach(p => p.classList.remove('on')); }
+function openPop(pop, btn){
+  const wasOpen = pop.classList.contains('on');
+  closePops();
+  if (wasOpen) return;
+  const r = btn.getBoundingClientRect();
+  pop.style.left = Math.min(r.left, innerWidth - 200) + 'px';
+  pop.style.top  = (r.bottom + 6) + 'px';
+  pop.classList.add('on');
+}
+(function buildColorPop(){
+  const el = $('#color-sws');
+  CARD_COLORS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'sw' + (c === cardColor ? ' on' : '');
+    b.style.background = c;
+    b.onclick = () => {
+      cardColor = c;
+      localStorage.setItem('saw_board_cardcolor', c);
+      [...el.children].forEach((x,i) => x.classList.toggle('on', CARD_COLORS[i] === c));
+      paintChip(); closePops();
+      if (api) api.updateScene({ appState:{ currentItemBackgroundColor:c } });
+    };
+    el.appendChild(b);
+  });
+  paintChip();
+})();
+(function buildShapePop(){
+  const el = $('#shape-row');
+  [['rectangle','사각형','R'],['diamond','마름모','D'],['ellipse','원','O'],
+   ['line','선','L'],['arrow','화살표','A'],['freedraw','펜','P']].forEach(([t,label,k]) => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span></span><span class="k">${k}</span>`;
+    b.firstChild.textContent = label;
+    b.onclick = () => { disarm(); closePops(); api && api.setActiveTool({type:t}); };
+    el.appendChild(b);
+  });
+})();
+$('#b-cardcolor').onclick = e => { e.stopPropagation(); openPop($('#pop-color'), $('#b-cardcolor')); };
+$('#b-shapes').onclick    = e => { e.stopPropagation(); openPop($('#pop-shape'),  $('#b-shapes')); };
+addEventListener('click', e => { if (!e.target.closest('.pop')) closePops(); });
 
 /* ══ 보드 목록 ══ */
 async function loadIndex(){
