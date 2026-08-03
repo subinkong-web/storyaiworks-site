@@ -91,6 +91,20 @@
   #cardhint{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#000c;color:var(--ink);
     font-size:12px;padding:7px 14px;border:1px solid var(--hair);white-space:nowrap}
 
+  /* ── Excalidraw 툴바 옆 자체 도구 섬 ── */
+  #tools2{position:fixed;z-index:6;display:none;align-items:center;gap:2px;padding:4px;
+    background:#232329;border:1px solid rgba(255,255,255,.08);border-radius:10px;
+    box-shadow:0 3px 14px rgba(0,0,0,.5)}
+  #tools2 button{display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border-radius:7px;
+    color:#d8d8dc;font-size:12.5px;transition:.14s;white-space:nowrap}
+  #tools2 button:hover{background:rgba(255,255,255,.08);color:#fff}
+  #tools2 button.on{background:var(--accd);color:#fff}
+  #tools2 button b{font-weight:700}
+  #tools2 button i{font-style:normal;font-size:9px;opacity:.7}
+  #tools2 svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  #tools2 .sep2{width:1px;height:22px;background:rgba(255,255,255,.10);margin:0 3px}
+
   /* ── 팝오버 ── */
   .pop{position:fixed;z-index:150;background:var(--panel);border:1px solid var(--hair);padding:8px;
     display:none;box-shadow:0 14px 38px rgba(0,0,0,.6)}
@@ -226,9 +240,6 @@
     <img class="logo" src="../images/saw_logo_white.png" alt="SAW">
     <button class="tb" id="b-boards">보드 ▾</button>
     <span class="bname" id="b-name">—</span>
-    <button class="tb pri" id="b-card">＋ 텍스트 박스</button>
-    <button class="tb" id="b-cardcolor" title="텍스트 박스 색"><span class="swchip" id="cc-sw"></span>▾</button>
-    <button class="tb" id="b-shapes">도형 ▾</button>
     <span class="spacer"></span>
     <span class="mini" id="b-state"><span class="dot"></span>저장됨</span>
     <span class="mini" id="b-who"></span>
@@ -246,6 +257,19 @@
     <div id="boot">화이트보드를 불러오는 중…</div>
   </div>
 </div>
+
+<!-- Excalidraw 툴바 옆에 붙는 자체 도구 섬. React가 관리하는 DOM 안에 끼워 넣으면
+     리렌더 때 트리가 깨지므로, 툴바 위치를 재서 나란히 띄우기만 한다. -->
+<div id="tools2">
+  <button id="b-card" title="텍스트 박스 — 제목과 본문이 있는 카드">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="2"/><path d="M3 10h18"/><path d="M6 14h9M6 16.6h6"/></svg>
+    <b>텍스트 박스</b>
+  </button>
+  <button id="b-cardcolor" title="텍스트 박스 색"><span class="swchip" id="cc-sw"></span><i>▾</i></button>
+  <span class="sep2"></span>
+  <button id="b-shapes" title="도형"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/><circle cx="16" cy="15" r="5"/></svg><i>▾</i></button>
+</div>
+
 <div id="tags"></div>
 
 <div class="pop" id="pop-shape"><div class="row" id="shape-row"></div></div>
@@ -514,6 +538,9 @@ async function doMount(){
   });
   if (!api) throw new Error('Excalidraw 초기화 시간 초과');
   $('#boot').style.display = 'none';
+  placeTools();
+  const tb = document.querySelector('.excalidraw .App-toolbar');
+  if (tb && window.ResizeObserver) new ResizeObserver(placeTools).observe(tb);
 }
 
 /* ══ 장면 변경 → 작성자 추적 · 저장 표시 · 이름표 ══ */
@@ -523,8 +550,22 @@ function onSceneChange(elements, appState){
   const v = Ex.getSceneVersion(elements);
   if (!S.loading && S.lastVer !== -1 && v !== S.lastVer) markDirty();
   S.lastVer = v;
-  if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); });
+  if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); placeTools(); });
 }
+
+/* 자체 도구 섬을 Excalidraw 툴바 왼쪽에 나란히 붙인다(좁으면 툴바 아래 가운데로). */
+function placeTools(){
+  const tb = document.querySelector('.excalidraw .App-toolbar');
+  const el = $('#tools2');
+  if (!tb){ el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  const r = tb.getBoundingClientRect(), w = el.offsetWidth;
+  let left = r.left - w - 10, top = r.top;
+  if (left < 78){ left = r.left + r.width/2 - w/2; top = r.bottom + 8; }
+  el.style.left = Math.max(8, left) + 'px';
+  el.style.top  = top + 'px';
+}
+addEventListener('resize', placeTools);
 function trackAuthors(elements){
   const now = Date.now();
   for (const el of elements){
