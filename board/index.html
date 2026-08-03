@@ -42,6 +42,9 @@
   .msg.err{color:var(--err)} .msg.ok{color:var(--ok)} .msg.warn{color:var(--warn)}
   .hint{font-size:11.5px;color:var(--dim2);margin-top:14px;line-height:1.75;word-break:keep-all}
   .hint code{background:var(--panel2);padding:1px 5px;font-size:11px}
+  .out{width:100%;height:120px;background:var(--panel2);border:1px solid var(--hair);color:var(--acc);
+    padding:11px 13px;font-family:ui-monospace,monospace;font-size:11px;line-height:1.6;
+    word-break:break-all;resize:vertical;margin-top:8px;outline:none}
 
   /* ── 앱 셸 ── */
   #app{position:fixed;inset:0;display:none;grid-template-rows:52px 1fr}
@@ -215,6 +218,30 @@
   </div>
 </div>
 
+<!-- ══ 토큰 봉인 (관리자 1회용 · /board/?seal) ══ -->
+<div class="gate" id="seal" style="display:none">
+  <div class="box">
+    <h1>토큰 봉인</h1>
+    <p class="sub">GitHub 토큰을 공용 비밀번호로 암호화합니다. <b>토큰과 비밀번호는 이 브라우저 밖으로 나가지 않습니다.</b>
+      결과로 나오는 봉인 문자열만 페이지에 심으면, 이후 다른 사람은 이름·비밀번호만으로 들어옵니다.</p>
+    <label>GitHub Personal Access Token</label>
+    <input class="fld" id="z-tk" type="password" placeholder="github_pat_… 또는 ghp_…" autocomplete="off">
+    <label>공용 비밀번호 (12자 이상)</label>
+    <input class="fld" id="z-pw" type="password" autocomplete="new-password">
+    <label>비밀번호 확인</label>
+    <input class="fld" id="z-pw2" type="password" autocomplete="new-password">
+    <button class="btn wide" id="z-go">봉인하기</button>
+    <p class="msg" id="z-msg"></p>
+    <div id="z-wrap" style="display:none">
+      <label>봉인 문자열</label>
+      <textarea class="out" id="z-out" readonly onclick="this.select()"></textarea>
+      <button class="btn ghost wide" id="z-copy" style="margin-top:8px">복사</button>
+      <p class="hint">이 문자열은 비밀번호 없이는 아무 의미가 없으므로 그대로 전달해도 안전합니다.
+        <b>토큰 원문과 비밀번호는 절대 전달하지 마세요.</b></p>
+    </div>
+  </div>
+</div>
+
 <!-- ══ 앱 ══ -->
 <div id="app">
   <div class="bar">
@@ -319,7 +346,12 @@
       id = 로그인 아이디(한글 이름), alias = 같이 받아줄 영문 표기, name = 화면·커밋에 남을 이름
    ══════════════════════════════════════════════════════════ */
 const REPO = 'subinkong-web/saw-board';
-const PW = '00000';
+
+/* 공용 GitHub 토큰을 공용 비밀번호로 암호화한 문자열(AES-GCM + PBKDF2).
+   /board/?seal 화면에서 만들어 여기에 붙여넣는다. 비워두면 예전처럼 각자 토큰을 등록한다.
+   비밀번호를 바꾸려면 토큰을 새 비밀번호로 다시 봉인해 이 값을 교체할 것. */
+const SEALED = '';
+const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이는 임시 비밀번호
 const USERS = [
   { id:'정태우', alias:['taewoo','jungtaewoo','jung.taewoo'],  name:'정태우' },
   { id:'공수빈', alias:['subin','kongsubin','subin.kong'],     name:'공수빈' },
@@ -373,12 +405,43 @@ async function ghPutJson(path, obj, msg, sha){
   return ghPut(path, b64enc(JSON.stringify(obj, null, 0)), msg, sha);
 }
 
+/* ══ 토큰 봉인/해제 (AES-GCM + PBKDF2) ══ */
+const te = new TextEncoder(), td = new TextDecoder();
+const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+const toBuf = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt){
+  const km = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:310000, hash:'SHA-256'},
+    km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function sealToken(tk, pass){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const ct   = await crypto.subtle.encrypt({name:'AES-GCM', iv}, await deriveKey(pass, salt), te.encode(tk));
+  return btoa(JSON.stringify({v:1, s:toB64(salt), i:toB64(iv), c:toB64(ct)}));
+}
+async function unsealToken(blob, pass){
+  const o = JSON.parse(atob(blob));
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:toBuf(o.i)},
+    await deriveKey(pass, toBuf(o.s)), toBuf(o.c));
+  return td.decode(pt);
+}
+
 /* ══ 로그인 ══ */
-function enter(){
+async function enter(){
   const id = $('#g-id').value.trim().toLowerCase().replace(/\s+/g,'');
   const pw = $('#g-pw').value;
   const u = findUser(id);
-  if (!u || pw !== PW) { $('#g-msg').textContent = '이름 또는 비밀번호가 올바르지 않습니다.'; return; }
+  const bad = () => { $('#g-msg').textContent = '이름 또는 비밀번호가 올바르지 않습니다.'; };
+  if (!u) return bad();
+  if (SEALED){
+    $('#g-msg').textContent = '확인 중…';
+    let tk;
+    try { tk = await unsealToken(SEALED, pw); } catch { return bad(); }
+    localStorage.setItem('saw_board_token', tk);
+    $('#g-msg').textContent = '';
+  } else if (pw !== PW) return bad();
   localStorage.setItem('saw_board_me', u.name);
   localStorage.setItem('saw_board_id', u.id);
   sessionStorage.setItem('saw_board_in', '1');
@@ -407,10 +470,45 @@ $('#s-go').onclick = async () => {
   $('#s-tk').value = '';
   boot();
 };
-$('#s-out').onclick = () => { sessionStorage.removeItem('saw_board_in'); location.reload(); };
+function logout(){
+  sessionStorage.removeItem('saw_board_in');
+  if (SEALED) localStorage.removeItem('saw_board_token');   // 토큰은 비밀번호에서 다시 풀면 된다
+  location.reload();
+}
+$('#s-out').onclick = logout;
 $('#b-out').onclick = () => {
   if (S.dirty && !confirm('저장되지 않은 변경이 있습니다. 나가시겠습니까?')) return;
-  sessionStorage.removeItem('saw_board_in'); location.reload();
+  logout();
+};
+
+/* ══ 토큰 봉인 화면 (/board/?seal) ══ */
+$('#z-go').onclick = async () => {
+  const tk = $('#z-tk').value.trim(), pw = $('#z-pw').value, pw2 = $('#z-pw2').value, m = $('#z-msg');
+  const err = t => { m.className = 'msg err'; m.textContent = t; };
+  if (!/^(github_pat_|ghp_)[\w]{20,}/.test(tk)) return err('GitHub 토큰 형식이 아닙니다.');
+  if (pw.length < 12) return err('공용 비밀번호는 12자 이상이어야 합니다.');
+  if (pw !== pw2)     return err('비밀번호 확인이 일치하지 않습니다.');
+  m.className = 'msg'; m.textContent = '토큰 권한 확인 중…';
+  let r;
+  try { r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:{Authorization:'Bearer ' + tk, Accept:'application/vnd.github+json'}}); }
+  catch { return err('네트워크 오류로 토큰을 확인하지 못했습니다.'); }
+  if (!r.ok) return err(r.status === 404
+    ? '이 토큰으로 saw-board 저장소에 접근할 수 없습니다. Resource owner와 저장소 선택을 확인해 주세요.'
+    : '토큰이 유효하지 않습니다 (' + r.status + ').');
+  m.textContent = '봉인 중…';
+  const blob = await sealToken(tk, pw);
+  if (await unsealToken(blob, pw) !== tk) return err('봉인 검증에 실패했습니다. 다시 시도해 주세요.');
+  $('#z-out').value = blob;
+  $('#z-wrap').style.display = 'block';
+  $('#z-tk').value = '';
+  m.className = 'msg ok';
+  m.textContent = '✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열만 전달하세요.';
+};
+$('#z-copy').onclick = async () => {
+  try {
+    await navigator.clipboard.writeText($('#z-out').value);
+    $('#z-msg').className = 'msg ok'; $('#z-msg').textContent = '복사했습니다.';
+  } catch { $('#z-out').select(); }
 };
 
 async function boot(){
@@ -433,9 +531,16 @@ async function boot(){
   } catch (e) {
     if (/→ 40[13]$/.test(e.message)){        // 토큰 만료·권한 상실
       localStorage.removeItem('saw_board_token');
-      $('#app').classList.remove('on'); $('#setup').style.display = 'grid';
-      $('#s-msg').className = 'msg err';
-      $('#s-msg').textContent = '토큰이 만료되었거나 저장소 권한이 없습니다. 새로 발급해 등록해 주세요.';
+      sessionStorage.removeItem('saw_board_in');
+      $('#app').classList.remove('on');
+      if (SEALED){                           // 공용 토큰이 죽은 경우 — 개인이 할 수 있는 게 없다
+        $('#gate').style.display = 'grid';
+        $('#g-msg').textContent = '공용 GitHub 토큰이 만료되었습니다. 관리자(공수빈)에게 토큰 재봉인을 요청해 주세요.';
+      } else {
+        $('#setup').style.display = 'grid';
+        $('#s-msg').className = 'msg err';
+        $('#s-msg').textContent = '토큰이 만료되었거나 저장소 권한이 없습니다. 새로 발급해 등록해 주세요.';
+      }
       return;
     }
     status('error');
@@ -1127,7 +1232,10 @@ $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
 
-boot();
+if (/[?&]seal\b/.test(location.search)){
+  $('#gate').style.display = 'none';
+  $('#seal').style.display = 'grid';
+} else boot();
 </script>
 </body>
 </html>
