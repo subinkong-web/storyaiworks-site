@@ -7,12 +7,23 @@
 <title>SAW Board — 내부 화이트보드</title>
 <link rel="icon" type="image/png" href="../images/saw_logo_white.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/index.css">
+<script>window.EXCALIDRAW_ASSET_PATH = "https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/";</script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client"
+  }
+}
+</script>
 <style>
   :root{
     --bg:#0B0B0C;--panel:#131316;--panel2:#1A1A1E;--ink:#F4F3F0;--txt:#C6C6CB;
     --dim:#93939A;--dim2:#616168;--acc:#B49BE2;--accd:#674498;
     --hair:rgba(255,255,255,.09);--ok:#7BC98A;--warn:#E2A75B;--err:#E27B7B;
-    --board:#15151A;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;overflow:hidden}
@@ -49,100 +60,45 @@
   /* ── 앱 셸 ── */
   #app{position:fixed;inset:0;display:none;grid-template-rows:52px 1fr}
   #app.on{display:grid}
-  .bar{display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--panel);
+  .bar{display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--panel);
     border-bottom:1px solid var(--hair);z-index:30}
   .bar .logo{height:16px;opacity:.85}
-  .bar .bname{font-weight:700;color:var(--ink);font-size:14px;max-width:260px;overflow:hidden;
+  .bar .bname{font-weight:700;color:var(--ink);font-size:14px;max-width:240px;overflow:hidden;
     text-overflow:ellipsis;white-space:nowrap}
   .bar .spacer{flex:1}
   .bar .mini{font-size:11.5px;color:var(--dim2);white-space:nowrap}
   .bar button.tb{padding:6px 12px;font-size:12.5px;color:var(--txt);border:1px solid var(--hair);
     white-space:nowrap;transition:.18s}
   .bar button.tb:hover{background:rgba(255,255,255,.06);color:var(--ink)}
-  .bar button.tb.pri{background:var(--accd);border-color:transparent;color:#fff;font-weight:700}
-  .bar button.tb.pri:hover{background:var(--acc);color:#17111f}
+  .bar button.tb.on{background:var(--accd);border-color:transparent;color:#fff;font-weight:700}
   .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:6px;
     vertical-align:1px}
   .dot.d{background:var(--warn)} .dot.e{background:var(--err)}
 
   /* ── 캔버스 ── */
-  #main{position:relative;overflow:hidden;background:var(--board);touch-action:none}
-  #grid{position:absolute;inset:0;pointer-events:none;opacity:.5}
-  #stage{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-  #ovl{position:absolute;inset:0;pointer-events:none;z-index:20}
-  #mq{position:absolute;border:1px solid var(--acc);background:rgba(180,155,226,.13);display:none;
-    pointer-events:none;z-index:21}
-  #main.pan{cursor:grab} #main.panning{cursor:grabbing}
-  #main.draw{cursor:crosshair}
+  #main{position:relative;overflow:hidden;background:#0f0f12}
+  #ex{position:absolute;inset:0}
+  #boot{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim2);font-size:13px;
+    text-align:center;padding:24px;word-break:keep-all}
 
-  /* 아이템 공통 */
-  .it{position:absolute;user-select:none}
-  .it .tx{width:100%;height:100%;padding:14px 15px;font-size:15px;line-height:1.5;
-    white-space:pre-wrap;word-break:break-word;overflow:hidden;outline:none;color:#1A1A1E}
-  .it .tx.edit{overflow:auto;cursor:text;user-select:text}
-  .t-note{box-shadow:0 6px 18px rgba(0,0,0,.35)}
-  .t-note .tx{font-weight:600}
-  .t-text .tx{color:#EDEDF0;font-weight:600;padding:6px 8px;text-shadow:0 1px 3px rgba(0,0,0,.5)}
-  .t-rect,.t-ellipse{border:2px solid}
-  .t-ellipse{border-radius:50%}
-  .t-rect .tx,.t-ellipse .tx{display:grid;place-items:center;text-align:center;font-weight:600}
-  .t-image img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-  .t-image{background:#0006;box-shadow:0 6px 18px rgba(0,0,0,.4)}
-  .it svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
-  .it svg path,.it svg line,.it svg polygon{pointer-events:auto}
-  .t-pen,.t-arrow{pointer-events:none}
-  .ph{display:grid;place-items:center;height:100%;font-size:11.5px;color:var(--dim2)}
-
-  /* 선택 오버레이 */
-  .selbox{position:absolute;border:1.5px solid var(--acc);pointer-events:none}
-  .hnd{position:absolute;width:10px;height:10px;background:#fff;border:1.5px solid var(--accd);
-    pointer-events:auto;border-radius:2px}
-  .hnd.e{border-radius:50%;background:var(--acc)}
-
-  /* ── 툴바 ── */
-  #tools{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:25;
-    background:var(--panel);border:1px solid var(--hair);padding:6px;display:flex;flex-direction:column;gap:4px;
-    box-shadow:0 10px 34px rgba(0,0,0,.5)}
-  #tools button{width:40px;height:40px;display:grid;place-items:center;color:var(--dim);border-radius:3px;
-    transition:.15s;position:relative}
-  #tools button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
-  #tools button.on{background:var(--accd);color:#fff}
-  #tools button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;
-    stroke-linecap:round;stroke-linejoin:round}
-  #tools .sep{height:1px;background:var(--hair);margin:3px 2px}
-  .tip{position:absolute;left:48px;top:50%;transform:translateY(-50%);background:#000;color:#fff;
-    font-size:11px;padding:4px 8px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;z-index:5}
-  #tools button:hover .tip{opacity:.92}
-
-  /* ── 팔레트 / 인스펙터 ── */
-  #insp{position:absolute;left:70px;top:50%;transform:translateY(-50%);z-index:25;display:none;
-    background:var(--panel);border:1px solid var(--hair);padding:12px;box-shadow:0 10px 34px rgba(0,0,0,.5)}
-  #insp.on{display:block}
-  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .sw{width:26px;height:26px;border-radius:3px;border:2px solid transparent;transition:.15s}
-  .sw:hover{transform:scale(1.1)}
-  .sw.on{border-color:var(--ink)}
-  .ilbl{font-size:9.5px;font-weight:800;letter-spacing:.16em;color:var(--dim2);text-transform:uppercase;
-    margin-bottom:8px}
-  .irow{display:flex;gap:6px;margin-top:12px}
-  .irow button{flex:1;padding:6px 0;font-size:11.5px;border:1px solid var(--hair);color:var(--dim);border-radius:2px}
-  .irow button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
-
-  /* ── 줌 컨트롤 ── */
-  #zoom{position:absolute;right:14px;bottom:14px;z-index:25;display:flex;align-items:center;gap:2px;
-    background:var(--panel);border:1px solid var(--hair);padding:4px}
-  #zoom button{padding:6px 10px;font-size:13px;color:var(--dim);border-radius:2px}
-  #zoom button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
-  #zoom .lv{font-size:11.5px;color:var(--txt);min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+  /* ── 작성자 태그 ── */
+  #tags{position:fixed;inset:0;pointer-events:none;z-index:4}
+  .tag{position:absolute;transform:translateY(-100%);
+    background:rgba(11,11,12,.82);border:1px solid rgba(180,155,226,.42);
+    color:var(--acc);font-size:10px;font-weight:700;letter-spacing:.02em;
+    padding:1px 6px;border-radius:9px;white-space:nowrap;backdrop-filter:blur(3px);
+    display:flex;align-items:center;gap:4px;opacity:.88}
+  .tag i{font-style:normal;color:var(--dim2);font-weight:500;font-size:9px}
+  .tag.inside{transform:none}
 
   /* ── 보드 목록 서랍 ── */
-  #drawer{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none}
+  #drawer{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.6);display:none}
   #drawer.on{display:block}
   #drawer .pane{position:absolute;left:0;top:0;bottom:0;width:min(340px,86vw);background:var(--panel);
     border-right:1px solid var(--hair);padding:22px 20px;overflow:auto}
   #drawer h2{font-size:11px;font-weight:800;letter-spacing:.22em;color:var(--dim2);text-transform:uppercase}
   .blist{margin-top:16px;display:flex;flex-direction:column;gap:2px}
-  .brow{display:flex;align-items:center;gap:8px;padding:10px 10px;border:1px solid transparent;transition:.15s}
+  .brow{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid transparent;transition:.15s}
   .brow:hover{background:rgba(255,255,255,.05);border-color:var(--hair)}
   .brow.on{background:rgba(180,155,226,.13);border-color:var(--accd)}
   .brow .nm{flex:1;font-size:13.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
@@ -152,12 +108,12 @@
   .brow .act:hover{color:var(--ink)}
 
   /* ── 토스트 / 배너 ── */
-  #toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:130;
     background:#000c;border:1px solid var(--hair);color:var(--ink);font-size:12.5px;padding:9px 16px;
     opacity:0;transition:.25s;pointer-events:none;backdrop-filter:blur(8px);max-width:min(560px,90vw);
     text-align:center;word-break:keep-all}
   #toast.on{opacity:1}
-  #banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:50;display:none;
+  #banner{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:130;display:none;
     background:var(--panel);border:1px solid var(--warn);padding:10px 14px;font-size:12.5px;
     align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:min(720px,92vw)}
   #banner.on{display:flex}
@@ -165,20 +121,17 @@
   #banner button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
 
   /* ── 도움말 ── */
-  #help{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.72);display:none;place-items:center;padding:24px}
+  #help{position:fixed;inset:0;z-index:140;background:rgba(0,0,0,.72);display:none;place-items:center;padding:24px}
   #help.on{display:grid}
   #help .box{background:var(--panel);border:1px solid var(--hair);padding:30px;max-width:560px;width:100%;
     max-height:86vh;overflow:auto}
   #help h3{font-size:16px;color:var(--ink);font-weight:800}
   #help table{width:100%;margin-top:16px;border-collapse:collapse;font-size:12.5px}
   #help td{padding:6px 0;border-bottom:1px solid var(--hair);color:var(--dim)}
-  #help td:first-child{color:var(--ink);font-weight:600;width:40%}
+  #help td:first-child{color:var(--ink);font-weight:600;width:42%}
   kbd{background:var(--panel2);border:1px solid var(--hair);padding:1px 6px;font-size:11px;
     font-family:ui-monospace,monospace;color:var(--txt)}
-  @media (max-width:720px){
-    #tools{left:8px;padding:4px}#tools button{width:34px;height:34px}
-    #insp{left:52px}.bar .mini{display:none}
-  }
+  @media (max-width:720px){ .bar .mini{display:none} .bar .bname{max-width:110px} }
 </style>
 </head>
 <body>
@@ -197,22 +150,19 @@
   </div>
 </div>
 
-<!-- ══ 토큰 등록 ══ -->
+<!-- ══ 토큰 등록 (봉인이 없을 때만 쓰이는 예비 경로) ══ -->
 <div class="gate" id="setup" style="display:none">
   <div class="box">
     <h1>GitHub 토큰 등록</h1>
     <p class="sub">보드 내용은 비공개 저장소 <code>subinkong-web/saw-board</code> 에 저장됩니다.
-      읽고 쓰려면 개인 액세스 토큰이 필요합니다. 토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다.</p>
+      토큰은 이 브라우저에만 저장되며 외부로 전송되지 않습니다.</p>
     <label>Personal Access Token</label>
     <input class="fld" id="s-tk" type="password" placeholder="github_pat_… 또는 ghp_…" autocomplete="new-password">
     <button class="btn wide" id="s-go">등록하고 시작</button>
     <p class="msg" id="s-msg"></p>
     <p class="hint">
       발급: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained tokens</a><br>
-      · Resource owner <code>subinkong-web</code><br>
-      · Repository access → Only select repositories → <code>saw-board</code><br>
-      · Repository permissions → <b>Contents: Read and write</b><br>
-      나머지 권한은 전부 필요 없습니다.
+      · Resource owner <code>subinkong-web</code> · 저장소 <code>saw-board</code> · <b>Contents: Read and write</b>
     </p>
     <p class="hint"><button class="btn ghost" style="padding:6px 12px;font-size:11.5px" id="s-out">로그아웃</button></p>
   </div>
@@ -251,107 +201,64 @@
     <span class="spacer"></span>
     <span class="mini" id="b-state"><span class="dot"></span>저장됨</span>
     <span class="mini" id="b-who"></span>
+    <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-save">저장</button>
     <button class="tb" id="b-help">?</button>
     <button class="tb" id="b-out">로그아웃</button>
   </div>
-
   <div id="main">
-    <canvas id="grid"></canvas>
-    <div id="stage"></div>
-    <div id="ovl"></div>
-    <div id="mq"></div>
-
-    <div id="tools">
-      <button data-tool="select" class="on"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.5L10 19 5 3z"/></svg><span class="tip">선택 (V)</span></button>
-      <button data-tool="hand"><svg viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 013 0V12m0-1V4.5a1.5 1.5 0 013 0V12m0-.5V6a1.5 1.5 0 013 0v8a6 6 0 01-6 6h-1.5a5 5 0 01-4.2-2.3L5 15.5a1.6 1.6 0 012.6-1.8L8 14.5V12"/></svg><span class="tip">이동 (H · Space)</span></button>
-      <div class="sep"></div>
-      <button data-tool="note"><svg viewBox="0 0 24 24"><path d="M4 4h16v10l-6 6H4V4z"/><path d="M20 14h-6v6"/></svg><span class="tip">스티키 노트 (N)</span></button>
-      <button data-tool="text"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M8.5 20h7"/></svg><span class="tip">텍스트 (T)</span></button>
-      <button data-tool="rect"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1"/></svg><span class="tip">사각형 (R)</span></button>
-      <button data-tool="ellipse"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg><span class="tip">원 (O)</span></button>
-      <button data-tool="pen"><svg viewBox="0 0 24 24"><path d="M3 21l3.5-1 11-11a2.1 2.1 0 00-3-3l-11 11L3 21z"/></svg><span class="tip">펜 (D)</span></button>
-      <button data-tool="arrow"><svg viewBox="0 0 24 24"><path d="M4 20L20 4M20 4h-7M20 4v7"/></svg><span class="tip">화살표 (A)</span></button>
-      <div class="sep"></div>
-      <button id="t-img"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-6 6-3-3-4 4"/></svg><span class="tip">이미지 (붙여넣기 가능)</span></button>
-    </div>
-
-    <div id="insp">
-      <div class="ilbl">색</div>
-      <div class="swatches" id="sws"></div>
-      <div class="irow">
-        <button id="i-front">맨 앞</button>
-        <button id="i-back">맨 뒤</button>
-      </div>
-      <div class="irow">
-        <button id="i-dup">복제</button>
-        <button id="i-del">삭제</button>
-      </div>
-    </div>
-
-    <div id="zoom">
-      <button id="z-out">−</button>
-      <button class="lv" id="z-lv">100%</button>
-      <button id="z-in">+</button>
-      <button id="z-fit">맞춤</button>
-    </div>
-
-    <div id="banner">
-      <span id="ban-tx"></span>
-      <button id="ban-reload">불러오기</button>
-      <button id="ban-force">내 것으로 덮어쓰기</button>
-      <button id="ban-x">닫기</button>
-    </div>
-    <div id="toast"></div>
-
-    <div id="drawer">
-      <div class="pane" onclick="event.stopPropagation()">
-        <h2>보드</h2>
-        <div class="blist" id="blist"></div>
-        <button class="btn wide" id="b-new">+ 새 보드</button>
-      </div>
-    </div>
+    <div id="ex"></div>
+    <div id="boot">화이트보드를 불러오는 중…</div>
   </div>
 </div>
+<div id="tags"></div>
+
+<div id="drawer">
+  <div class="pane" onclick="event.stopPropagation()">
+    <h2>보드</h2>
+    <div class="blist" id="blist"></div>
+    <button class="btn wide" id="b-new">+ 새 보드</button>
+  </div>
+</div>
+
+<div id="banner">
+  <span id="ban-tx"></span>
+  <button id="ban-reload">불러오기</button>
+  <button id="ban-force">내 것으로 덮어쓰기</button>
+  <button id="ban-x">닫기</button>
+</div>
+<div id="toast"></div>
 
 <!-- ══ 도움말 ══ -->
 <div id="help">
   <div class="box">
-    <h3>단축키 · 사용법</h3>
+    <h3>사용법</h3>
     <table>
-      <tr><td>V / H</td><td>선택 / 화면 이동</td></tr>
-      <tr><td>N / T / R / O / D / A</td><td>노트 · 텍스트 · 사각형 · 원 · 펜 · 화살표</td></tr>
-      <tr><td>Space + 드래그</td><td>화면 이동 (어느 도구에서든)</td></tr>
-      <tr><td>휠 / 두 손가락</td><td>화면 이동</td></tr>
-      <tr><td><kbd>⌘</kbd>+휠 · 핀치</td><td>확대 / 축소</td></tr>
-      <tr><td>더블클릭</td><td>노트·도형 글자 편집 / 빈 곳에서 노트 생성</td></tr>
-      <tr><td><kbd>⌘</kbd><kbd>C</kbd> <kbd>⌘</kbd><kbd>V</kbd> <kbd>⌘</kbd><kbd>D</kbd></td><td>복사 · 붙여넣기 · 복제</td></tr>
-      <tr><td><kbd>⌘</kbd><kbd>Z</kbd> / <kbd>⇧</kbd><kbd>⌘</kbd><kbd>Z</kbd></td><td>실행 취소 / 다시 실행</td></tr>
-      <tr><td><kbd>⌘</kbd><kbd>A</kbd> · <kbd>Delete</kbd></td><td>전체 선택 · 삭제</td></tr>
-      <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>맨 뒤로 / 맨 앞으로</td></tr>
-      <tr><td><kbd>⌘</kbd><kbd>S</kbd> · <kbd>0</kbd> · <kbd>1</kbd></td><td>저장 · 배율 100% · 전체 맞춤</td></tr>
-      <tr><td>이미지</td><td>스크린샷을 그냥 <kbd>⌘</kbd><kbd>V</kbd> 로 붙여넣으세요</td></tr>
+      <tr><td>도구</td><td>왼쪽 위 툴바 — 선택 · 사각형 · 마름모 · 원 · 화살표 · 선 · 펜 · 텍스트 · 이미지 · 지우개 · 프레임</td></tr>
+      <tr><td>스티키 노트</td><td>사각형(<kbd>R</kbd>)을 그린 뒤 더블클릭해서 글자 입력</td></tr>
+      <tr><td>화면 이동 / 확대</td><td>휠·두 손가락 이동, <kbd>⌘</kbd>+휠 확대, <kbd>Space</kbd>+드래그</td></tr>
+      <tr><td>이미지</td><td>스크린샷을 <kbd>⌘</kbd><kbd>V</kbd> 로 붙여넣거나 드래그해서 놓기</td></tr>
+      <tr><td>실행취소 / 복제</td><td><kbd>⌘</kbd><kbd>Z</kbd> · <kbd>⌘</kbd><kbd>D</kbd> · <kbd>Alt</kbd>+드래그</td></tr>
+      <tr><td>전체 맞춤</td><td><kbd>⇧</kbd><kbd>1</kbd> · 배율 100%는 <kbd>⌘</kbd><kbd>0</kbd></td></tr>
+      <tr><td>이름표</td><td>상단 [이름표] 버튼으로 켜고 끕니다. 요소마다 마지막으로 손댄 사람이 표시됩니다</td></tr>
+      <tr><td>저장</td><td>변경 후 3초 뒤 자동 저장 · <kbd>⌘</kbd><kbd>S</kbd> 즉시 저장</td></tr>
     </table>
-    <p class="hint">변경사항은 3초 뒤 자동으로 비공개 저장소에 커밋됩니다.
-      다른 사람이 같은 보드를 저장하면 상단에 알림이 뜹니다 — 동시에 같은 보드를 편집하는 것은 피해 주세요.</p>
+    <p class="hint">보드는 비공개 저장소에 저장됩니다. 다른 사람이 같은 보드를 저장하면 상단에 알림이 뜨니,
+      동시에 같은 보드를 편집하는 것은 피해 주세요.</p>
     <button class="btn wide" id="h-x">닫기</button>
   </div>
 </div>
 
-<script>
+<script type="module">
 /* ══════════════════════════════════════════════════════════
-   SAW Board — 내부 화이트보드
+   SAW Board — 내부 화이트보드 (Excalidraw 기반, MIT)
    저장소: subinkong-web/saw-board (private)
    ※ 사람이 늘면 아래 USERS 배열에 한 줄 추가하고 다시 배포하면 됩니다.
-      id = 로그인 아이디(한글 이름), alias = 같이 받아줄 영문 표기, name = 화면·커밋에 남을 이름
+   ※ 비밀번호를 바꾸려면 /board/?seal 에서 다시 봉인해 SEALED를 교체하세요.
    ══════════════════════════════════════════════════════════ */
 const REPO = 'subinkong-web/saw-board';
-
-/* 공용 GitHub 토큰을 공용 비밀번호로 암호화한 문자열(AES-GCM + PBKDF2).
-   /board/?seal 화면에서 만들어 여기에 붙여넣는다. 비워두면 예전처럼 각자 토큰을 등록한다.
-   비밀번호를 바꾸려면 토큰을 새 비밀번호로 다시 봉인해 이 값을 교체할 것. */
 const SEALED = 'eyJ2IjoxLCJzIjoidXI4RFNSTm1hTklTRE9VMGcxQVBnZz09IiwiaSI6IkF5UUVwaVFsdDFqbWc1WEQiLCJjIjoiM0l5bDViMHJMaUkyYUhoQVBKek9aVzUzbWdjOEdvb0daWWNydVZiWWRsWVlZTGMwRHNEQTE3WThldFJmWTF3T3dBUWZqdTMrQk5rS3J5dFV1WEdGclROOW5pYm50ZGVxVU5kVHRZY1JTNTBNWWlRSnpOd1NWKzlsMGtmQUJKM3YzT2JxM2pWaG9hQ21OQzhEVnc9PSJ9';
-const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이는 임시 비밀번호
+const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이는 예비 비밀번호
 const USERS = [
   { id:'정태우', alias:['taewoo','jungtaewoo','jung.taewoo'],  name:'정태우' },
   { id:'공수빈', alias:['subin','kongsubin','subin.kong'],     name:'공수빈' },
@@ -359,25 +266,20 @@ const USERS = [
 ];
 const findUser = v => USERS.find(u => u.id === v || u.alias.includes(v));
 
-const COLORS = ['#FFE68A','#FFC08A','#FFB3C7','#D9C0F7','#A9D6FF','#A8E6BC','#E8E6E1','#8C8C96'];
 const $  = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
 const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
-const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const b64enc = s => btoa(unescape(encodeURIComponent(s)));
 const b64dec = s => decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
 const token = () => localStorage.getItem('saw_board_token') || '';
 const auth  = () => ({ Authorization:'Bearer ' + token(), Accept:'application/vnd.github+json' });
 
+let Ex = null, api = null;
 let S = {
-  me:'', boards:[], boardId:null, name:'',
-  items:[], sha:null, etag:null, dirty:false, saving:false,
-  sel:new Set(), tool:'select', color:COLORS[0],
-  view:{x:0,y:0,k:1}, hist:[], hi:-1, clip:[],
-  updatedBy:'', updatedAt:0,
+  me:'', boards:[], boardId:null, name:'', idxSha:null,
+  sha:null, etag:null, dirty:false, saving:false, loading:false,
+  authors:{}, fileMeta:{}, uploaded:new Set(), showTags:true, lastVer:-1,
 };
-const assets = {};          // path → dataURL
-const nodes  = new Map();   // id → element
+const prevVer = new Map();      // elementId → element.version
 
 /* ══ GitHub API ══ */
 async function ghGet(path, useEtag){
@@ -401,9 +303,7 @@ async function ghPut(path, content64, msg, sha){
   if (!r.ok) throw new Error('PUT ' + path + ' → ' + r.status);
   return r.json();
 }
-async function ghPutJson(path, obj, msg, sha){
-  return ghPut(path, b64enc(JSON.stringify(obj, null, 0)), msg, sha);
-}
+const ghPutJson = (path, obj, msg, sha) => ghPut(path, b64enc(JSON.stringify(obj)), msg, sha);
 
 /* ══ 토큰 봉인/해제 (AES-GCM + PBKDF2) ══ */
 const te = new TextEncoder(), td = new TextDecoder();
@@ -411,8 +311,7 @@ const toB64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
 const toBuf = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function deriveKey(pass, salt){
   const km = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey(
-    {name:'PBKDF2', salt, iterations:310000, hash:'SHA-256'},
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:310000, hash:'SHA-256'},
     km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
 }
 async function sealToken(tk, pass){
@@ -423,9 +322,8 @@ async function sealToken(tk, pass){
 }
 async function unsealToken(blob, pass){
   const o = JSON.parse(atob(blob));
-  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:toBuf(o.i)},
-    await deriveKey(pass, toBuf(o.s)), toBuf(o.c));
-  return td.decode(pt);
+  return td.decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:toBuf(o.i)},
+    await deriveKey(pass, toBuf(o.s)), toBuf(o.c)));
 }
 
 /* ══ 로그인 ══ */
@@ -453,26 +351,18 @@ $('#g-pw').onkeydown = e => { if (e.key === 'Enter') enter(); };
 $('#g-id').value = localStorage.getItem('saw_board_id') || '';
 
 $('#s-go').onclick = async () => {
-  const t = $('#s-tk').value.trim();
-  const m = $('#s-msg');
+  const t = $('#s-tk').value.trim(), m = $('#s-msg');
   if (!/^(github_pat_|ghp_)[\w]{20,}/.test(t)) { m.className='msg err'; m.textContent='GitHub 토큰 형식이 아닙니다.'; return; }
   m.className='msg'; m.textContent='확인 중…';
   localStorage.setItem('saw_board_token', t);
   const r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:auth()});
-  if (!r.ok) {
-    localStorage.removeItem('saw_board_token');
-    m.className='msg err';
-    m.textContent = r.status === 404
-      ? '저장소에 접근할 수 없습니다. Resource owner와 저장소 선택(saw-board)을 확인해 주세요.'
-      : '토큰이 유효하지 않습니다 (' + r.status + ').';
-    return;
-  }
-  $('#s-tk').value = '';
-  boot();
+  if (!r.ok){ localStorage.removeItem('saw_board_token'); m.className='msg err';
+    m.textContent = '토큰이 유효하지 않거나 저장소 권한이 없습니다 (' + r.status + ').'; return; }
+  $('#s-tk').value = ''; boot();
 };
 function logout(){
   sessionStorage.removeItem('saw_board_in');
-  if (SEALED) localStorage.removeItem('saw_board_token');   // 토큰은 비밀번호에서 다시 풀면 된다
+  if (SEALED) localStorage.removeItem('saw_board_token');
   location.reload();
 }
 $('#s-out').onclick = logout;
@@ -481,47 +371,53 @@ $('#b-out').onclick = () => {
   logout();
 };
 
-/* ══ 토큰 봉인 화면 (/board/?seal) ══ */
+/* ══ 토큰 봉인 화면 ══ */
 $('#z-go').onclick = async () => {
   const tk = $('#z-tk').value.trim(), pw = $('#z-pw').value, pw2 = $('#z-pw2').value, m = $('#z-msg');
-  const err = t => { m.className = 'msg err'; m.textContent = t; };
+  const err = t => { m.className='msg err'; m.textContent = t; };
   if (!/^(github_pat_|ghp_)[\w]{20,}/.test(tk)) return err('GitHub 토큰 형식이 아닙니다.');
   if (pw.length < 12) return err('공용 비밀번호는 12자 이상이어야 합니다.');
   if (pw !== pw2)     return err('비밀번호 확인이 일치하지 않습니다.');
-  m.className = 'msg'; m.textContent = '토큰 권한 확인 중…';
+  m.className='msg'; m.textContent='토큰 권한 확인 중…';
   let r;
-  try { r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:{Authorization:'Bearer ' + tk, Accept:'application/vnd.github+json'}}); }
+  try { r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:{Authorization:'Bearer '+tk, Accept:'application/vnd.github+json'}}); }
   catch { return err('네트워크 오류로 토큰을 확인하지 못했습니다.'); }
   if (!r.ok) return err(r.status === 404
     ? '이 토큰으로 saw-board 저장소에 접근할 수 없습니다. Resource owner와 저장소 선택을 확인해 주세요.'
     : '토큰이 유효하지 않습니다 (' + r.status + ').');
-  m.textContent = '봉인 중…';
+  m.textContent='봉인 중…';
   const blob = await sealToken(tk, pw);
   if (await unsealToken(blob, pw) !== tk) return err('봉인 검증에 실패했습니다. 다시 시도해 주세요.');
-  $('#z-out').value = blob;
-  $('#z-wrap').style.display = 'block';
-  $('#z-tk').value = '';
-  m.className = 'msg ok';
-  m.textContent = '✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열만 전달하세요.';
+  $('#z-out').value = blob; $('#z-wrap').style.display='block'; $('#z-tk').value='';
+  m.className='msg ok'; m.textContent='✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열만 전달하세요.';
 };
 $('#z-copy').onclick = async () => {
-  try {
-    await navigator.clipboard.writeText($('#z-out').value);
-    $('#z-msg').className = 'msg ok'; $('#z-msg').textContent = '복사했습니다.';
-  } catch { $('#z-out').select(); }
+  try { await navigator.clipboard.writeText($('#z-out').value);
+    $('#z-msg').className='msg ok'; $('#z-msg').textContent='복사했습니다.'; }
+  catch { $('#z-out').select(); }
 };
 
-async function boot(){
+/* ══ 부팅 ══ */
+let booting = null;
+function boot(){ return booting || (booting = doBoot().finally(() => { booting = null; })); }
+async function doBoot(){
   const me = localStorage.getItem('saw_board_me');
   if (!sessionStorage.getItem('saw_board_in') || !me) { $('#gate').style.display='grid'; return; }
   $('#gate').style.display = 'none';
   if (!token()) { $('#setup').style.display='grid'; return; }
   $('#setup').style.display = 'none';
   S.me = me;
-  $('#b-who').textContent = S.me;
+  $('#b-who').textContent = me;
   $('#app').classList.add('on');
-  buildSwatches();
-  resizeGrid();
+
+  {
+    try { await mountExcalidraw(); }
+    catch (e) {
+      $('#boot').innerHTML = '화이트보드 라이브러리를 불러오지 못했습니다.<br>네트워크를 확인하고 새로고침해 주세요.<br><br>'
+        + '<span style="font-size:11px;opacity:.7">' + e.message + '</span>';
+      return;
+    }
+  }
   try {
     await loadIndex();
     const last = localStorage.getItem('saw_board_last');
@@ -529,41 +425,147 @@ async function boot(){
     if (pick) await openBoard(pick.id);
     else await newBoard('첫 번째 보드');
   } catch (e) {
-    if (/→ 40[13]$/.test(e.message)){        // 토큰 만료·권한 상실
+    if (/→ 40[13]$/.test(e.message)){
       localStorage.removeItem('saw_board_token');
       sessionStorage.removeItem('saw_board_in');
       $('#app').classList.remove('on');
-      if (SEALED){                           // 공용 토큰이 죽은 경우 — 개인이 할 수 있는 게 없다
-        $('#gate').style.display = 'grid';
+      if (SEALED){
+        $('#gate').style.display='grid';
         $('#g-msg').textContent = '공용 GitHub 토큰이 만료되었습니다. 관리자(공수빈)에게 토큰 재봉인을 요청해 주세요.';
       } else {
-        $('#setup').style.display = 'grid';
-        $('#s-msg').className = 'msg err';
-        $('#s-msg').textContent = '토큰이 만료되었거나 저장소 권한이 없습니다. 새로 발급해 등록해 주세요.';
+        $('#setup').style.display='grid';
+        $('#s-msg').className='msg err'; $('#s-msg').textContent='토큰이 만료되었거나 권한이 없습니다.';
       }
       return;
     }
-    status('error');
-    toast('보드를 불러오지 못했습니다 — ' + e.message);
-    return;
+    status('error'); toast('보드를 불러오지 못했습니다 — ' + e.message); return;
   }
   setInterval(poll, 25000);
   setInterval(() => { if (S.dirty && !S.saving) save(); }, 3000);
 }
 
+/* ══ Excalidraw 마운트 ══
+   boot()이 두 번 불릴 수 있으므로(모듈 로드 시 + 로그인 직후) 반드시 한 번만 마운트한다.
+   React 루트를 같은 컨테이너에 두 번 만들면 서로의 노드를 지우다 트리가 통째로 날아간다. */
+let mounting = null;
+function mountExcalidraw(){ return (mounting ||= doMount()); }
+async function doMount(){
+  const [ExMod, React, ReactDOM] = await Promise.all([
+    import('https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/index.js?external=react,react-dom'),
+    import('react'),
+    import('react-dom/client'),
+  ]);
+  Ex = ExMod;
+  const R = React.default || React;
+  const App = () => R.createElement(Ex.Excalidraw, {
+    excalidrawAPI: a => { api = a; },
+    theme: 'dark',
+    langCode: 'ko-KR',
+    onChange: onSceneChange,
+    initialData: { appState: { viewBackgroundColor:'#ffffff' } },
+    UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false } },
+  });
+  (ReactDOM.default || ReactDOM).createRoot($('#ex')).render(R.createElement(App));
+  await new Promise(r => {
+    const t = setInterval(() => { if (api) { clearInterval(t); r(); } }, 40);
+    setTimeout(() => { clearInterval(t); r(); }, 8000);
+  });
+  if (!api) throw new Error('Excalidraw 초기화 시간 초과');
+  $('#boot').style.display = 'none';
+}
+
+/* ══ 장면 변경 → 작성자 추적 · 저장 표시 · 이름표 ══ */
+let tagRaf = 0;
+function onSceneChange(elements, appState){
+  if (!S.loading) trackAuthors(elements);
+  const v = Ex.getSceneVersion(elements);
+  if (!S.loading && S.lastVer !== -1 && v !== S.lastVer) markDirty();
+  S.lastVer = v;
+  if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); });
+}
+function trackAuthors(elements){
+  const now = Date.now();
+  for (const el of elements){
+    const pv = prevVer.get(el.id);
+    if (!el.isDeleted && (pv === undefined || el.version > pv)) S.authors[el.id] = {by:S.me, at:now};
+    prevVer.set(el.id, el.version);
+  }
+}
+function seedVersions(elements){
+  prevVer.clear();
+  for (const el of elements) prevVer.set(el.id, el.version);
+}
+
+/* ══ 작성자 이름표 ══ */
+const tagsEl = $('#tags');
+function drawTags(){
+  if (!api || !S.showTags){ tagsEl.textContent = ''; return; }
+  const st = api.getAppState();
+  const els = api.getSceneElements();
+  const W = innerWidth, H = innerHeight;
+  const frag = document.createDocumentFragment();
+  /* Excalidraw UI(상단 툴바·좌측 속성패널)를 가리지 않도록 배치를 비켜준다 */
+  const TOOLBAR_Y = 132;
+  const lpEl = document.querySelector('.excalidraw .App-menu__left');
+  const lp = lpEl && lpEl.offsetParent !== null ? lpEl.getBoundingClientRect() : null;
+  let n = 0;
+  for (const el of els){
+    if (el.isDeleted || el.containerId) continue;          // 도형에 묶인 텍스트는 도형이 대표한다
+    const a = S.authors[el.id];
+    if (!a) continue;
+    if (el.width * st.zoom.value < 26 && el.height * st.zoom.value < 26) continue;
+    const p = Ex.sceneCoordsToViewportCoords({sceneX: el.x, sceneY: el.y}, st);
+    if (p.x < -140 || p.x > W || p.y > H) continue;
+    let top = p.y - 3, inside = false;
+    if (top < TOOLBAR_Y){                                  // 요소 위쪽이 툴바에 가리면 안쪽으로 내린다
+      const bottom = Ex.sceneCoordsToViewportCoords({sceneX: el.x, sceneY: el.y + el.height}, st).y;
+      top = Math.min(TOOLBAR_Y, bottom - 6);
+      inside = true;
+      if (top < 60) continue;                              // 요소가 사실상 화면 밖
+    }
+    if (lp && p.x < lp.right + 8 && top > lp.top - 16 && top < lp.bottom + 8) continue;
+    const d = document.createElement('div');
+    d.className = 'tag' + (inside ? ' inside' : '');
+    d.style.left = p.x + 'px';
+    d.style.top  = top + 'px';
+    d.innerHTML = '<span></span><i></i>';
+    d.firstChild.textContent = a.by;
+    d.lastChild.textContent = ago(a.at);
+    frag.appendChild(d);
+    if (++n >= 140) break;
+  }
+  tagsEl.textContent = '';
+  tagsEl.appendChild(frag);
+}
+function ago(t){
+  if (!t) return '';
+  const s = (Date.now() - t) / 1000;
+  if (s < 90) return '방금';
+  if (s < 3600) return Math.floor(s/60) + '분 전';
+  if (s < 86400) return Math.floor(s/3600) + '시간 전';
+  const d = Math.floor(s/86400);
+  return d < 30 ? d + '일 전' : new Date(t).toLocaleDateString('ko-KR', {month:'numeric', day:'numeric'});
+}
+$('#b-tags').onclick = () => {
+  S.showTags = !S.showTags;
+  $('#b-tags').classList.toggle('on', S.showTags);
+  drawTags();
+};
+addEventListener('resize', drawTags);
+
 /* ══ 보드 목록 ══ */
 async function loadIndex(){
   const f = await ghGet('data/index.json');
   S.boards = f ? (JSON.parse(b64dec(f.content)).boards || []) : [];
-  S._idxSha = f ? f.sha : null;
+  S.idxSha = f ? f.sha : null;
   renderList();
 }
 async function saveIndex(msg){
-  const r = await ghPutJson('data/index.json', {boards:S.boards}, msg, S._idxSha);
-  S._idxSha = r.content.sha;
+  const r = await ghPutJson('data/index.json', {boards:S.boards}, msg, S.idxSha);
+  S.idxSha = r.content.sha;
 }
 function renderList(){
-  const el = $('#blist'); el.innerHTML = '';
+  const el = $('#blist'); el.textContent = '';
   S.boards.forEach(b => {
     const row = document.createElement('div');
     row.className = 'brow' + (b.id === S.boardId ? ' on' : '');
@@ -573,7 +575,7 @@ function renderList(){
     rn.onclick = async () => {
       const v = prompt('보드 이름', b.name); if (!v || v.trim() === b.name) return;
       b.name = v.trim(); await saveIndex('보드 이름 변경: ' + b.name);
-      if (b.id === S.boardId) { S.name = b.name; $('#b-name').textContent = b.name; }
+      if (b.id === S.boardId){ S.name = b.name; $('#b-name').textContent = b.name; }
       renderList();
     };
     const dl = document.createElement('button'); dl.className='act'; dl.textContent='삭제';
@@ -592,58 +594,115 @@ async function newBoard(preset){
   const name = preset || prompt('새 보드 이름', '새 보드');
   if (!name) return;
   const id = 'b' + uid();
-  S.boards.push({id, name:name.trim(), createdAt: Date.now()});
+  S.boards.push({id, name:name.trim(), createdAt:Date.now()});
   try {
     await saveIndex('보드 생성: ' + name);
-    await ghPutJson(`data/${id}.json`, {items:[], updatedBy:S.me, updatedAt:Date.now()}, '보드 초기화: ' + name);
+    await ghPutJson(`data/${id}.json`, blank(), '보드 초기화: ' + name);
   } catch (e) {
     S.boards = S.boards.filter(b => b.id !== id);
     toast('보드를 만들지 못했습니다 — ' + e.message); return;
   }
-  renderList();
-  $('#drawer').classList.remove('on');
+  renderList(); $('#drawer').classList.remove('on');
   await openBoard(id);
 }
+const blank = () => ({v:2, elements:[], appState:{viewBackgroundColor:'#ffffff'}, files:{}, authors:{},
+  updatedBy:S.me, updatedAt:Date.now()});
 $('#b-new').onclick = () => newBoard();
 $('#b-boards').onclick = () => { renderList(); $('#drawer').classList.add('on'); };
 $('#drawer').onclick = () => $('#drawer').classList.remove('on');
 
-/* ══ 보드 열기 / 저장 ══ */
+/* ══ 보드 열기 ══ */
 async function openBoard(id){
   if (S.dirty) { try { await save(); } catch(e){} }
   const meta = S.boards.find(b => b.id === id);
-  S.boardId = id; S.name = meta ? meta.name : '보드';
-  S.etag = null;
+  S.boardId = id; S.name = meta ? meta.name : '보드'; S.etag = null;
   $('#b-name').textContent = S.name;
   localStorage.setItem('saw_board_last', id);
   status('loading');
   let f;
   try { f = await ghGet(`data/${id}.json`); }
   catch (e) { status('error'); toast('보드를 불러오지 못했습니다 — ' + e.message); return; }
-  const d = f ? JSON.parse(b64dec(f.content)) : {items:[]};
+  const d = f ? JSON.parse(b64dec(f.content)) : blank();
   S.sha = f ? f.sha : null;
   S.etag = f ? f._etag : null;
-  S.items = d.items || [];
-  S.updatedBy = d.updatedBy || ''; S.updatedAt = d.updatedAt || 0;
-  S.sel.clear(); S.hist = []; S.hi = -1; S.dirty = false;
-  nodes.forEach(n => n.remove()); nodes.clear();
-  pushHist();
-  render(); zoomFit(); status('saved');
+  applyScene(d);
+  status('saved');
   renderList();
-  loadAssets();
+  loadFiles();
 }
-function boardJson(){ return {items:S.items, updatedBy:S.me, updatedAt:Date.now()}; }
+function applyScene(d){
+  S.loading = true;
+  S.authors  = d.authors || {};
+  S.fileMeta = d.files || {};
+  S.uploaded = new Set(Object.keys(S.fileMeta));
+  const elements = Ex.restoreElements(d.elements || [], null, {refreshDimensions:false});
+  api.updateScene({ elements, appState:{ viewBackgroundColor:(d.appState||{}).viewBackgroundColor || '#ffffff' } });
+  seedVersions(elements);
+  S.lastVer = Ex.getSceneVersion(elements);
+  S.dirty = false;
+  api.scrollToContent(elements, {fitToContent:true, animate:false});
+  setTimeout(() => { S.loading = false; drawTags(); }, 60);
+}
+async function loadFiles(){
+  const ids = Object.keys(S.fileMeta);
+  if (!ids.length) return;
+  const out = [];
+  for (const id of ids){
+    try {
+      const f = await ghGet('assets/' + id);
+      if (!f) continue;
+      let b64 = f.content ? f.content.replace(/\n/g,'') : null;
+      if (!b64 && f.download_url){
+        const blob = await (await fetch(f.download_url)).blob();
+        const url = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+        out.push({ id, mimeType:S.fileMeta[id].mimeType, dataURL:url, created:Date.now() });
+        continue;
+      }
+      out.push({ id, mimeType:S.fileMeta[id].mimeType, dataURL:`data:${S.fileMeta[id].mimeType};base64,${b64}`, created:Date.now() });
+    } catch(e){}
+  }
+  if (out.length && api) api.addFiles(out);
+}
+
+/* ══ 저장 ══ */
+function sceneJson(){
+  const elements = api.getSceneElements();
+  const alive = new Set(elements.map(e => e.id));
+  const authors = {};
+  for (const k in S.authors) if (alive.has(k)) authors[k] = S.authors[k];
+  S.authors = authors;
+  return { v:2, elements,
+    appState:{ viewBackgroundColor: api.getAppState().viewBackgroundColor },
+    files:S.fileMeta, authors, updatedBy:S.me, updatedAt:Date.now() };
+}
+async function uploadNewFiles(){
+  const files = api.getFiles() || {};
+  for (const id in files){
+    if (S.uploaded.has(id)) continue;
+    const f = files[id];
+    const m = /^data:([^;]+);base64,(.*)$/.exec(f.dataURL || '');
+    if (!m) continue;
+    try {
+      await ghPut('assets/' + id, m[2], `이미지 업로드 — ${S.me}`);
+      S.fileMeta[id] = { mimeType:m[1] };
+      S.uploaded.add(id);
+    } catch(e){ toast('이미지 업로드 실패 — ' + e.message); }
+  }
+}
 async function save(force){
-  if (!S.boardId || S.saving) return;
+  if (!S.boardId || S.saving || !api) return;
   S.saving = true; status('saving');
   try {
-    const r = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(boardJson())),
-      `${S.name} — ${S.me}`, force ? await currentRemoteSha() : S.sha);
+    await uploadNewFiles();
+    const sha = force ? await currentRemoteSha() : S.sha;
+    const r = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(sceneJson())), `${S.name} — ${S.me}`, sha);
     S.sha = r.content.sha; S.etag = null; S.dirty = false;
     status('saved'); $('#banner').classList.remove('on');
   } catch (e) {
-    if (e.conflict) { status('conflict'); showConflict(); }
-    else { status('error'); toast('저장 실패 — ' + e.message); }
+    if (e.conflict){ status('conflict');
+      $('#ban-tx').textContent = '다른 사람이 먼저 저장해서 충돌이 났습니다. 어떻게 할까요?';
+      $('#banner').classList.add('on');
+    } else { status('error'); toast('저장 실패 — ' + e.message); }
   } finally { S.saving = false; }
 }
 async function currentRemoteSha(){
@@ -651,6 +710,9 @@ async function currentRemoteSha(){
   return f ? f.sha : null;
 }
 $('#b-save').onclick = () => save();
+addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's'){ e.preventDefault(); save(); }
+});
 
 /* ══ 원격 변경 감시 ══ */
 async function poll(){
@@ -661,576 +723,39 @@ async function poll(){
     S.etag = f._etag;
     if (f.sha === S.sha) return;
     const d = JSON.parse(b64dec(f.content));
-    if (!S.dirty) {                       // 내 변경이 없으면 조용히 최신으로 갱신
-      S.sha = f.sha; S.items = d.items || [];
-      S.updatedBy = d.updatedBy || '';
-      S.sel.clear(); render(); loadAssets();
+    if (!S.dirty){
+      S.sha = f.sha; applyScene(d); loadFiles();
       toast(`${d.updatedBy || '누군가'}님의 변경을 불러왔습니다.`);
     } else {
-      S._remote = {sha:f.sha, data:d};
       $('#ban-tx').textContent = `${d.updatedBy || '다른 사람'}님이 이 보드를 저장했습니다. 내 화면에는 저장하지 않은 변경이 있습니다.`;
       $('#banner').classList.add('on');
     }
   } catch(e){}
 }
-function showConflict(){
-  $('#ban-tx').textContent = '다른 사람이 먼저 저장해서 충돌이 났습니다. 어떻게 할까요?';
-  $('#banner').classList.add('on');
-}
 $('#ban-reload').onclick = async () => { $('#banner').classList.remove('on'); S.dirty = false; await openBoard(S.boardId); };
 $('#ban-force').onclick  = async () => { $('#banner').classList.remove('on'); await save(true); };
 $('#ban-x').onclick      = () => $('#banner').classList.remove('on');
 
+/* ══ 상태 표시 ══ */
 function status(k){
-  const el = $('#b-state');
   const map = {
-    saved:   ['<span class="dot"></span>저장됨', ''],
-    dirty:   ['<span class="dot d"></span>저장 대기', ''],
-    saving:  ['<span class="dot d"></span>저장 중…', ''],
-    loading: ['<span class="dot d"></span>불러오는 중…', ''],
-    error:   ['<span class="dot e"></span>저장 실패', ''],
-    conflict:['<span class="dot e"></span>충돌', ''],
+    saved:'<span class="dot"></span>저장됨', dirty:'<span class="dot d"></span>저장 대기',
+    saving:'<span class="dot d"></span>저장 중…', loading:'<span class="dot d"></span>불러오는 중…',
+    error:'<span class="dot e"></span>저장 실패', conflict:'<span class="dot e"></span>충돌',
   };
-  el.innerHTML = (map[k] || map.saved)[0];
+  $('#b-state').innerHTML = map[k] || map.saved;
 }
 function markDirty(){ S.dirty = true; status('dirty'); }
-window.addEventListener('beforeunload', e => { if (S.dirty) { e.preventDefault(); e.returnValue = ''; } });
+addEventListener('beforeunload', e => { if (S.dirty){ e.preventDefault(); e.returnValue = ''; } });
 
-/* ══ 히스토리 ══ */
-function pushHist(){
-  S.hist = S.hist.slice(0, S.hi + 1);
-  S.hist.push(JSON.stringify(S.items));
-  if (S.hist.length > 80) S.hist.shift();
-  S.hi = S.hist.length - 1;
-}
-function commit(){ pushHist(); markDirty(); render(); }
-function undo(){ if (S.hi <= 0) return; S.hi--; S.items = JSON.parse(S.hist[S.hi]); S.sel.clear(); markDirty(); render(); }
-function redo(){ if (S.hi >= S.hist.length - 1) return; S.hi++; S.items = JSON.parse(S.hist[S.hi]); S.sel.clear(); markDirty(); render(); }
-
-/* ══ 좌표 ══ */
-const main = $('#main'), stage = $('#stage'), ovl = $('#ovl');
-function rect(){ return main.getBoundingClientRect(); }
-function s2w(sx, sy){ const r = rect(); return {x:(sx - r.left - S.view.x)/S.view.k, y:(sy - r.top - S.view.y)/S.view.k}; }
-function w2s(wx, wy){ return {x: wx*S.view.k + S.view.x, y: wy*S.view.k + S.view.y}; }
-function applyView(){
-  stage.style.transform = `translate(${S.view.x}px, ${S.view.y}px) scale(${S.view.k})`;
-  $('#z-lv').textContent = Math.round(S.view.k * 100) + '%';
-  drawGrid(); drawOvl();
-}
-function zoomAt(sx, sy, k2){
-  k2 = clamp(k2, .08, 4);
-  const w = s2w(sx, sy); const r = rect();
-  S.view.k = k2;
-  S.view.x = sx - r.left - w.x*k2;
-  S.view.y = sy - r.top  - w.y*k2;
-  applyView();
-}
-function zoomFit(){
-  const r = rect();
-  if (!S.items.length) { S.view = {x:r.width/2, y:r.height/2, k:1}; applyView(); return; }
-  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
-  S.items.forEach(i => { x0=Math.min(x0,i.x); y0=Math.min(y0,i.y); x1=Math.max(x1,i.x+i.w); y1=Math.max(y1,i.y+i.h); });
-  const pad = 90;
-  const k = clamp(Math.min((r.width-pad*2)/(x1-x0||1), (r.height-pad*2)/(y1-y0||1)), .08, 1.6);
-  S.view.k = k;
-  S.view.x = (r.width  - (x1-x0)*k)/2 - x0*k;
-  S.view.y = (r.height - (y1-y0)*k)/2 - y0*k;
-  applyView();
-}
-$('#z-in').onclick  = () => { const r = rect(); zoomAt(r.left+r.width/2, r.top+r.height/2, S.view.k*1.25); };
-$('#z-out').onclick = () => { const r = rect(); zoomAt(r.left+r.width/2, r.top+r.height/2, S.view.k/1.25); };
-$('#z-lv').onclick  = () => { const r = rect(); zoomAt(r.left+r.width/2, r.top+r.height/2, 1); };
-$('#z-fit').onclick = zoomFit;
-
-/* ══ 배경 그리드 ══ */
-const gc = $('#grid');
-function resizeGrid(){
-  const r = rect(), d = window.devicePixelRatio || 1;
-  gc.width = r.width*d; gc.height = r.height*d; gc.style.width = r.width+'px'; gc.style.height = r.height+'px';
-  gc.getContext('2d').setTransform(d,0,0,d,0,0);
-  drawGrid();
-}
-function drawGrid(){
-  const r = rect(), c = gc.getContext('2d');
-  c.clearRect(0,0,r.width,r.height);
-  let step = 48 * S.view.k;
-  while (step < 26) step *= 4;
-  while (step > 190) step /= 4;
-  const ox = S.view.x % step, oy = S.view.y % step;
-  c.fillStyle = 'rgba(255,255,255,.10)';
-  for (let x = ox; x < r.width; x += step)
-    for (let y = oy; y < r.height; y += step) c.fillRect(x, y, 1.4, 1.4);
-}
-window.addEventListener('resize', () => { resizeGrid(); drawOvl(); });
-
-/* ══ 렌더 ══ */
-function penPath(pts, ox, oy){
-  if (pts.length < 2) return `M${pts[0][0]-ox} ${pts[0][1]-oy} l0 0`;
-  let d = `M${pts[0][0]-ox} ${pts[0][1]-oy}`;
-  for (let i = 1; i < pts.length - 1; i++){
-    const mx = (pts[i][0] + pts[i+1][0])/2 - ox, my = (pts[i][1] + pts[i+1][1])/2 - oy;
-    d += ` Q${pts[i][0]-ox} ${pts[i][1]-oy} ${mx} ${my}`;
-  }
-  const l = pts[pts.length-1];
-  d += ` L${l[0]-ox} ${l[1]-oy}`;
-  return d;
-}
-function build(it){
-  const d = document.createElement('div');
-  d.className = 'it t-' + it.type;
-  d.dataset.id = it.id;
-  if (['note','text','rect','ellipse'].includes(it.type)){
-    const t = document.createElement('div'); t.className = 'tx'; d.appendChild(t);
-  } else if (it.type === 'image'){
-    const im = document.createElement('img'); d.appendChild(im);
-    const p = document.createElement('div'); p.className = 'ph'; p.textContent = '이미지 불러오는 중…'; d.appendChild(p);
-  } else {
-    d.innerHTML = '<svg><path class="hit" fill="none" stroke="transparent" stroke-width="16" stroke-linecap="round"/>'
-      + '<path class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
-      + '<polygon class="head"/></svg>';
-  }
-  return d;
-}
-const PAD = 12;
-function paint(d, it, z){
-  d.style.zIndex = z;
-  if (it.type === 'pen' || it.type === 'arrow'){
-    d.style.left = (it.x - PAD)+'px'; d.style.top = (it.y - PAD)+'px';
-    d.style.width = (it.w + PAD*2)+'px'; d.style.height = (it.h + PAD*2)+'px';
-    const svg = d.querySelector('svg');
-    svg.setAttribute('width', it.w + PAD*2); svg.setAttribute('height', it.h + PAD*2);
-    const ox = it.x - PAD, oy = it.y - PAD;
-    const ink = d.querySelector('.ink'), hit = d.querySelector('.hit'), head = d.querySelector('.head');
-    ink.setAttribute('stroke', it.color); ink.setAttribute('stroke-width', it.sw || 3);
-    if (it.type === 'pen'){
-      const p = penPath(it.pts, ox, oy);
-      ink.setAttribute('d', p); hit.setAttribute('d', p); head.setAttribute('points','');
-    } else {
-      const a = it.pts[0], b = it.pts[1];
-      const p = `M${a[0]-ox} ${a[1]-oy} L${b[0]-ox} ${b[1]-oy}`;
-      ink.setAttribute('d', p); hit.setAttribute('d', p);
-      const ang = Math.atan2(b[1]-a[1], b[0]-a[0]), L = 13 + (it.sw||3), W = 5 + (it.sw||3);
-      const bx = b[0]-ox, by = b[1]-oy;
-      head.setAttribute('points',
-        `${bx},${by} ${bx-L*Math.cos(ang-.42)},${by-L*Math.sin(ang-.42)} ${bx-L*Math.cos(ang+.42)},${by-L*Math.sin(ang+.42)}`);
-      head.setAttribute('fill', it.color);
-    }
-    return;
-  }
-  d.style.left = it.x+'px'; d.style.top = it.y+'px';
-  d.style.width = it.w+'px'; d.style.height = it.h+'px';
-  if (it.type === 'note'){ d.style.background = it.color; }
-  else if (it.type === 'rect' || it.type === 'ellipse'){
-    d.style.borderColor = it.color; d.style.background = it.color + '22';
-  }
-  const tx = d.querySelector('.tx');
-  if (tx){
-    if (document.activeElement !== tx) tx.textContent = it.text || '';
-    if (it.type === 'text'){ tx.style.color = it.color; tx.style.fontSize = (it.fs || 26)+'px'; }
-    if (it.type === 'rect' || it.type === 'ellipse') tx.style.color = '#EDEDF0';
-  }
-  if (it.type === 'image'){
-    const im = d.querySelector('img'), ph = d.querySelector('.ph');
-    const src = assets[it.src];
-    if (src){ im.src = src; im.style.display='block'; ph.style.display='none'; }
-    else { im.style.display='none'; ph.style.display='grid'; }
-  }
-}
-function render(){
-  const seen = new Set();
-  S.items.forEach((it, i) => {
-    seen.add(it.id);
-    let d = nodes.get(it.id);
-    if (!d){ d = build(it); nodes.set(it.id, d); stage.appendChild(d); }
-    paint(d, it, i + 1);
-  });
-  nodes.forEach((d, id) => { if (!seen.has(id)) { d.remove(); nodes.delete(id); } });
-  drawOvl();
-  $('#insp').classList.toggle('on', S.sel.size > 0 || ['note','text','rect','ellipse','pen','arrow'].includes(S.tool));
-}
-
-/* ══ 선택 오버레이 ══ */
-function selItems(){ return S.items.filter(i => S.sel.has(i.id)); }
-function selBBox(){
-  const a = selItems(); if (!a.length) return null;
-  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
-  a.forEach(i => { x0=Math.min(x0,i.x); y0=Math.min(y0,i.y); x1=Math.max(x1,i.x+i.w); y1=Math.max(y1,i.y+i.h); });
-  return {x:x0,y:y0,w:x1-x0,h:y1-y0};
-}
-const HANDLES = [['nw',0,0],['n',.5,0],['ne',1,0],['e',1,.5],['se',1,1],['s',.5,1],['sw',0,1],['w',0,.5]];
-function drawOvl(){
-  ovl.innerHTML = '';
-  const bb = selBBox(); if (!bb) return;
-  const p0 = w2s(bb.x, bb.y), p1 = w2s(bb.x+bb.w, bb.y+bb.h);
-  const box = document.createElement('div'); box.className = 'selbox';
-  box.style.cssText = `left:${p0.x-2}px;top:${p0.y-2}px;width:${p1.x-p0.x+4}px;height:${p1.y-p0.y+4}px`;
-  ovl.appendChild(box);
-  const one = selItems().length === 1 ? selItems()[0] : null;
-  if (one && one.type === 'arrow'){
-    one.pts.forEach((p, i) => {
-      const s = w2s(p[0], p[1]);
-      const h = document.createElement('div'); h.className = 'hnd e'; h.dataset.pt = i;
-      h.style.cssText = `left:${s.x-6}px;top:${s.y-6}px`;
-      ovl.appendChild(h);
-    });
-    return;
-  }
-  if (one && one.type === 'pen') return;
-  if (selItems().length !== 1) return;
-  HANDLES.forEach(([k, fx, fy]) => {
-    const s = w2s(bb.x + bb.w*fx, bb.y + bb.h*fy);
-    const h = document.createElement('div'); h.className = 'hnd'; h.dataset.h = k;
-    h.style.cssText = `left:${s.x-5}px;top:${s.y-5}px;cursor:${k.length===2?k+'-resize':k+'-resize'}`;
-    ovl.appendChild(h);
-  });
-}
-
-/* ══ 도구 ══ */
-function setTool(t){
-  S.tool = t;
-  $$('#tools button[data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
-  main.classList.toggle('pan', t === 'hand');
-  main.classList.toggle('draw', ['note','text','rect','ellipse','pen','arrow'].includes(t));
-  render();
-}
-$$('#tools button[data-tool]').forEach(b => b.onclick = () => setTool(b.dataset.tool));
-
-function buildSwatches(){
-  const el = $('#sws'); el.innerHTML = '';
-  COLORS.forEach(c => {
-    const b = document.createElement('button'); b.className = 'sw' + (c === S.color ? ' on' : '');
-    b.style.background = c;
-    b.onclick = () => {
-      S.color = c;
-      [...el.children].forEach((x,i) => x.classList.toggle('on', COLORS[i] === c));
-      const a = selItems().filter(i => i.type !== 'image');
-      if (a.length){ a.forEach(i => i.color = c); commit(); }
-    };
-    el.appendChild(b);
-  });
-}
-$('#i-del').onclick   = () => delSel();
-$('#i-dup').onclick   = () => dupSel();
-$('#i-front').onclick = () => { const a = selItems(); S.items = S.items.filter(i => !S.sel.has(i.id)).concat(a); commit(); };
-$('#i-back').onclick  = () => { const a = selItems(); S.items = a.concat(S.items.filter(i => !S.sel.has(i.id))); commit(); };
-
-function delSel(){ if (!S.sel.size) return; S.items = S.items.filter(i => !S.sel.has(i.id)); S.sel.clear(); commit(); }
-function dupSel(){
-  const a = selItems(); if (!a.length) return;
-  const copies = a.map(i => {
-    const c = JSON.parse(JSON.stringify(i)); c.id = uid(); c.x += 28; c.y += 28;
-    if (c.pts) c.pts = c.pts.map(p => [p[0]+28, p[1]+28]);
-    return c;
-  });
-  S.items = S.items.concat(copies);
-  S.sel = new Set(copies.map(c => c.id));
-  commit();
-}
-
-/* ══ 아이템 생성 ══ */
-function defaults(type, x, y){
-  const base = {id:uid(), type, x, y, color:S.color};
-  if (type === 'note')    return {...base, w:200, h:200, text:''};
-  if (type === 'text')    return {...base, w:280, h:44, text:'', fs:26, color:'#EDEDF0'};
-  if (type === 'rect')    return {...base, w:220, h:140, text:''};
-  if (type === 'ellipse') return {...base, w:180, h:180, text:''};
-  return base;
-}
-function addAt(type, wx, wy, w, h){
-  const it = defaults(type, wx, wy);
-  if (w) { it.w = w; it.h = h; }
-  if (type === 'note' || type === 'ellipse' || type === 'rect'){ it.x = wx - it.w/2; it.y = wy - it.h/2; }
-  S.items.push(it); S.sel = new Set([it.id]); commit();
-  setTool('select');
-  if (['note','text','rect','ellipse'].includes(type)) edit(it.id);
-  return it;
-}
-function fitPts(it){
-  const xs = it.pts.map(p => p[0]), ys = it.pts.map(p => p[1]);
-  it.x = Math.min(...xs); it.y = Math.min(...ys);
-  it.w = Math.max(1, Math.max(...xs) - it.x); it.h = Math.max(1, Math.max(...ys) - it.y);
-}
-
-/* ══ 텍스트 편집 ══ */
-let editing = null;
-function edit(id){
-  const it = S.items.find(i => i.id === id); if (!it) return;
-  const d = nodes.get(id); const tx = d && d.querySelector('.tx'); if (!tx) return;
-  editing = id;
-  tx.contentEditable = 'true'; tx.classList.add('edit'); tx.focus();
-  const r = document.createRange(); r.selectNodeContents(tx); r.collapse(false);
-  const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-  tx.onblur = () => {
-    tx.contentEditable = 'false'; tx.classList.remove('edit'); editing = null;
-    const v = tx.innerText.replace(/ /g,' ').replace(/\n+$/,'');
-    if (v !== (it.text || '')){ it.text = v; commit(); }
-    if (!v && it.type === 'text'){ S.items = S.items.filter(x => x.id !== it.id); S.sel.delete(it.id); commit(); }
-  };
-  tx.onpaste = e => {
-    e.preventDefault();
-    document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
-  };
-}
-
-/* ══ 포인터 상호작용 ══ */
-let drag = null, space = false;
-/* 캔버스에서 브라우저 기본 포커스 이동·텍스트 선택을 막는다.
-   (막지 않으면 노트를 만들자마자 준 포커스를 mouseup이 도로 뺏어간다) */
-main.addEventListener('mousedown', e => { if (!e.target.closest('.tx.edit')) e.preventDefault(); });
-main.addEventListener('pointerdown', e => {
-  if (e.target.closest('#tools, #insp, #zoom, #banner, #drawer')) return;
-  if (editing && e.target.closest('.tx.edit')) return;
-  if (editing) { document.activeElement.blur(); }
-  main.setPointerCapture(e.pointerId);
-  const w = s2w(e.clientX, e.clientY);
-
-  /* 패닝 */
-  if (space || S.tool === 'hand' || e.button === 1){
-    drag = {mode:'pan', sx:e.clientX, sy:e.clientY, vx:S.view.x, vy:S.view.y};
-    main.classList.add('panning'); return;
-  }
-  /* 리사이즈 핸들 */
-  const hnd = e.target.closest('.hnd');
-  if (hnd){
-    const it = selItems()[0];
-    if (hnd.dataset.pt !== undefined) drag = {mode:'pt', it, i:+hnd.dataset.pt};
-    else drag = {mode:'resize', it, h:hnd.dataset.h, o:JSON.parse(JSON.stringify(it))};
-    return;
-  }
-  /* 그리기 도구 */
-  if (S.tool === 'pen'){
-    const it = {id:uid(), type:'pen', color:S.color, sw:3, pts:[[w.x,w.y]], x:w.x, y:w.y, w:1, h:1};
-    S.items.push(it); S.sel = new Set([it.id]);
-    drag = {mode:'pen', it}; render(); return;
-  }
-  if (S.tool === 'arrow'){
-    const it = {id:uid(), type:'arrow', color:S.color, sw:3, pts:[[w.x,w.y],[w.x,w.y]], x:w.x, y:w.y, w:1, h:1};
-    S.items.push(it); S.sel = new Set([it.id]);
-    drag = {mode:'arrow', it}; render(); return;
-  }
-  if (['rect','ellipse'].includes(S.tool)){
-    drag = {mode:'new', type:S.tool, ox:w.x, oy:w.y, made:null}; return;
-  }
-  if (S.tool === 'note' || S.tool === 'text'){ addAt(S.tool, w.x, w.y); return; }
-
-  /* 선택 */
-  const hitEl = e.target.closest('.it');
-  if (hitEl){
-    const id = hitEl.dataset.id;
-    if (e.shiftKey){ S.sel.has(id) ? S.sel.delete(id) : S.sel.add(id); }
-    else if (!S.sel.has(id)) S.sel = new Set([id]);
-    drag = {mode:'move', sx:w.x, sy:w.y, snap:selItems().map(i => ({id:i.id, x:i.x, y:i.y, pts:i.pts ? JSON.parse(JSON.stringify(i.pts)) : null}))};
-    drawOvl(); render();
-  } else {
-    if (!e.shiftKey) S.sel.clear();
-    drag = {mode:'mq', sx:e.clientX, sy:e.clientY, add:e.shiftKey ? new Set(S.sel) : new Set()};
-    render();
-  }
-});
-
-main.addEventListener('pointermove', e => {
-  if (!drag) return;
-  const w = s2w(e.clientX, e.clientY);
-  if (drag.mode === 'pan'){
-    S.view.x = drag.vx + (e.clientX - drag.sx); S.view.y = drag.vy + (e.clientY - drag.sy); applyView(); return;
-  }
-  if (drag.mode === 'move'){
-    const dx = w.x - drag.sx, dy = w.y - drag.sy;
-    drag.snap.forEach(s => {
-      const it = S.items.find(i => i.id === s.id); if (!it) return;
-      it.x = s.x + dx; it.y = s.y + dy;
-      if (s.pts) it.pts = s.pts.map(p => [p[0]+dx, p[1]+dy]);
-    });
-    render(); return;
-  }
-  if (drag.mode === 'pen'){
-    const p = drag.it.pts, l = p[p.length-1];
-    if (Math.hypot(w.x-l[0], w.y-l[1]) > 2/S.view.k){ p.push([w.x, w.y]); fitPts(drag.it); render(); }
-    return;
-  }
-  if (drag.mode === 'arrow'){
-    drag.it.pts[1] = [w.x, w.y]; fitPts(drag.it); render(); return;
-  }
-  if (drag.mode === 'pt'){
-    drag.it.pts[drag.i] = [w.x, w.y]; fitPts(drag.it); render(); return;
-  }
-  if (drag.mode === 'resize'){
-    const it = drag.it, o = drag.o, h = drag.h, M = 24;
-    let x0 = o.x, y0 = o.y, x1 = o.x + o.w, y1 = o.y + o.h;
-    if (h.includes('w')) x0 = Math.min(w.x, x1 - M);
-    if (h.includes('e')) x1 = Math.max(w.x, x0 + M);
-    if (h.includes('n')) y0 = Math.min(w.y, y1 - M);
-    if (h.includes('s')) y1 = Math.max(w.y, y0 + M);
-    it.x = x0; it.y = y0; it.w = x1 - x0; it.h = y1 - y0;
-    if (it.type === 'text') it.fs = Math.max(11, Math.round((o.fs || 26) * (it.h / o.h)));
-    render(); return;
-  }
-  if (drag.mode === 'new'){
-    if (Math.abs(w.x - drag.ox) < 6 && Math.abs(w.y - drag.oy) < 6) return;
-    if (!drag.made){
-      drag.made = defaults(drag.type, drag.ox, drag.oy);
-      S.items.push(drag.made); S.sel = new Set([drag.made.id]);
-    }
-    const it = drag.made;
-    it.x = Math.min(drag.ox, w.x); it.y = Math.min(drag.oy, w.y);
-    it.w = Math.max(24, Math.abs(w.x - drag.ox)); it.h = Math.max(24, Math.abs(w.y - drag.oy));
-    render(); return;
-  }
-  if (drag.mode === 'mq'){
-    const mq = $('#mq'), r = rect();
-    const x0 = Math.min(drag.sx, e.clientX) - r.left, y0 = Math.min(drag.sy, e.clientY) - r.top;
-    const ww = Math.abs(e.clientX - drag.sx), hh = Math.abs(e.clientY - drag.sy);
-    mq.style.cssText = `display:block;left:${x0}px;top:${y0}px;width:${ww}px;height:${hh}px`;
-    const a = s2w(Math.min(drag.sx,e.clientX), Math.min(drag.sy,e.clientY));
-    const b = s2w(Math.max(drag.sx,e.clientX), Math.max(drag.sy,e.clientY));
-    S.sel = new Set(drag.add);
-    S.items.forEach(i => { if (i.x < b.x && i.x+i.w > a.x && i.y < b.y && i.y+i.h > a.y) S.sel.add(i.id); });
-    drawOvl(); return;
-  }
-});
-
-function endDrag(e){
-  if (!drag) return;
-  main.classList.remove('panning');
-  $('#mq').style.display = 'none';
-  const d = drag; drag = null;
-  const m = d.mode, it = d.it;
-  if (m === 'pan' || m === 'mq') { render(); return; }
-  if (m === 'pen'){
-    if (it.pts.length < 3){ S.items = S.items.filter(x => x.id !== it.id); S.sel.clear(); }
-    setTool('select'); commit(); return;
-  }
-  if (m === 'arrow'){
-    const [a,b] = it.pts;
-    if (Math.hypot(b[0]-a[0], b[1]-a[1]) < 8){ S.items = S.items.filter(x => x.id !== it.id); S.sel.clear(); }
-    setTool('select'); commit(); return;
-  }
-  if (m === 'new'){
-    if (!d.made){ addAt(d.type, d.ox, d.oy); return; }   // 드래그 없이 클릭만 → 기본 크기
-    setTool('select'); commit(); return;
-  }
-  if (m === 'move'){
-    const moved = d.snap.some(s => { const i = S.items.find(x => x.id === s.id); return i && (i.x !== s.x || i.y !== s.y); });
-    if (!moved) { render(); return; }                     // 단순 클릭은 히스토리에 남기지 않음
-  }
-  commit();
-}
-main.addEventListener('pointerup', endDrag);
-main.addEventListener('pointercancel', endDrag);
-main.addEventListener('dblclick', e => {
-  const el = e.target.closest('.it');
-  if (el){ const it = S.items.find(i => i.id === el.dataset.id);
-    if (it && ['note','text','rect','ellipse'].includes(it.type)){ S.sel = new Set([it.id]); render(); edit(it.id); } return; }
-  const w = s2w(e.clientX, e.clientY);
-  addAt('note', w.x, w.y);
-});
-
-/* 휠 / 줌 */
-main.addEventListener('wheel', e => {
-  e.preventDefault();
-  if (e.ctrlKey || e.metaKey) zoomAt(e.clientX, e.clientY, S.view.k * Math.pow(0.995, e.deltaY));
-  else { S.view.x -= e.deltaX; S.view.y -= e.deltaY; applyView(); }
-}, {passive:false});
-
-/* ══ 키보드 ══ */
-document.addEventListener('keydown', e => {
-  if (!$('#app').classList.contains('on')) return;
-  const typing = editing || /INPUT|TEXTAREA/.test(document.activeElement.tagName);
-  const cmd = e.metaKey || e.ctrlKey;
-  if (e.code === 'Space' && !typing){ space = true; main.classList.add('pan'); e.preventDefault(); }
-  if (cmd && e.key.toLowerCase() === 's'){ e.preventDefault(); save(); return; }
-  if (editing && e.key === 'Escape'){ e.preventDefault(); document.activeElement.blur(); return; }
-  if (typing) return;
-  if (cmd && e.key.toLowerCase() === 'z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
-  if (cmd && e.key.toLowerCase() === 'a'){ e.preventDefault(); S.sel = new Set(S.items.map(i => i.id)); render(); return; }
-  if (cmd && e.key.toLowerCase() === 'd'){ e.preventDefault(); dupSel(); return; }
-  if (cmd && e.key.toLowerCase() === 'c'){ S.clip = JSON.parse(JSON.stringify(selItems())); toast(S.clip.length + '개 복사'); return; }
-  if (cmd && e.key.toLowerCase() === 'v'){
-    if (!S.clip.length) return;
-    const copies = S.clip.map(i => { const c = JSON.parse(JSON.stringify(i)); c.id = uid(); c.x += 32; c.y += 32;
-      if (c.pts) c.pts = c.pts.map(p => [p[0]+32, p[1]+32]); return c; });
-    S.items = S.items.concat(copies); S.sel = new Set(copies.map(c => c.id)); commit(); return;
-  }
-  if (e.key === 'Delete' || e.key === 'Backspace'){ e.preventDefault(); delSel(); return; }
-  if (e.key === 'Escape'){ S.sel.clear(); setTool('select'); render(); return; }
-  if (e.key === ']'){ $('#i-front').click(); return; }
-  if (e.key === '['){ $('#i-back').click(); return; }
-  if (e.key === '0'){ const r = rect(); zoomAt(r.left+r.width/2, r.top+r.height/2, 1); return; }
-  if (e.key === '1'){ zoomFit(); return; }
-  const map = {v:'select', h:'hand', n:'note', t:'text', r:'rect', o:'ellipse', d:'pen', a:'arrow'};
-  if (!cmd && map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
-});
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space'){ space = false; main.classList.toggle('pan', S.tool === 'hand'); }
-});
-
-/* ══ 이미지 ══ */
-const filePick = document.createElement('input');
-filePick.type = 'file'; filePick.accept = 'image/*';
-filePick.onchange = () => { if (filePick.files[0]) addImage(filePick.files[0]); filePick.value = ''; };
-$('#t-img').onclick = () => filePick.click();
-
-document.addEventListener('paste', e => {
-  if (editing) return;
-  const f = [...(e.clipboardData.files || [])].find(x => x.type.startsWith('image/'));
-  if (f){ e.preventDefault(); addImage(f); }
-});
-main.addEventListener('dragover', e => e.preventDefault());
-main.addEventListener('drop', e => {
-  e.preventDefault();
-  const f = [...(e.dataTransfer.files || [])].find(x => x.type.startsWith('image/'));
-  if (f) addImage(f, s2w(e.clientX, e.clientY));
-});
-
-async function addImage(file, at){
-  toast('이미지 업로드 중…');
-  const url = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(file); });
-  const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = url; });
-  const MAX = 1600, sc = Math.min(1, MAX/Math.max(img.width, img.height));
-  const cw = Math.round(img.width*sc), ch = Math.round(img.height*sc);
-  const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
-  cv.getContext('2d').drawImage(img, 0, 0, cw, ch);
-  const keepPng = file.type === 'image/png' && file.size < 500000;
-  const data = keepPng ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', .86);
-  const ext = keepPng ? 'png' : 'jpg';
-  const path = `assets/${uid()}.${ext}`;
-  assets[path] = data;
-  const r = rect();
-  const c = at || s2w(r.left + r.width/2, r.top + r.height/2);
-  const disp = Math.min(460, cw);
-  const it = {id:uid(), type:'image', src:path, x:c.x - disp/2, y:c.y - disp*ch/cw/2, w:disp, h:disp*ch/cw, color:'#000'};
-  S.items.push(it); S.sel = new Set([it.id]); commit();
-  try {
-    await ghPut(path, data.split(',')[1], `이미지 업로드 — ${S.me}`);
-    toast('이미지 업로드 완료');
-  } catch(err){
-    toast('이미지 업로드 실패 — 다시 시도해 주세요.');
-    S.items = S.items.filter(x => x.id !== it.id); commit();
-  }
-}
-async function loadAssets(){
-  const need = S.items.filter(i => i.type === 'image' && !assets[i.src]);
-  for (const i of need){
-    try {
-      const f = await ghGet(i.src);
-      if (!f) continue;
-      const ext = i.src.endsWith('png') ? 'png' : 'jpeg';
-      if (f.content) assets[i.src] = `data:image/${ext};base64,` + f.content.replace(/\n/g,'');
-      else if (f.download_url){                       // 1MB 초과 파일은 content가 비어 온다
-        const b = await (await fetch(f.download_url)).blob();
-        assets[i.src] = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); });
-      }
-      render();
-    } catch(e){}
-  }
-}
-
-/* ══ 기타 UI ══ */
 let tt;
-function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2600); }
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2800); }
 $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
+
+window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, boot, enter, openBoard, save, drawTags };
 
 if (/[?&]seal\b/.test(location.search)){
   $('#gate').style.display = 'none';
