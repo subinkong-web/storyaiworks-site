@@ -743,17 +743,21 @@ body.hascur .cring{opacity:1}
 @media (max-width:560px){.modal-stills{grid-template-columns:1fr 1fr}}
 
 /* ============ TEAM ============ */
-.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,4vw,60px);margin-top:56px}
-.member{background:var(--panel);border:1px solid var(--hair);padding:clamp(26px,3.4vw,44px)}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.2vw,34px);margin-top:56px}
+.member{background:var(--panel);border:1px solid var(--hair);padding:clamp(24px,2.6vw,34px)}
 .light .member{border:0;box-shadow:0 1px 0 var(--hair),0 14px 40px rgba(19,19,22,.06)}
 .member .role{font-size:10.5px;font-weight:800;letter-spacing:.3em;color:var(--acc);text-transform:uppercase}
-.member h3{font-size:clamp(24px,2.6vw,32px);font-weight:800;color:var(--ink);margin-top:12px}
+.member h3{font-size:clamp(22px,2.1vw,28px);font-weight:800;color:var(--ink);margin-top:12px}
 .member .en{font-size:12px;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase;margin-top:4px}
 .member ul{list-style:none;margin-top:26px;border-top:1px solid var(--hair)}
 .member li{padding:14px 0;border-bottom:1px solid var(--hair);font-size:13.5px;color:var(--dim);word-break:keep-all}
 .member li b{display:block;color:var(--txt);font-weight:700;margin-bottom:3px}
+.member .fl{display:grid;grid-template-columns:60px 1fr;gap:0 10px;margin-top:7px;font-size:12.5px;line-height:1.62}
+.member .fl i{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.12em;color:var(--acc);
+  white-space:nowrap;padding-top:4px}
 .member .now{margin-top:20px;font-size:12.5px;color:var(--dim2);word-break:keep-all}
 .member .now b{color:var(--dim)}
+@media (max-width:1080px){.team-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:820px){.team-grid{grid-template-columns:1fr}}
 
 /* ============ ROADMAP ============ */
