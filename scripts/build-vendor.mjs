@@ -84,6 +84,33 @@ await esbuild.build({
 rm(SRC);
 fs.copyFileSync(path.join(EX, 'index.css'), path.join(OUT, 'excalidraw.css'));
 
+/* ── 회전 기능 제거 ──
+   Excalidraw에는 회전을 끄는 옵션이 없다. 다행히 회전 핸들을 만드는 지점이 두 곳뿐이고
+   렌더링과 클릭 판정이 같은 함수를 거치므로, "프레임일 때만 회전 핸들을 뺀다"를
+   "항상 뺀다"로 바꾸면 핸들이 보이지도, 잡히지도 않는다.
+   버전이 올라가 패턴이 안 맞으면 조용히 넘어가지 말고 빌드를 실패시킨다. */
+const ROTATION_PATCHES = [
+  { what: '단일 선택 회전 핸들',   // 원본: ke(e)&&(i={...i,rotation:!0})   ← ke = isFrameLikeElement
+    re: /[A-Za-z_$][\w$]*\([A-Za-z_$][\w$]*\)&&\(([A-Za-z_$][\w$]*)=\{\.\.\.\1,rotation:!0\}\)/g,
+    to: (_, o) => `(${o}={...${o},rotation:!0})` },
+  { what: '다중 선택 회전 핸들',   // 원본: h?{...yf(u),rotation:!0}:yf(u)
+    re: /[A-Za-z_$][\w$]*\?\{\.\.\.([A-Za-z_$][\w$]*\([A-Za-z_$][\w$]*\)),rotation:!0\}:\1/g,
+    to: (_, call) => `{...${call},rotation:!0}` },
+];
+for (const p of ROTATION_PATCHES) {
+  let hits = 0;
+  for (const f of fs.readdirSync(OUT).filter(f => f.endsWith('.js'))) {
+    const fp = path.join(OUT, f);
+    const src = fs.readFileSync(fp, 'utf8');
+    const out = src.replace(p.re, (...a) => { hits++; return p.to(...a); });
+    if (out !== src) fs.writeFileSync(fp, out);
+  }
+  if (hits !== 1) throw new Error(
+    `회전 제거 패치 실패: "${p.what}" 패턴이 ${hits}번 잡힘(1이어야 함). ` +
+    `Excalidraw 버전이 바뀌어 코드 모양이 달라졌을 수 있으니 패턴을 다시 확인할 것.`);
+  console.log(`회전 제거: ${p.what} ✔`);
+}
+
 /* ───────────────── 2. 폰트 복사 ─────────────────
    폰트는 코드가 아니라 EXCALIDRAW_ASSET_PATH 기준 문자열 경로로 런타임에 받아가므로 그대로 복사한다.
    CJK 폴백 Xiaolai 는 209개 서브셋 12MB. 한글·라틴·기호 구간만 남기고 한자 전용 서브셋은 뺀다

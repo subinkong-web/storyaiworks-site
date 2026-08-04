@@ -137,13 +137,13 @@
 
   /* ── 작성자 태그 ── */
   #tags{position:fixed;inset:0;pointer-events:none;z-index:4}
-  .tag{position:absolute;transform:translateY(-100%);
+  /* 박스 우측 상단 안쪽에 붙는 배지. 한 카드(그룹)당 하나만 뜬다. */
+  .tag{position:absolute;transform:translateX(-100%);
     background:rgba(11,11,12,.82);border:1px solid rgba(180,155,226,.42);
     color:var(--acc);font-size:10px;font-weight:700;letter-spacing:.02em;
     padding:1px 6px;border-radius:9px;white-space:nowrap;backdrop-filter:blur(3px);
     display:flex;align-items:center;gap:4px;opacity:.88}
   .tag i{font-style:normal;color:var(--dim2);font-weight:500;font-size:9px}
-  .tag.inside{transform:none}
 
   /* ── 보드 목록 서랍 ── */
   #drawer{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.6);display:none}
@@ -623,41 +623,53 @@ function seedVersions(elements){
   for (const el of elements) prevVer.set(el.id, el.version);
 }
 
-/* ══ 작성자 이름표 ══ */
+/* ══ 작성자 이름표 ══
+   카드는 제목 상자 + 본문 상자를 묶은 그룹이라 요소마다 붙이면 이름표가 두 개 뜬다.
+   그래서 **그룹 하나당 하나**만, 그룹 전체를 감싸는 사각형의 우측 상단 안쪽에 붙인다. */
 const tagsEl = $('#tags');
 function drawTags(){
   if (!api || !S.showTags){ tagsEl.textContent = ''; return; }
   const st = api.getAppState();
   const els = api.getSceneElements();
   const W = innerWidth, H = innerHeight;
-  const frag = document.createDocumentFragment();
-  /* Excalidraw UI(상단 툴바·좌측 속성패널)를 가리지 않도록 배치를 비켜준다 */
-  const TOOLBAR_Y = 132;
-  const lpEl = document.querySelector('.excalidraw .App-menu__left');
-  const lp = lpEl && lpEl.offsetParent !== null ? lpEl.getBoundingClientRect() : null;
-  let n = 0;
+
+  /* 1) 그룹(없으면 요소 자신) 단위로 묶으면서 경계와 가장 최근 작성자를 모은다 */
+  const boxes = new Map();
   for (const el of els){
     if (el.isDeleted || el.containerId) continue;          // 도형에 묶인 텍스트는 도형이 대표한다
-    const a = S.authors[el.id];
-    if (!a) continue;
-    if (el.width * st.zoom.value < 26 && el.height * st.zoom.value < 26) continue;
-    const p = Ex.sceneCoordsToViewportCoords({sceneX: el.x, sceneY: el.y}, st);
-    if (p.x < -140 || p.x > W || p.y > H) continue;
-    let top = p.y - 3, inside = false;
-    if (top < TOOLBAR_Y){                                  // 요소 위쪽이 툴바에 가리면 안쪽으로 내린다
-      const bottom = Ex.sceneCoordsToViewportCoords({sceneX: el.x, sceneY: el.y + el.height}, st).y;
-      top = Math.min(TOOLBAR_Y, bottom - 6);
-      inside = true;
-      if (top < 60) continue;                              // 요소가 사실상 화면 밖
+    const key = el.groupIds && el.groupIds.length ? 'g:' + el.groupIds[el.groupIds.length - 1] : el.id;
+    let b = boxes.get(key);
+    if (!b) boxes.set(key, b = { x1:el.x, y1:el.y, x2:el.x+el.width, y2:el.y+el.height, a:null });
+    else {
+      if (el.x < b.x1) b.x1 = el.x;
+      if (el.y < b.y1) b.y1 = el.y;
+      if (el.x + el.width  > b.x2) b.x2 = el.x + el.width;
+      if (el.y + el.height > b.y2) b.y2 = el.y + el.height;
     }
-    if (lp && p.x < lp.right + 8 && top > lp.top - 16 && top < lp.bottom + 8) continue;
+    const a = S.authors[el.id];
+    if (a && (!b.a || a.at > b.a.at)) b.a = a;              // 그룹 안에서 가장 최근에 손댄 사람
+  }
+
+  /* 2) 그리기 */
+  const frag = document.createDocumentFragment();
+  const TOOLBAR_Y = 132;                                   // 상단 툴바에 가리지 않게 내려 붙인다
+  let n = 0;
+  for (const b of boxes.values()){
+    if (!b.a) continue;
+    const z = st.zoom.value;
+    if ((b.x2 - b.x1) * z < 40 || (b.y2 - b.y1) * z < 20) continue;   // 너무 작으면 생략
+    const tr = Ex.sceneCoordsToViewportCoords({sceneX: b.x2, sceneY: b.y1}, st);
+    const bottom = Ex.sceneCoordsToViewportCoords({sceneX: b.x2, sceneY: b.y2}, st).y;
+    if (tr.x < 0 || tr.x > W + 140 || bottom < 0 || tr.y > H) continue;
+    const top = Math.max(TOOLBAR_Y, tr.y + 4);
+    if (top > bottom - 6) continue;                        // 요소가 사실상 화면 밖
     const d = document.createElement('div');
-    d.className = 'tag' + (inside ? ' inside' : '');
-    d.style.left = p.x + 'px';
+    d.className = 'tag';
+    d.style.left = (tr.x - 4) + 'px';                      // translateX(-100%) 라 우측 정렬된다
     d.style.top  = top + 'px';
     d.innerHTML = '<span></span><i></i>';
-    d.firstChild.textContent = a.by;
-    d.lastChild.textContent = ago(a.at);
+    d.firstChild.textContent = b.a.by;
+    d.lastChild.textContent = ago(b.a.at);
     frag.appendChild(d);
     if (++n >= 140) break;
   }
