@@ -1256,11 +1256,31 @@ mmCv.addEventListener('pointercancel', () => { mmDrag = false; });
    사각형 컨테이너 두 개(헤더/본문)를 한 그룹으로 묶는다. 각 컨테이너의 글자는
    Excalidraw의 bound text라서 폭에 맞춰 자동 줄바꿈되고, 더블클릭으로 바로 고쳐진다.
    카드를 선택한 뒤 왼쪽 패널의 배경색을 바꾸면 헤더·본문이 함께 바뀐다. */
-/* 카드 색 — 디자인 시안 "Precise Modernity" 채택.
-   채도를 크게 낮춘 8색이라 여러 장 늘어놓아도 조용하고, 제목이 먼저 읽힌다.
-   테두리는 각 색을 조금 어둡게 한 짝을 쓴다(회색 한 가지로 두면 색이 겉돈다). */
-const CARD_COLORS = ['#E3F2FD','#E8F5E9','#FFF3E0','#EDE7F6','#FFEBEE','#E1F5FE','#FBE9E7','#F5F5F5'];
+/* 카드 색 — 채도를 낮춘 8색이라 여러 장 늘어놓아도 조용하고, 제목이 먼저 읽힌다.
+   테두리는 각 색을 조금 어둡게 한 짝을 쓴다(회색 한 가지로 두면 색이 겉돈다).
+
+   ⚠️ **두 테마를 같이 놓고 골라야 한다.** 다크 테마는 캔버스 전체에
+   `invert(93%) hue-rotate(180deg)` 를 먹이므로, 라이트에서 아무리 예뻐도 반전 결과가
+   서로 붙으면 다크에서 카드 색으로는 아무것도 구분할 수 없게 된다.
+   예전 팔레트가 그랬다 — #E3F2FD 와 #E1F5FE 가, #FFEBEE 와 #FBE9E7 이 사실상 같은 색이었고
+   (OKLab ΔE 0.8·1.2 = 눈에 안 보이는 차이), #F5F5F5 는 반전하면 캔버스 배경과 겹쳤다.
+   그래서 색상을 8방향(파랑·청록·초록·연두·주황·분홍·보라·무채)으로 고정해 두고
+   **명도·채도를 라이트/다크 양쪽의 최소 간격이 최대가 되도록** 잡았다. 지금 최소 ΔE 는
+   라이트 4.69 / 다크 5.35 (예전 0.76). 색을 손볼 일이 생기면 반드시 반전 결과까지 재 볼 것. */
+const CARD_COLORS = ['#CFDEFE','#D2FBFF','#C2EAC9','#F7F5C5','#FFE6D2','#FED2CD','#FEEBFC','#DEDEDE'];
 const CARD_BORDERS = {
+  '#CFDEFE':'#A6B9E2', '#D2FBFF':'#A1D7DE', '#C2EAC9':'#92C99D', '#F7F5C5':'#D4D08F',
+  '#FFE6D2':'#DFBFA5', '#FED2CD':'#E1A9A3', '#FEEBFC':'#DCC3D9', '#DEDEDE':'#B9B9B9',
+};
+/* 옛 팔레트 → 새 팔레트. 색상(hue)이 가장 가까운 짝으로 1:1 로 옮긴다.
+   구분이 안 되던 두 쌍(하늘/하늘, 분홍/살구)은 각각 파랑·청록, 분홍·주황으로 갈라놔서
+   사용자가 색으로 구분해 두었던 의도가 살아난다. 불러올 때 straighten() 이 적용한다. */
+const CARD_COLORS_OLD = {
+  '#E3F2FD':'#CFDEFE', '#E1F5FE':'#D2FBFF', '#E8F5E9':'#C2EAC9', '#FFF3E0':'#F7F5C5',
+  '#FBE9E7':'#FFE6D2', '#FFEBEE':'#FED2CD', '#EDE7F6':'#FEEBFC', '#F5F5F5':'#DEDEDE',
+};
+// 옛 테두리 짝 — "손대지 않은 카드"인지 알아보는 데만 쓴다
+const CARD_BORDERS_OLD = {
   '#E3F2FD':'#B3D9F5', '#E8F5E9':'#BFE3C2', '#FFF3E0':'#F0DCB8', '#EDE7F6':'#CFC3E6',
   '#FFEBEE':'#F5C9D0', '#E1F5FE':'#B3E1F5', '#FBE9E7':'#EFC8C2', '#F5F5F5':'#DCDCDC',
 };
@@ -1293,7 +1313,14 @@ const cardGroupOf = el => {
   const g = el.groupIds || [];
   return g.find(x => x.startsWith('card')) || g[g.length - 1] || null;
 };
-let cardColor = localStorage.getItem('saw_board_cardcolor') || CARD_COLORS[0];
+/* 마지막에 고른 카드 색. 옛 팔레트가 남아 있으면 새 짝으로 옮기고,
+   그래도 팔레트에 없는 값이면(수동 편집 등) 첫 색으로 되돌린다 —
+   그냥 두면 팔레트에 없는 색으로 카드가 계속 만들어져 테두리 짝이 안 붙는다. */
+let cardColor = (() => {
+  const saved = localStorage.getItem('saw_board_cardcolor');
+  const moved = CARD_COLORS_OLD[saved] || saved;
+  return CARD_COLORS.includes(moved) ? moved : CARD_COLORS[0];
+})();
 let arming = false, ghostFrom = null;
 
 function paintChip(){ $('#cc-sw').style.background = cardColor; }
@@ -1792,9 +1819,17 @@ function straighten(elements){
     const fixStroke = isCard && el.strokeColor === CARD_STROKE_OLD;
     // 표식이 없던 시절 카드에 표식을 심는다 → 복사해도 카드로 인식된다
     const fixMark  = isCard && !(el.customData && el.customData.sawCard);
-    if (el.roughness === 0 && !fixStroke && !fixMark) return el;
+    /* 옛 팔레트로 칠해진 카드를 새 색으로 옮긴다(다크에서 서로 구분되도록).
+       카드 사각형만 건드리므로 사용자가 직접 그린 도형 색은 그대로 남는다.
+       테두리도 새 짝으로 같이 옮기되 **옛 짝을 그대로 쓰고 있을 때만** — 테두리를 따로
+       골라 둔 카드는 그 선택을 존중한다. 글상자는 테두리가 'transparent' 라 여기 안 걸린다. */
+    const newBg = isCard ? CARD_COLORS_OLD[el.backgroundColor] : null;
+    const movesBorder = !!newBg &&
+      (el.strokeColor === CARD_BORDERS_OLD[el.backgroundColor] || el.strokeColor === CARD_STROKE);
+    if (el.roughness === 0 && !fixStroke && !fixMark && !newBg) return el;
     return { ...el, roughness:0,
-      ...(fixStroke ? { strokeColor:CARD_STROKE } : {}),
+      ...(newBg ? { backgroundColor:newBg } : {}),
+      ...(movesBorder ? { strokeColor: borderFor(newBg) } : (fixStroke ? { strokeColor:CARD_STROKE } : {})),
       ...(fixMark   ? { customData:{ ...(el.customData||{}), ...CARD_MARK } } : {}) };
   });
 }
@@ -2947,7 +2982,8 @@ $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
 
 window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, get hApi(){ return hApi; },
-  boot, enter, openBoard, save, drawTags, drawMinimap, drawChecks, addCheckItem, openHistory, maybeCheckpoint, startFreshCanvas };
+  boot, enter, openBoard, save, drawTags, drawMinimap, drawChecks, addCheckItem, openHistory, maybeCheckpoint, startFreshCanvas,
+  buildCard };
 
 if (/[?&]seal\b/.test(location.search)){
   $('#gate').style.display = 'none';
