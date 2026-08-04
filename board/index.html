@@ -546,9 +546,9 @@ const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이�
    암호문이고, 로그인할 때 그 비밀번호로 풀어 sessionStorage 에만 잠깐 둔다(창을 닫으면 사라진다).
    ⚠️ 알아 둘 것: 비밀번호를 아는 사람은 키를 꺼내 쓸 수 있다. 즉 **비밀번호 = API 사용 요금 권한**이다.
       Anthropic 콘솔에서 이 보드 전용 키를 따로 발급하고 지출 한도를 걸어 두는 편이 좋다.
-   ※ 키를 심으려면 /board/?seal 에서 GitHub 토큰과 함께 봉인해 SEALED_AI 를 교체하세요.
+   ※ 키를 바꾸려면 /board/?seal 에서 새 키를 봉인해 SEALED_AI 를 교체하세요(토큰은 건드리지 않아도 된다).
       비워 두면 Claude 버튼이 "키가 없습니다" 안내만 띄우고 아무 요청도 보내지 않는다. */
-const SEALED_AI = '';
+const SEALED_AI = 'eyJ2IjoxLCJzIjoiK1ZXeHVPWXZUaE8wUmc5c1VDRWNhUT09IiwiaSI6Ing2SEtqRVZYeEMvOHNkdlciLCJjIjoiai9DdEgyZ3Rlay9VdmVNWSthUGs1TTJDM1h1V2c5cUdPTHNSRHJ0TSsya3RUZ05YVFdYU1ZvRjhETU44K2tocHFWcW5xUTJxRmpxV3pMSTQ1b01mdnZIeDZudHhNUjRSYzE2UWY2NS9pM0dsTitrWCszb3ZnbXJWSll5WXd3bFo1QkhuS01SWHM5eDVsRTY5SW43MnkzWGZ1R3poWnRYb3pENzJZQT09In0=';
 const AI_MODEL = 'claude-opus-5';
 const AI_EFFORT = 'medium';            // 카드 정리 정도에는 medium 이면 충분하고 응답이 빠르다
 const USERS = [
@@ -2345,7 +2345,7 @@ function cGreet(){
       '· “이 카드 할 일을 체크리스트로 바꿔줘”<br><br>' +
       'Claude 가 바꾼 것도 <b>⌘Z 로 되돌아가고</b>, 평소처럼 자동저장됩니다.'
     : 'API 키가 심어져 있지 않아 아직 쓸 수 없습니다.<br><br>' +
-      '<b>/board/?seal</b> 에서 GitHub 토큰과 함께 Anthropic API 키를 봉인한 뒤, ' +
+      '<b>/board/?seal</b> 에서 Anthropic API 키를 봉인한 뒤, ' +
       '나온 <b>SEALED_AI</b> 값을 페이지에 심으면 켜집니다.';
   cLog.appendChild(d);
 }
