@@ -571,6 +571,7 @@ async function doMount(){
       viewBackgroundColor:'#ffffff',
       theme: S.theme,
       gridModeEnabled: S.grid, gridSize: GRID_SIZE, gridStep: GRID_STEP,
+      currentItemRoughness: 0,        // 도형·선·화살표도 손그림 대신 반듯하게
     } },
     UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false } },
   });
@@ -879,6 +880,10 @@ mmCv.addEventListener('pointercancel', () => { mmDrag = false; });
    카드를 선택한 뒤 왼쪽 패널의 배경색을 바꾸면 헤더·본문이 함께 바뀐다. */
 const CARD_COLORS = ['#ffec99','#ffd8a8','#ffc9c9','#eebefa','#a5d8ff','#b2f2bb','#e9ecef','#ced4da'];
 const HDR_H = 44, CARD_W = 290, CARD_H = 180;
+/* 카드 테두리 — 예전 기본값(#1e1e1e)은 파스텔 배경 위에서 너무 세서 손그림 느낌을 키웠다.
+   Apple 계열 카드가 쓰는 방식대로 얇고 연한 헤어라인으로 낮춘다. 흐린 회색이라
+   흰 캔버스든 다크 테마(색 반전)든 카드 윤곽은 남는다. */
+const CARD_STROKE = '#868e96', CARD_STROKE_OLD = '#1e1e1e';
 let cardColor = localStorage.getItem('saw_board_cardcolor') || CARD_COLORS[0];
 let arming = false, ghostFrom = null;
 
@@ -887,8 +892,11 @@ function makeCard(x, y, w, h){
   w = Math.max(150, w || CARD_W);
   h = Math.max(HDR_H + 60, h || CARD_H);
   const g = 'card' + uid();
-  const common = { strokeColor:'#1e1e1e', strokeWidth:1, backgroundColor:cardColor,
-    fillStyle:'solid', roundness:null, groupIds:[g] };
+  /* roughness:0 = 손으로 그린 듯 삐뚤어진 선을 끄고 반듯한 직선으로 그린다.
+     모서리는 각지게 둔다(roundness:null) — 제목·본문 두 상자를 위아래로 붙여 만드는 구조라
+     둘 다 둥글게 하면 이음매에서 알약 두 개가 겹친 것처럼 보인다(실제로 그려 보고 확인함). */
+  const common = { strokeColor:CARD_STROKE, strokeWidth:1, backgroundColor:cardColor,
+    fillStyle:'solid', roundness:null, roughness:0, groupIds:[g] };
   const els = Ex.convertToExcalidrawElements([
     { ...common, type:'rectangle', x, y, width:w, height:HDR_H,
       label:{ text:'제목', fontSize:18, fontFamily:2, textAlign:'left', verticalAlign:'middle', strokeColor:'#1e1e1e' } },
@@ -1107,15 +1115,30 @@ async function openBoard(id){
   renderList();
   loadFiles();
 }
+/* 손그림 스타일을 쓰던 시절에 만든 요소를 불러올 때 한 번 반듯하게 편다.
+   version 을 건드리지 않으므로 작성자 기록에는 영향이 없고, 다음에 저장할 때 함께 기록된다.
+   테두리는 "예전 기본값 그대로인 카드 사각형"만 바꾼다 — 사용자가 직접 고른 색은 그대로 둔다. */
+function straighten(elements){
+  return elements.map(el => {
+    const isCard = el.type === 'rectangle' && (el.groupIds || []).some(g => g.startsWith('card'));
+    const fixStroke = isCard && el.strokeColor === CARD_STROKE_OLD;
+    if (el.roughness === 0 && !fixStroke) return el;
+    return { ...el, roughness:0, ...(fixStroke ? { strokeColor:CARD_STROKE } : {}) };
+  });
+}
 function applyScene(d){
   S.loading = true;
   S.authors  = d.authors || {};
   S.fileMeta = d.files || {};
   S.uploaded = new Set(Object.keys(S.fileMeta));
-  const elements = Ex.restoreElements(d.elements || [], null, {refreshDimensions:false});
+  const elements = straighten(Ex.restoreElements(d.elements || [], null, {refreshDimensions:false}));
   api.updateScene({ elements, appState:{ viewBackgroundColor:(d.appState||{}).viewBackgroundColor || '#ffffff' } });
-  seedVersions(elements);
-  S.lastVer = Ex.getSceneVersion(elements);
+  /* ⚠️ 넘겨준 배열이 아니라 **적용된 뒤의 요소**로 기준을 잡아야 한다.
+     Excalidraw가 장면을 받으면서 version 을 올리는데, 올리기 전 값으로 기준을 잡으면
+     다음 편집 때 모든 요소가 "바뀐 것"으로 보여 작성자가 통째로 다시 찍힌다. */
+  const live = api.getSceneElements();
+  seedVersions(live);
+  S.lastVer = Ex.getSceneVersion(live);
   S.dirty = false;
   api.scrollToContent(elements, {fitToContent:true, animate:false});
   setTimeout(() => { S.loading = false; drawTags(); }, 60);
