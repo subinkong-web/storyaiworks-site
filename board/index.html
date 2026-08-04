@@ -7,18 +7,12 @@
 <title>SAW Board — 내부 화이트보드</title>
 <link rel="icon" type="image/png" href="../images/saw_logo_white.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/index.css">
-<script>window.EXCALIDRAW_ASSET_PATH = "https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/";</script>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client"
-  }
-}
-</script>
+<link rel="stylesheet" href="vendor/excalidraw.css">
+<!-- Excalidraw·React는 CDN 대신 vendor/ 에 고정해 둔다. esm.sh 가 한 번이라도 흔들리면
+     보드가 아예 안 열렸기 때문(실제로 react-dom fetch 실패로 겪음).
+     재생성 방법은 scripts/build-vendor.mjs 주석 참고.
+     에셋 경로는 절대 URL이어야 Excalidraw 내부의 new URL() 이 성립한다. -->
+<script>window.EXCALIDRAW_ASSET_PATH = new URL("vendor/", location.href).href;</script>
 <style>
   :root{
     --bg:#0B0B0C;--panel:#131316;--panel2:#1A1A1E;--ink:#F4F3F0;--txt:#C6C6CB;
@@ -516,11 +510,9 @@ async function doBoot(){
 let mounting = null;
 function mountExcalidraw(){ return (mounting ||= doMount()); }
 async function doMount(){
-  const [ExMod, React, ReactDOM] = await Promise.all([
-    import('https://esm.sh/@excalidraw/excalidraw@0.18.1/dist/prod/index.js?external=react,react-dom'),
-    import('react'),
-    import('react-dom/client'),
-  ]);
+  // React는 번들 안에 함께 들어 있다. 따로 import 하면 인스턴스가 둘이 되어 훅이 깨진다.
+  const ExMod = await import('./vendor/excalidraw.js');
+  const React = ExMod.__React, ReactDOM = ExMod.__ReactDOMClient;
   Ex = ExMod;
   const R = React.default || React;
   const App = () => R.createElement(Ex.Excalidraw, {
