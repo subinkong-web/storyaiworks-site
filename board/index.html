@@ -152,11 +152,12 @@
   #tags{position:fixed;inset:0;pointer-events:none;z-index:4}
   /* 카드 우측 상단 안쪽에 붙는 배지. 한 카드(그룹)당 하나만 뜬다. */
   .tag{position:absolute;transform:translateX(-100%);
-    background:rgba(11,11,12,.82);border:1px solid rgba(180,155,226,.42);
-    color:var(--acc);font-size:10px;font-weight:700;letter-spacing:.02em;
-    padding:1px 6px;border-radius:9px;white-space:nowrap;backdrop-filter:blur(3px);
-    display:flex;align-items:center;gap:4px;opacity:.88}
-  .tag i{font-style:normal;color:var(--dim2);font-weight:500;font-size:9px}
+    background:#F5F5F5;border:1px solid #E0E0E0;
+    color:#424242;font-size:10.5px;font-weight:600;letter-spacing:.01em;
+    padding:2px 8px;border-radius:999px;white-space:nowrap;
+    display:flex;align-items:center;gap:5px;opacity:.72}
+  .tag i{font-style:normal;color:#9E9E9E;font-weight:500;font-size:9.5px}
+  #tags.dark .tag{filter:invert(93%) hue-rotate(180deg)}
 
   /* ── 보드 목록 서랍 ── */
   #drawer{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.6);display:none}
@@ -770,6 +771,7 @@ function drawTags(){
   }
 
   /* 2) 그리기 */
+  tagsEl.classList.toggle('dark', S.theme === 'dark');
   const frag = document.createDocumentFragment();
   const TOOLBAR_Y = 132;                                   // 상단 툴바에 가리지 않게 내려 붙인다
   let n = 0;
@@ -997,23 +999,30 @@ mmCv.addEventListener('pointercancel', () => { mmDrag = false; });
    사각형 컨테이너 두 개(헤더/본문)를 한 그룹으로 묶는다. 각 컨테이너의 글자는
    Excalidraw의 bound text라서 폭에 맞춰 자동 줄바꿈되고, 더블클릭으로 바로 고쳐진다.
    카드를 선택한 뒤 왼쪽 패널의 배경색을 바꾸면 헤더·본문이 함께 바뀐다. */
-/* 카드 색 — Excalidraw 기본 파스텔은 채도가 높아 여러 장 늘어놓으면 촌스러워진다.
-   Apple 계열 앱처럼 **채도를 낮추고 밝기를 한 줄로 맞춰** 톤을 정돈했다. */
-const CARD_COLORS = ['#FBEFC8','#FBE1CD','#FADDD8','#EFDCF3','#D8E6F6','#D5EBDE','#EAECF0','#D9DDE3'];
+/* 카드 색 — 디자인 시안 "Precise Modernity" 채택.
+   채도를 크게 낮춘 8색이라 여러 장 늘어놓아도 조용하고, 제목이 먼저 읽힌다.
+   테두리는 각 색을 조금 어둡게 한 짝을 쓴다(회색 한 가지로 두면 색이 겉돈다). */
+const CARD_COLORS = ['#E3F2FD','#E8F5E9','#FFF3E0','#EDE7F6','#FFEBEE','#E1F5FE','#FBE9E7','#F5F5F5'];
+const CARD_BORDERS = {
+  '#E3F2FD':'#B3D9F5', '#E8F5E9':'#BFE3C2', '#FFF3E0':'#F0DCB8', '#EDE7F6':'#CFC3E6',
+  '#FFEBEE':'#F5C9D0', '#E1F5FE':'#B3E1F5', '#FBE9E7':'#EFC8C2', '#F5F5F5':'#DCDCDC',
+};
+const borderFor = fill => CARD_BORDERS[fill] || CARD_STROKE;
 /* 카드 = 둥근 배경 사각형 1개 + 제목 글상자 + 본문 글상자.
    ⚠️ 예전에는 제목·본문을 **색이 칠해진 상자 두 개**로 위아래 붙여 만들었는데, 그러면 모서리를
    둥글게 할 수가 없었다(이음매에서 알약 두 개가 겹친 모양이 된다). 그래서 색과 테두리는
    **배경 사각형 하나만** 갖고, 제목·본문 상자는 투명하게 두어 글자만 보이게 한다.
    덕분에 라운딩이 자유롭고, 글상자는 그대로 bound text 라 자동 줄바꿈·더블클릭 편집이 유지된다. */
 const CARD_W = 320, CARD_H = 210;
-const CARD_PAD = 18;                 // 카드 안쪽 여백
-const TITLE_H = 40, TITLE_GAP = 10;  // 제목 줄 높이와 본문까지의 간격
-const TITLE_SIZE = 28, BODY_SIZE = 14;   // 신문기사처럼 제목을 크게 눌러 본문과 위계를 준다
-const CARD_INK = '#1e1e1e';
+const CARD_PAD = 20;                 // 카드 안쪽 여백
+const TITLE_H = 34, TITLE_GAP = 12;  // 제목 줄 높이와 본문까지의 간격
+const TITLE_SIZE = 24, BODY_SIZE = 14;
+const TITLE_LH = 1.3, BODY_LH = 1.5; // 본문은 줄 간격을 넉넉히 — 목록이 읽기 편해진다
+const CARD_INK = '#1A1A1A', CARD_INK2 = '#424242';   // 제목은 더 진하게, 본문은 한 단계 눌러서
 /* 카드 테두리 — 예전 기본값(#1e1e1e)은 파스텔 배경 위에서 너무 세서 손그림 느낌을 키웠다.
    Apple 계열 카드가 쓰는 방식대로 얇고 연한 헤어라인으로 낮춘다. 흐린 회색이라
    흰 캔버스든 다크 테마(색 반전)든 카드 윤곽은 남는다. */
-const CARD_STROKE = '#C7CCD4', CARD_STROKE_OLD = '#1e1e1e';   // 아주 연한 헤어라인 — 색은 배경이 낸다
+const CARD_STROKE = '#E0E0E0', CARD_STROKE_OLD = '#1e1e1e';   // 색 짝이 없을 때 쓰는 기본 테두리
 
 /* ⚠️ 카드 식별 — 예전에는 그룹 id 접두사('card…')로 알아봤는데, Excalidraw는
    복제·붙여넣기할 때 그룹 id를 새 난수로 바꾼다. 그래서 **복사한 카드는 카드로 인식되지 않아
@@ -1044,18 +1053,18 @@ function makeCard(x, y, w, h){
   const iw = w - CARD_PAD*2;
   const els = Ex.convertToExcalidrawElements([
     { ...base, type:'rectangle', x, y, width:w, height:h,
-      strokeColor:CARD_STROKE, strokeWidth:1, backgroundColor:cardColor, fillStyle:'solid',
-      roundness:{ type:3 },                       // 세련되게 — 모서리는 항상 둥글게
+      strokeColor:borderFor(cardColor), strokeWidth:1, backgroundColor:cardColor, fillStyle:'solid',
+      roundness:{ type:3, value:10 },             // 과하지 않게 살짝만 둥글게
       customData:{ ...CARD_MARK, role:'bg' } },
     { ...clear, type:'rectangle', x:x + CARD_PAD, y:y + CARD_PAD, width:iw, height:TITLE_H,
       customData:{ ...CARD_MARK, role:'title' },
       label:{ text:'제목', fontSize:TITLE_SIZE, fontFamily:2, textAlign:'left',
-        verticalAlign:'middle', strokeColor:CARD_INK } },
+        verticalAlign:'middle', strokeColor:CARD_INK, lineHeight:TITLE_LH } },
     { ...clear, type:'rectangle', x:x + CARD_PAD, y:y + CARD_PAD + TITLE_H + TITLE_GAP,
       width:iw, height:h - CARD_PAD*2 - TITLE_H - TITLE_GAP,
       customData:{ ...CARD_MARK, role:'body' },
       label:{ text:'내용을 입력하세요', fontSize:BODY_SIZE, fontFamily:2, textAlign:'left',
-        verticalAlign:'top', strokeColor:CARD_INK } },
+        verticalAlign:'top', strokeColor:CARD_INK2, lineHeight:BODY_LH } },
   ]);
   api.updateScene({ elements: [...api.getSceneElements(), ...els], captureUpdate: CAP.now });
   const ids = {};
@@ -1076,12 +1085,13 @@ const CHK_OFF = '▢', CHK_ON = '▣';
 const CHK_RE = /^([ \t]*)([☐☑▢▣])/gm;                 // 줄 맨 앞의 체크 문자만 항목으로 본다
 const chkIsOn = c => c === '☑' || c === '▣';
 const chkEl = $('#checks');
+const CHK_GREEN = '#4CAF50';
 const CHK_SVG = on => on
-  ? '<svg viewBox="0 0 20 20"><rect x="1.6" y="1.6" width="16.8" height="16.8" rx="5.2" fill="#6E56A8"/>'
-    + '<path d="M5.8 10.4l2.9 2.9 5.5-5.9" fill="none" stroke="#fff" stroke-width="2.2" '
+  ? '<svg viewBox="0 0 20 20"><rect x="1.5" y="1.5" width="17" height="17" rx="4.6" fill="' + CHK_GREEN + '"/>'
+    + '<path d="M5.7 10.3l2.9 2.9 5.7-6.1" fill="none" stroke="#fff" stroke-width="2.3" '
     + 'stroke-linecap="round" stroke-linejoin="round"/></svg>'
-  : '<svg viewBox="0 0 20 20"><rect x="2.4" y="2.4" width="15.2" height="15.2" rx="4.8" '
-    + 'fill="none" stroke="#98A0AC" stroke-width="1.7"/></svg>';
+  : '<svg viewBox="0 0 20 20"><rect x="2.5" y="2.5" width="15" height="15" rx="4.2" '
+    + 'fill="none" stroke="' + CHK_GREEN + '" stroke-width="2"/></svg>';
 
 function drawChecks(){
   if (!api){ chkEl.textContent = ''; return; }
@@ -1247,6 +1257,12 @@ function keepCardStyle(elements){
     // 글상자는 테두리가 없어야 하고, 배경은 카드와 같은 색이어야 한다(클릭이 잡히도록)
     if (e.strokeColor !== 'transparent' || e.backgroundColor !== card.backgroundColor)
       fix.set(e.id, { ...e, strokeColor:'transparent', backgroundColor: card.backgroundColor });
+  }
+  // 카드 색을 바꾸면 테두리도 그 색의 짝으로 따라간다
+  for (const card of new Set(bg.values())){
+    const want = borderFor(card.backgroundColor);
+    if (CARD_BORDERS[card.backgroundColor] && card.strokeColor !== want)
+      fix.set(card.id, { ...(fix.get(card.id) || card), strokeColor: want });
   }
 
   /* 글이 길어지면 Excalidraw 가 글상자를 늘려 준다. 그때 카드 배경도 같이 늘려야
