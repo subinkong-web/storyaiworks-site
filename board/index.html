@@ -123,9 +123,12 @@
 
   /* ── 체크 목록 ── 글자 위에 클릭 영역만 얹는다(상태는 글자 자체에 들어 있다) */
   #checks{position:fixed;inset:0;pointer-events:none;z-index:5}
-  #checks button{position:absolute;pointer-events:auto;padding:0;border:0;background:transparent;
-    border-radius:4px;cursor:pointer}
-  #checks button:hover{background:rgba(180,155,226,.30)}
+  #checks button{position:absolute;pointer-events:auto;padding:0;border:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:flex-start;line-height:0}
+  #checks button svg{display:block;flex-shrink:0}
+  #checks button:hover svg{opacity:.7}
+  /* 다크 테마는 Excalidraw 가 캔버스에 거는 필터와 똑같이 걸어야 색이 맞는다 */
+  #checks.dark button{filter:invert(93%) hue-rotate(180deg)}
 
   /* ── 미니맵 (FLOWMARK 하단 미니맵 표현을 옮겨온 것) ── */
   #minimap{position:fixed;right:12px;bottom:52px;z-index:6;display:none;gap:3px;
@@ -994,7 +997,9 @@ mmCv.addEventListener('pointercancel', () => { mmDrag = false; });
    사각형 컨테이너 두 개(헤더/본문)를 한 그룹으로 묶는다. 각 컨테이너의 글자는
    Excalidraw의 bound text라서 폭에 맞춰 자동 줄바꿈되고, 더블클릭으로 바로 고쳐진다.
    카드를 선택한 뒤 왼쪽 패널의 배경색을 바꾸면 헤더·본문이 함께 바뀐다. */
-const CARD_COLORS = ['#ffec99','#ffd8a8','#ffc9c9','#eebefa','#a5d8ff','#b2f2bb','#e9ecef','#ced4da'];
+/* 카드 색 — Excalidraw 기본 파스텔은 채도가 높아 여러 장 늘어놓으면 촌스러워진다.
+   Apple 계열 앱처럼 **채도를 낮추고 밝기를 한 줄로 맞춰** 톤을 정돈했다. */
+const CARD_COLORS = ['#FBEFC8','#FBE1CD','#FADDD8','#EFDCF3','#D8E6F6','#D5EBDE','#EAECF0','#D9DDE3'];
 /* 카드 = 둥근 배경 사각형 1개 + 제목 글상자 + 본문 글상자.
    ⚠️ 예전에는 제목·본문을 **색이 칠해진 상자 두 개**로 위아래 붙여 만들었는데, 그러면 모서리를
    둥글게 할 수가 없었다(이음매에서 알약 두 개가 겹친 모양이 된다). 그래서 색과 테두리는
@@ -1008,7 +1013,7 @@ const CARD_INK = '#1e1e1e';
 /* 카드 테두리 — 예전 기본값(#1e1e1e)은 파스텔 배경 위에서 너무 세서 손그림 느낌을 키웠다.
    Apple 계열 카드가 쓰는 방식대로 얇고 연한 헤어라인으로 낮춘다. 흐린 회색이라
    흰 캔버스든 다크 테마(색 반전)든 카드 윤곽은 남는다. */
-const CARD_STROKE = '#868e96', CARD_STROKE_OLD = '#1e1e1e';
+const CARD_STROKE = '#C7CCD4', CARD_STROKE_OLD = '#1e1e1e';   // 아주 연한 헤어라인 — 색은 배경이 낸다
 
 /* ⚠️ 카드 식별 — 예전에는 그룹 id 접두사('card…')로 알아봤는데, Excalidraw는
    복제·붙여넣기할 때 그룹 id를 새 난수로 바꾼다. 그래서 **복사한 카드는 카드로 인식되지 않아
@@ -1031,8 +1036,10 @@ function makeCard(x, y, w, h){
   h = Math.max(CARD_PAD*2 + TITLE_H + TITLE_GAP + 60, h || CARD_H);
   const g = 'card' + uid();
   const base = { roughness:0, groupIds:[g] };
-  // 글상자는 투명 — 색과 테두리는 배경 사각형만 갖는다(라운딩을 자유롭게 쓰기 위해)
-  const clear = { ...base, strokeColor:'transparent', backgroundColor:'transparent',
+  /* ⚠️ 글상자 배경을 'transparent' 로 두면 **안쪽을 클릭해도 안 잡힌다**(Excalidraw는 투명
+     도형을 테두리로만 집는다). 그래서 카드와 같은 색으로 채우고 테두리만 없앤다 —
+     배경 사각형 위에 같은 색이 얹히므로 보기엔 똑같고, 글자를 고치려 클릭하면 바로 잡힌다. */
+  const clear = { ...base, strokeColor:'transparent', backgroundColor:cardColor,
     fillStyle:'solid', roundness:null };
   const iw = w - CARD_PAD*2;
   const els = Ex.convertToExcalidrawElements([
@@ -1061,34 +1068,60 @@ function makeCard(x, y, w, h){
    Excalidraw 에는 체크박스 요소가 없다. 그래서 **본문 글자 안에** ☐ / ☑ 를 두고,
    화면에서 그 자리에 클릭 영역만 얹는다. 상태가 글자 자체이므로 저장·기록·복사·되돌리기에
    자연히 따라가고, 별도 자료구조를 맞춰줄 필요가 없다. */
-const CHK_OFF = '☐', CHK_ON = '☑';
-const CHK_RE = /^([ \t]*)([☐☑])/gm;                    // 줄 맨 앞의 체크 문자만 항목으로 본다
+/* 글자에 남는 표식. ☐/☑ 는 폰트마다 크기가 제각각이라(빈칸은 크고 체크는 작게 나온다)
+   크기가 고르게 나오는 ▢/▣ 로 바꿨다. 예전 카드의 ☐/☑ 도 계속 인식한다.
+   ⚠️ 화면에서는 이 글자를 **카드 색으로 덮고 그 위에 제대로 그린 체크박스를 얹는다**.
+   다크 테마는 캔버스에 invert 필터를 걸므로 오버레이에도 같은 필터를 걸어 색을 맞춘다. */
+const CHK_OFF = '▢', CHK_ON = '▣';
+const CHK_RE = /^([ \t]*)([☐☑▢▣])/gm;                 // 줄 맨 앞의 체크 문자만 항목으로 본다
+const chkIsOn = c => c === '☑' || c === '▣';
 const chkEl = $('#checks');
+const CHK_SVG = on => on
+  ? '<svg viewBox="0 0 20 20"><rect x="1.6" y="1.6" width="16.8" height="16.8" rx="5.2" fill="#6E56A8"/>'
+    + '<path d="M5.8 10.4l2.9 2.9 5.5-5.9" fill="none" stroke="#fff" stroke-width="2.2" '
+    + 'stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  : '<svg viewBox="0 0 20 20"><rect x="2.4" y="2.4" width="15.2" height="15.2" rx="4.8" '
+    + 'fill="none" stroke="#98A0AC" stroke-width="1.7"/></svg>';
 
 function drawChecks(){
   if (!api){ chkEl.textContent = ''; return; }
   const st = api.getAppState();
   const z = st.zoom.value;
   const W = innerWidth, H = innerHeight;
+  const els = api.getSceneElements();
+  chkEl.classList.toggle('dark', S.theme === 'dark');
+
+  const bgOf = new Map();                       // 그룹 → 카드 배경색(글자 표식을 덮을 색)
+  for (const e of els) if (cardRole(e) === 'bg')
+    for (const g of e.groupIds || []) bgOf.set(g, e.backgroundColor);
+
   const frag = document.createDocumentFragment();
-  for (const el of api.getSceneElements()){
+  for (const el of els){
     if (el.isDeleted || el.type !== 'text') continue;
-    if (!el.text.includes(CHK_OFF) && !el.text.includes(CHK_ON)) continue;
+    if (!/[☐☑▢▣]/.test(el.text)) continue;
+    const box = el.containerId ? els.find(x => x.id === el.containerId) : null;
+    const cover = (box && (box.groupIds || []).map(g => bgOf.get(g)).find(Boolean)) ||
+                  st.viewBackgroundColor || '#ffffff';
     const lh = (el.lineHeight || 1.25) * el.fontSize;
     let k = -1;
     el.text.split('\n').forEach((line, i) => {
-      const m = /^([ \t]*)([☐☑])/.exec(line);
+      const m = /^([ \t]*)([☐☑▢▣])/.exec(line);
       if (!m) return;
       k++;
       const p = Ex.sceneCoordsToViewportCoords(
         { sceneX: el.x + m[1].length * el.fontSize * 0.5, sceneY: el.y + i * lh }, st);
-      const size = el.fontSize * z;
-      if (p.x < -size || p.x > W || p.y < -size || p.y > H) return;
+      const cw = el.fontSize * 1.15 * z, ch = lh * z;
+      if (p.x < -cw || p.x > W || p.y < -ch || p.y > H) return;
+      const on = chkIsOn(m[2]);
       const b = document.createElement('button');
       b.type = 'button';
-      b.title = m[2] === CHK_ON ? '완료 해제' : '완료 표시';
+      b.title = on ? '완료 해제' : '완료 표시';
       b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
-      b.style.width = size + 'px'; b.style.height = lh * z + 'px';
+      b.style.width = cw + 'px'; b.style.height = ch + 'px';
+      b.style.background = cover;               // 글자에 남은 표식을 가린다
+      b.innerHTML = CHK_SVG(on);
+      const d = Math.max(9, el.fontSize * 0.92 * z);
+      b.firstChild.style.width = d + 'px'; b.firstChild.style.height = d + 'px';
       const idx = k, id = el.id;
       b.onclick = e => { e.stopPropagation(); toggleCheck(id, idx); };
       frag.appendChild(b);
@@ -1147,7 +1180,7 @@ function writeBoundText(els, box, textEl, raw){
 function toggleCheck(textId, n){
   const flip = str => { let i = -1;
     return str.replace(CHK_RE, (m, sp, c) =>
-      (++i === n ? sp + (c === CHK_ON ? CHK_OFF : CHK_ON) : m)); };
+      (++i === n ? sp + (chkIsOn(c) ? CHK_OFF : CHK_ON) : m)); };
   const els = api.getSceneElements();
   const t = els.find(e => e.id === textId);
   if (!t) return;
@@ -1158,8 +1191,25 @@ function toggleCheck(textId, n){
   requestAnimationFrame(drawChecks);
 }
 
-/* 선택한 카드의 본문 끝에 체크 항목 한 줄을 덧붙인다. */
+/* 체크 항목 만들기.
+   · 글을 고치는 중이라면(글상자가 열려 있으면) **드래그로 잡은 줄 전체**를 체크 항목으로 바꾼다.
+   · 그냥 카드만 선택한 상태라면 본문 끝에 한 줄을 덧붙인다. */
 function addCheckItem(){
+  const ta = document.querySelector('textarea.excalidraw-wysiwyg');
+  if (ta){
+    const v = ta.value;
+    const from = v.lastIndexOf('\n', Math.max(0, ta.selectionStart - 1)) + 1;
+    let to = v.indexOf('\n', ta.selectionEnd);
+    if (to < 0) to = v.length;
+    const block = v.slice(from, to).split('\n').map(line => {
+      if (/^\s*[☐☑▢▣]/.test(line)) return line;           // 이미 체크 항목이면 그대로
+      return line.trim() ? CHK_OFF + ' ' + line.replace(/^\s+/, '') : line;
+    }).join('\n');
+    ta.setRangeText(block, from, to, 'end');
+    ta.dispatchEvent(new Event('input', { bubbles:true }));
+    ta.focus();
+    return;
+  }
   if (!api) return;
   const els = api.getSceneElements();
   const sel = api.getAppState().selectedElementIds || {};
@@ -1184,15 +1234,49 @@ function addCheckItem(){
    선택된 요소를 전부 칠하기 때문에, 여기서 되돌려 놓는다(라운딩을 배경 사각형에만 두는 구조라
    글상자에 색이 들어오면 카드가 이상해진다). */
 function keepCardStyle(elements){
-  const bad = elements.filter(e => {
+  const bg = new Map();                    // 그룹 → 카드 배경 사각형
+  for (const e of elements) if (cardRole(e) === 'bg')
+    for (const g of e.groupIds || []) bg.set(g, e);
+
+  const fix = new Map();
+  for (const e of elements){
     const r = cardRole(e);
-    return (r === 'title' || r === 'body') &&
-      (e.backgroundColor !== 'transparent' || e.strokeColor !== 'transparent');
-  });
-  if (!bad.length) return;
-  const ids = new Set(bad.map(e => e.id));
-  api.updateScene({ captureUpdate: CAP.never, elements: elements.map(e => ids.has(e.id)
-    ? { ...e, backgroundColor:'transparent', strokeColor:'transparent' } : e) });
+    if (r !== 'title' && r !== 'body') continue;
+    const card = (e.groupIds || []).map(g => bg.get(g)).find(Boolean);
+    if (!card) continue;
+    // 글상자는 테두리가 없어야 하고, 배경은 카드와 같은 색이어야 한다(클릭이 잡히도록)
+    if (e.strokeColor !== 'transparent' || e.backgroundColor !== card.backgroundColor)
+      fix.set(e.id, { ...e, strokeColor:'transparent', backgroundColor: card.backgroundColor });
+  }
+
+  /* 글이 길어지면 Excalidraw 가 글상자를 늘려 준다. 그때 카드 배경도 같이 늘려야
+     글자가 카드 밖으로 삐져나가지 않는다. */
+  for (const [g, card] of bg){
+    const inner = elements.filter(e => ['title','body'].includes(cardRole(e)) && (e.groupIds||[]).includes(g));
+    if (!inner.length) continue;
+    /* 제목이 두 줄이 되면 본문을 그만큼 아래로 민다.
+       ⚠️ 글상자를 옮길 때는 그 안의 글자 요소도 같은 만큼 함께 옮겨야 한다(따로 논다). */
+    const ti = inner.find(e => cardRole(e) === 'title');
+    const bo = inner.find(e => cardRole(e) === 'body');
+    let bodyBottom = bo ? bo.y + bo.height : 0;
+    if (ti && bo){
+      const dy = (ti.y + ti.height + TITLE_GAP) - bo.y;
+      if (Math.abs(dy) > 0.5){
+        fix.set(bo.id, { ...(fix.get(bo.id) || bo), y: bo.y + dy });
+        for (const t of elements)
+          if (t.type === 'text' && t.containerId === bo.id)
+            fix.set(t.id, { ...(fix.get(t.id) || t), y: t.y + dy });
+        bodyBottom += dy;
+      }
+    }
+    const need = Math.max(ti ? ti.y + ti.height : 0, bodyBottom) + CARD_PAD - card.y;
+    if (need > card.height + 0.5 || need < card.height - CARD_PAD)
+      fix.set(card.id, { ...(fix.get(card.id) || card), height: Math.max(need, CARD_PAD*2 + TITLE_H) });
+  }
+
+  if (!fix.size) return;
+  api.updateScene({ captureUpdate: CAP.never,
+    elements: elements.map(e => fix.get(e.id) || e) });
 }
 
 function hintEdit(){
