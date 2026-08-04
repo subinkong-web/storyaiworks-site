@@ -358,6 +358,7 @@
     <span class="bname" id="b-name">—</span>
     <span class="spacer"></span>
     <span class="mini" id="b-state"><span class="dot"></span>저장됨</span>
+    <span class="mini" id="b-last" title="이 보드를 마지막으로 저장한 사람"></span>
     <span class="mini" id="b-who"></span>
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
@@ -604,6 +605,7 @@ let S = {
   sha:null, etag:null, dirty:false, saving:false, loading:false,
   authors:{}, fileMeta:{}, uploaded:new Set(), showTags:true, lastVer:-1,
   savedAt:0, lastCommit:null, hist:[], histSha:null,
+  lastBy:'', lastAt:0,                 // 이 보드를 마지막으로 저장한 사람(상단 표시용)
   /* 캔버스 보기 설정 — 사람마다 다르므로 보드 데이터가 아니라 localStorage 에 둔다 */
   theme: localStorage.getItem('saw_board_theme') || 'dark',
   grid:  localStorage.getItem('saw_board_grid') !== '0',
@@ -876,10 +878,20 @@ async function doMount(){
 
 /* ══ 장면 변경 → 작성자 추적 · 저장 표시 · 이름표 ══ */
 let tagRaf = 0;
+/* ══ 병합 직후의 "조용한 구간" ══
+   남의 변경을 합쳐 넣은 것은 **내가 만든 변경이 아니다.** 이걸 저장 대기로 잡으면
+   아무도 손대지 않은 두 탭이 서로의 저장을 받아 다시 저장하는 일을 끝없이 반복한다.
+   구간 안의 **첫 onChange 는 병합 결과 그 자체**이므로 그것만 넘기고, 그 뒤에 버전이 또
+   달라지면 그건 사용자가 실제로 고친 것이니 평소대로 저장 대기로 잡는다. */
+const QUIET_MS = 250;
+let quietUntil = 0, quietBase = null;
 function onSceneChange(elements, appState){
   if (!S.loading) trackAuthors(elements);
   const v = Ex.getSceneVersion(elements);
-  if (!S.loading && S.lastVer !== -1 && v !== S.lastVer) markDirty();
+  const quiet = Date.now() < quietUntil;
+  if (quiet && quietBase === null) quietBase = v;
+  const mine = !quiet || v !== quietBase;
+  if (!S.loading && mine && S.lastVer !== -1 && v !== S.lastVer) markDirty();
   S.lastVer = v;
   if (!S.loading) keepCardStyle(elements);
   if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); placeTools(); drawMinimap(); drawChecks(); });
@@ -1695,6 +1707,7 @@ async function openBoard(id){
   S.sha = f ? f.sha : null;
   S.etag = f ? f._etag : null;
   applyScene(d);
+  noteRemoteSave(d);
   status('saved');
   renderList();
   loadFiles();
@@ -1731,8 +1744,12 @@ function applyScene(d){
   api.scrollToContent(elements, {fitToContent:true, animate:false});
   setTimeout(() => { S.loading = false; drawTags(); drawChecks(); }, 60);
 }
+/* ⚠️ 이미 가지고 있는 이미지는 다시 받지 않는다.
+   폴링이 8초마다 도는데 남의 변경이 올 때마다 첨부 전부를 다시 내려받으면
+   이미지 열 장짜리 보드는 변경 한 번에 GitHub 요청이 열 번씩 나간다(느리고 한도도 먹는다). */
 async function loadFiles(){
-  const ids = Object.keys(S.fileMeta);
+  const have = (api && api.getFiles && api.getFiles()) || {};
+  const ids = Object.keys(S.fileMeta).filter(id => !have[id]);
   if (!ids.length) return;
   const out = [];
   for (const id of ids){
@@ -1912,24 +1929,34 @@ async function save(force){
     const r = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(sceneJson())), `${S.name} — ${S.me}`, sha);
     S.sha = r.content.sha; S.etag = null; S.dirty = false; S.savedAt = Date.now();
     S.lastCommit = (r.commit && r.commit.sha) || S.lastCommit;   // 기록점이 가리킬 커밋
+    S.lastBy = S.me; S.lastAt = Date.now(); drawLastBy();        // 이제 마지막은 나다
     status('saved'); $('#banner').classList.remove('on');
   } catch (e) {
     if (e.conflict){
       /* 저장하려는 순간 남이 먼저 저장한 경우. 예전엔 배너로 "불러오기/덮어쓰기"를 물었고
          어느 쪽이든 한 사람 작업이 날아갔다. 이제 합친 뒤 한 번 더 저장한다.
-         (합치는 것까지 실패했을 때만 예전 배너로 떨어진다 — 그때도 조용히 덮어쓰진 않는다.) */
-      try {
-        const f = await ghGet(`data/${S.boardId}.json`);
-        if (!f) throw new Error('원격 파일 없음');
-        const d = JSON.parse(b64dec(f.content));
-        mergeInto(d, f.sha);
-        const r2 = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(sceneJson())),
-          `${S.name} — ${S.me} (병합)`, S.sha);
-        S.sha = r2.content.sha; S.etag = null; S.dirty = false; S.savedAt = Date.now();
-        S.lastCommit = (r2.commit && r2.commit.sha) || S.lastCommit;
-        status('saved'); $('#banner').classList.remove('on');
-        toast(`${d.updatedBy || '다른 사람'}님의 변경과 합쳐서 저장했습니다.`);
-      } catch (e2) {
+         ⚠️ 한 번만 시도하면 부족하다 — 셋이 20초마다 저장하면 "합치는 사이에 또 누가 저장"이
+            실제로 일어나고, 그때마다 배너로 떨어지면 사용자가 결국 한쪽을 버리게 된다.
+            그래서 몇 번 다시 시도한다. 시도할 때마다 합치는 것이므로 남의 작업은 계속 쌓인다.
+         (끝내 실패했을 때만 예전 배너로 떨어진다 — 그때도 조용히 덮어쓰진 않는다.) */
+      let done = false, last = null;
+      for (let i = 0; i < 3 && !done; i++){
+        try {
+          const f = await ghGet(`data/${S.boardId}.json`);
+          if (!f) throw new Error('원격 파일 없음');
+          const d = JSON.parse(b64dec(f.content));
+          mergeInto(d, f.sha);
+          const r2 = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(sceneJson())),
+            `${S.name} — ${S.me} (병합)`, S.sha);
+          S.sha = r2.content.sha; S.etag = null; S.dirty = false; S.savedAt = Date.now();
+          S.lastCommit = (r2.commit && r2.commit.sha) || S.lastCommit;
+          S.lastBy = S.me; S.lastAt = Date.now(); drawLastBy();
+          status('saved'); $('#banner').classList.remove('on');
+          toast(`${d.updatedBy || '다른 사람'}님의 변경과 합쳐서 저장했습니다.`);
+          done = true;
+        } catch (e2) { last = e2; if (!e2.conflict) break; }
+      }
+      if (!done){
         status('conflict');
         $('#ban-tx').textContent = '다른 사람이 먼저 저장했는데 자동으로 합치지 못했습니다. 어떻게 할까요?';
         $('#banner').classList.add('on');
@@ -1971,7 +1998,12 @@ function mergeElements(mine, theirs){
   return { elements: [...win.values()], from };
 }
 
-/* 원격 문서를 지금 화면에 합쳐 넣는다. 내 미저장 변경은 그대로 남는다. */
+/* 원격 문서를 지금 화면에 합쳐 넣는다. 내 미저장 변경은 그대로 남는다.
+   ⚠️ 남의 변경이 들어왔다고 해서 **내가 "저장 대기" 상태가 되면 안 된다.**
+      그러면 아무도 손대지 않은 두 탭이 서로의 저장을 받아 다시 저장하는 일을 무한 반복한다
+      (A 저장 → B 가 받아 dirty → B 저장 → A 가 받아 dirty → …). 그래서 병합 직후 짧은
+      "조용한 구간"을 두어 그 변경만 저장 대기로 세지 않는다(onSceneChange 의 QUIET_MS 참고).
+      내가 원래 미저장 변경을 들고 있었다면 S.dirty 는 true 그대로 남는다(여기서 내리지 않는다). */
 let mergingAt = 0;                             // 이 직후의 version 변화는 작성자를 새로 찍지 않는다
 function mergeInto(d, remoteSha){
   const theirs = straighten(Ex.restoreElements(d.elements || [], null, {refreshDimensions:false}));
@@ -1988,10 +2020,15 @@ function mergeInto(d, remoteSha){
   S.uploaded = new Set([...S.uploaded, ...Object.keys(d.files || {})]);
 
   mergingAt = Date.now();
+  /* ⚠️ 여기서 S.loading 을 세웠다 내리면 안 된다 — 보드 열기(applyScene)와 겹치면
+     서로의 타이머가 엇갈려 플래그가 켜진 채로 굳는다(그러면 이후 편집이 영영 저장 대기로
+     안 잡힌다). 대신 "언제까지 조용히"라는 시각만 둔다. 겹쳐도 뒤엣것이 이길 뿐 안 굳는다. */
+  quietUntil = Date.now() + QUIET_MS; quietBase = null;
   api.updateScene({ elements, captureUpdate: CAP.never });   // 남의 작업은 내 ⌘Z 대상이 아니다
   seedVersions(api.getSceneElements());
   S.sha = remoteSha;                            // 이제 최신 파일 위에 얹어 저장할 수 있다
   loadFiles();
+  noteRemoteSave(d);
   requestAnimationFrame(() => { drawTags(); drawChecks(); drawMinimap(); });
   return elements.length;
 }
@@ -1999,6 +2036,11 @@ function mergeInto(d, remoteSha){
 /* ══ 원격 변경 감시 ══ */
 async function poll(){
   if (!S.boardId || S.saving) return;
+  /* 글자를 고치는 중이면 건드리지 않는다 — 편집기가 열린 채로 장면을 갈아끼우면
+     타이핑하던 내용이 튄다. 다음 폴링(8초 뒤)에 합친다.
+     ⚠️ 이 검사는 **맨 위**에 있어야 한다. 아래쪽에 두면, 아직 한 글자도 안 쳐서
+        S.dirty 가 false 인 사이에 남의 변경이 들어와 편집기가 통째로 날아간다. */
+  if (document.querySelector('textarea.excalidraw-wysiwyg')) return;
   try {
     const f = await ghGet(`data/${S.boardId}.json`, true);
     if (!f || f.notModified) return;
@@ -2006,16 +2048,13 @@ async function poll(){
     if (f.sha === S.sha) return;
     const d = JSON.parse(b64dec(f.content));
     const who = d.updatedBy || '누군가';
-    if (!S.dirty){
-      S.sha = f.sha; applyScene(d); loadFiles();
-      toast(`${who}님의 변경을 불러왔습니다.`);
-      return;
-    }
-    /* 글자를 고치는 중이면 건드리지 않는다 — 편집기가 열린 채로 장면을 갈아끼우면
-       타이핑하던 내용이 튄다. 다음 폴링(8초 뒤)에 합친다. */
-    if (document.querySelector('textarea.excalidraw-wysiwyg')) return;
+    /* ⚠️ 내가 아무것도 안 건드린 상태여도 **다시 불러오지(applyScene) 않고 합친다.**
+       applyScene 은 화면을 전체 내용에 맞춰 다시 잡으므로, 남이 저장할 때마다
+       내가 보고 있던 자리에서 튕겨 나갔다(카드 하나를 확대해 보고 있으면 특히 심하다).
+       합치기는 내가 깨끗하면 결과가 상대 파일과 같으므로 잃는 것도 없다. */
     mergeInto(d, f.sha);
-    toast(`${who}님의 변경을 합쳤습니다. 내 작업도 그대로 있습니다.`);
+    toast(S.dirty ? `${who}님의 변경을 합쳤습니다. 내 작업도 그대로 있습니다.`
+                  : `${who}님의 변경을 불러왔습니다.`);
   } catch(e){}
 }
 $('#ban-reload').onclick = async () => { $('#banner').classList.remove('on'); S.dirty = false; await openBoard(S.boardId); };
@@ -2032,6 +2071,24 @@ function status(k){
   $('#b-state').innerHTML = map[k] || map.saved;
 }
 function markDirty(){ S.dirty = true; status('dirty'); }
+
+/* ══ "마지막으로 저장한 사람" 표시 ══
+   진짜 동시편집이 아니라서 남이 지금 보고 있는지는 알 수 없다. 대신 **누가 마지막으로
+   손댔는지**는 파일에 적혀 있으니 상단에 늘 띄워 둔다 — 방금 다른 사람이 저장했다는 게
+   보이면 같은 카드를 동시에 붙잡는 일이 줄어든다. 토스트는 3초면 사라지지만 이건 남는다. */
+function noteRemoteSave(d){
+  if (!d) return;
+  S.lastBy = d.updatedBy || '';
+  S.lastAt = d.updatedAt || 0;
+  drawLastBy();
+}
+function drawLastBy(){
+  const el = $('#b-last');
+  if (!el) return;
+  if (!S.lastBy || S.lastBy === S.me){ el.textContent = ''; return; }
+  el.textContent = `${S.lastBy} 편집 ${ago(S.lastAt)}`;
+}
+setInterval(drawLastBy, 30 * 1000);            // "3분 전" 같은 표기를 계속 갱신
 addEventListener('beforeunload', e => { if (S.dirty){ e.preventDefault(); e.returnValue = ''; } });
 
 let tt;
