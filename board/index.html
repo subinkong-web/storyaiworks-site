@@ -286,6 +286,7 @@
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
     <button class="tb" id="b-hist" title="지난 기록 보기 (읽기 전용)">기록</button>
+    <button class="tb" id="b-fresh" title="지금 내용을 기록으로 남기고 빈 캔버스에서 시작">새 캔버스</button>
     <button class="tb" id="b-save" title="지금 저장 (⌘S)">저장</button>
     <button class="tb" id="b-help">?</button>
     <button class="tb" id="b-out">로그아웃</button>
@@ -396,6 +397,8 @@
       <tr><td>저장</td><td>바뀐 것이 있으면 <b>2분마다 자동 저장</b>되고, 탭을 닫거나 다른 탭으로 옮길 때도 저장됩니다.
         지금 당장 저장하려면 상단 [저장] 또는 <kbd>⌘</kbd><kbd>S</kbd></td></tr>
       <tr><td>기록</td><td>상단 [기록] — <b>하루 두 번(오전·오후)</b>, 그 사이에 바뀐 것이 있을 때만 그때의 보드가 기록으로 남습니다. 3년치를 보관합니다</td></tr>
+      <tr><td>새 캔버스</td><td>상단 [새 캔버스] — <b>지금 내용을 먼저 기록으로 남긴 뒤</b> 캔버스를 비웁니다.
+        지운 내용은 [기록]에 그대로 있으니 언제든 다시 보고 필요한 것만 가져올 수 있습니다</td></tr>
       <tr><td>기록에서 가져오기</td><td>기록 창에서 시점을 고른 뒤 필요한 박스를 선택하고
         [선택한 것 현재 보드로 가져오기]. <b>기록은 읽기 전용이라 현재 보드를 덮어쓰지 않습니다</b></td></tr>
     </table>
@@ -665,7 +668,8 @@ async function doMount(){
       gridModeEnabled: S.grid, gridSize: GRID_SIZE, gridStep: GRID_STEP,
       currentItemRoughness: 0,        // 도형·선·화살표도 손그림 대신 반듯하게
     } },
-    UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false } },
+    /* 기본 '캔버스 초기화'는 그냥 날려 버리는 기능이라 끈다 — 상단 [새 캔버스]가 대신한다 */
+    UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false, clearCanvas:false } },
   });
   (ReactDOM.default || ReactDOM).createRoot($('#ex')).render(R.createElement(App));
   await new Promise(r => {
@@ -1286,7 +1290,15 @@ async function loadFiles(){
    바뀐 게 있을 때만 남긴다. */
 const halfKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-` +
   `${String(d.getDate()).padStart(2,'0')}-${d.getHours() < 12 ? 'AM' : 'PM'}`;
-const halfLabel = k => { const [y,m,dd,h] = k.split('-'); return `${y}.${m}.${dd} ${h === 'AM' ? '오전' : '오후'}`; };
+/* 정기 기록점 키는 `2026-08-04-AM`, 수동 기록점은 시각까지 넣은 `2026-08-04-1432`.
+   같은 반나절에 여러 번 남길 수 있어야 하므로 형식을 나눈다. */
+const stampKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-` +
+  `${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+const halfLabel = k => {
+  const [y,m,dd,h] = k.split('-');
+  if (h === 'AM' || h === 'PM') return `${y}.${m}.${dd} ${h === 'AM' ? '오전' : '오후'}`;
+  return `${y}.${m}.${dd} ${h.slice(0,2)}:${h.slice(2)}`;
+};
 
 async function loadHistory(){
   try {
@@ -1307,29 +1319,76 @@ async function boardCommitSha(){
 }
 
 let cpBusy = false;
+
+/* 15초마다 불린다. 이번 반나절 구간에 기록이 없고, 직전 기록 이후 바뀐 게 있을 때만 남긴다. */
 async function maybeCheckpoint(){
   if (cpBusy || !api || !S.boardId || S.loading) return;
   const key = halfKey(new Date());
   if (S.hist.some(h => h.key === key)) return;                 // 이번 구간은 이미 남겼다
+  // 빈 보드는 기록해 봐야 볼 게 없다. [새 캔버스] 직후 목록 맨 위에 빈 항목이 뜨는 것도 막는다.
+  if (!api.getSceneElements().some(e => !e.isDeleted)) return;
   const ver = Ex.getSceneVersion(api.getSceneElements());
   const last = S.hist[S.hist.length - 1];
   if (last && last.ver === ver) return;                        // 그 사이에 바뀐 게 없다
+  await writeCheckpoint(key, null);
+}
+
+/* 기록점 한 개를 실제로 남긴다. 실패해도 현재 보드 저장에는 영향이 없어야 한다. */
+async function writeCheckpoint(key, note){
+  if (cpBusy) return false;
   cpBusy = true;
   try {
     if (S.dirty) await save();                                 // 최신 상태를 먼저 커밋
     const sha = await boardCommitSha();
-    if (!sha) return;
+    if (!sha) return false;
     const now = Date.now();
-    S.hist.push({ key, at:now, sha, by:S.me, ver,
+    S.hist.push({ key, at:now, sha, by:S.me, note: note || undefined,
+      ver: Ex.getSceneVersion(api.getSceneElements()),
       n: api.getSceneElements().filter(e => !e.isDeleted).length });
     const cut = now - HIST_KEEP_DAYS * 86400000;               // 3년치만 목록에 유지
     S.hist = S.hist.filter(h => h.at >= cut);
     const r = await ghPutJson('history/index.json', { points:S.hist },
-      `기록점 ${halfLabel(key)} — ${S.me}`, S.histSha);
+      `기록점 ${halfLabel(key)}${note ? ' — ' + note : ''} — ${S.me}`, S.histSha);
     S.histSha = r.content.sha;
-  } catch(e){
-    // 기록점이 실패해도 현재 보드 저장에는 영향이 없어야 한다. 다음 15초 뒤에 다시 시도된다.
-  } finally { cpBusy = false; }
+    return true;
+  } catch(e){ return false; }
+  finally { cpBusy = false; }
+}
+
+/* ══ 새 캔버스로 시작 ══
+   Excalidraw 기본 "캔버스 초기화"는 그냥 지워 버리는 기능이라 UIOptions 에서 껐다.
+   대신 **지금 내용을 기록으로 남긴 다음** 캔버스를 비운다 — 지운 내용은 [기록]에서 언제든 다시 본다. */
+async function startFreshCanvas(){
+  if (!api || !S.boardId) return;
+  const n = api.getSceneElements().filter(e => !e.isDeleted).length;
+  if (!n) return toast('이미 빈 캔버스입니다.');
+  if (!confirm(
+    `지금 캔버스(요소 ${n}개)를 기록으로 남긴 뒤 비웁니다.\n\n` +
+    `지운 내용은 상단 [기록]에서 언제든 다시 볼 수 있고,\n` +
+    `거기서 필요한 것만 골라 새 캔버스로 가져올 수 있습니다.\n\n계속할까요?`)) return;
+
+  status('saving');
+  /* ⚠️ 기록점은 "커밋 sha"를 가리킨다. 이번 세션에 한 번도 저장한 적이 없으면 그 sha 가
+     지금 화면의 내용이라고 확신할 수 없다(남이 그 사이 저장했을 수도 있다).
+     지우기 직전이라 되돌릴 수 없으므로, 여기서만큼은 변경이 없어도 한 번 강제로 커밋한다. */
+  try { markDirty(); await save(); }
+  catch(e){ status('error'); return toast('저장에 실패해서 중단했습니다 — ' + e.message); }
+  if (S.dirty){ status('error'); return toast('저장이 끝나지 않아 중단했습니다. 잠시 뒤 다시 시도해 주세요.'); }
+
+  const ok = await writeCheckpoint(stampKey(new Date()), '새 캔버스 시작 직전');
+  if (!ok){
+    status('error');
+    return toast('기록으로 남기지 못해서 중단했습니다. 잠시 뒤 다시 시도해 주세요.');
+  }
+  // 기록이 확실히 남은 뒤에만 비운다. 실행취소 대상이라 방금 지운 건 ⌘Z 로도 되돌릴 수 있다.
+  api.updateScene({ elements: [], captureUpdate: CAP.now });
+  S.authors = {}; prevVer.clear();
+  // 새 캔버스가 참조하지 않는 첨부파일 목록을 정리한다(파일 자체는 기록이 쓰므로 지우지 않는다)
+  S.fileMeta = {};
+  markDirty();
+  await save();
+  drawTags(); drawMinimap();
+  toast('기록으로 남기고 새 캔버스로 시작합니다. 지운 내용은 [기록]에 있습니다.');
 }
 
 /* 그 시점의 보드 내용. 읽기만 한다 — 이 값이 현재 보드로 흘러가는 경로는 없다. */
@@ -1469,7 +1528,7 @@ function renderHistList(){
     b.className = 'hrow' + (hPick === h.key ? ' on' : '');
     b.innerHTML = '<span></span><i></i>';
     b.firstChild.textContent = halfLabel(h.key);
-    b.lastChild.textContent  = `${h.by} · 요소 ${h.n}개`;
+    b.lastChild.textContent  = `${h.by} · 요소 ${h.n}개` + (h.note ? ` · ${h.note}` : '');
     b.onclick = () => showSnapshot(h);
     el.appendChild(b);
   });
@@ -1490,7 +1549,7 @@ async function showSnapshot(h){
     hApi.scrollToContent(els, { fitToContent:true, animate:false });
     hSnapFiles = d.files || {};
     await loadSnapshotFiles(hSnapFiles);
-    $('#h-when').textContent = `${halfLabel(h.key)} · ${h.by} · 요소 ${h.n}개 — 읽기 전용`;
+    $('#h-when').textContent = `${halfLabel(h.key)} · ${h.by} · 요소 ${h.n}개` + (h.note ? ` · ${h.note}` : '') + ' — 읽기 전용';
   } catch(e){
     $('#h-when').textContent = '';
     $('#h-empty').style.display = 'grid';
@@ -1567,6 +1626,7 @@ $('#h-import').onclick = async () => {
 };
 
 $('#b-hist').onclick  = () => openHistory();
+$('#b-fresh').onclick = () => startFreshCanvas();
 $('#h-close').onclick = () => $('#hist').classList.remove('on');
 $('#hist').onclick    = e => { if (e.target.id === 'hist') $('#hist').classList.remove('on'); };
 
@@ -1575,7 +1635,7 @@ $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
 
 window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, get hApi(){ return hApi; },
-  boot, enter, openBoard, save, drawTags, drawMinimap, openHistory, maybeCheckpoint };
+  boot, enter, openBoard, save, drawTags, drawMinimap, openHistory, maybeCheckpoint, startFreshCanvas };
 
 if (/[?&]seal\b/.test(location.search)){
   $('#gate').style.display = 'none';
