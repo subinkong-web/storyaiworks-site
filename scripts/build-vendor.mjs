@@ -84,20 +84,33 @@ await esbuild.build({
 rm(SRC);
 fs.copyFileSync(path.join(EX, 'index.css'), path.join(OUT, 'excalidraw.css'));
 
-/* ── 회전 기능 제거 ──
-   Excalidraw에는 회전을 끄는 옵션이 없다. 다행히 회전 핸들을 만드는 지점이 두 곳뿐이고
+/* ── 번들 패치 ──
+   Excalidraw가 옵션으로 열어두지 않은 것들을 여기서 직접 고친다.
+   (회전 끄기 / 격자 흐리게 / 선 굵기 단계)
+   회전: 핸들을 만드는 지점이 두 곳뿐이고
    렌더링과 클릭 판정이 같은 함수를 거치므로, "프레임일 때만 회전 핸들을 뺀다"를
    "항상 뺀다"로 바꾸면 핸들이 보이지도, 잡히지도 않는다.
    버전이 올라가 패턴이 안 맞으면 조용히 넘어가지 말고 빌드를 실패시킨다. */
-const ROTATION_PATCHES = [
+const VENDOR_PATCHES = [
   { what: '단일 선택 회전 핸들',   // 원본: ke(e)&&(i={...i,rotation:!0})   ← ke = isFrameLikeElement
     re: /[A-Za-z_$][\w$]*\([A-Za-z_$][\w$]*\)&&\(([A-Za-z_$][\w$]*)=\{\.\.\.\1,rotation:!0\}\)/g,
     to: (_, o) => `(${o}={...${o},rotation:!0})` },
   { what: '다중 선택 회전 핸들',   // 원본: h?{...yf(u),rotation:!0}:yf(u)
     re: /[A-Za-z_$][\w$]*\?\{\.\.\.([A-Za-z_$][\w$]*\([A-Za-z_$][\w$]*\)),rotation:!0\}:\1/g,
     to: (_, call) => `{...${call},rotation:!0}` },
+
+  /* 배경 격자를 절반쯤 흐리게. 흰 캔버스 기준 색이라 흰색 쪽으로 반씩 당긴다.
+     (다크 테마는 캔버스에 invert 필터를 걸 뿐이라 양쪽 모두 같은 비율로 흐려진다) */
+  { what: '격자 선 색 흐리게',      // 원본: {Bold:"#dddddd",Regular:"#e5e5e5"}
+    re: /\{Bold:"#dddddd",Regular:"#e5e5e5"\}/g,
+    to: () => '{Bold:"#eeeeee",Regular:"#f2f2f2"}' },
+
+  /* 선 굵기 3단계의 차이를 훨씬 크게. 1/2/4 는 눈으로 구분이 잘 안 됐다. */
+  { what: '선 굵기 단계 벌리기',    // 원본: thin:1,bold:2,extraBold:4
+    re: /thin:1,bold:2,extraBold:4/g,
+    to: () => 'thin:1,bold:5,extraBold:12' },
 ];
-for (const p of ROTATION_PATCHES) {
+for (const p of VENDOR_PATCHES) {
   let hits = 0;
   for (const f of fs.readdirSync(OUT).filter(f => f.endsWith('.js'))) {
     const fp = path.join(OUT, f);
@@ -106,9 +119,9 @@ for (const p of ROTATION_PATCHES) {
     if (out !== src) fs.writeFileSync(fp, out);
   }
   if (hits !== 1) throw new Error(
-    `회전 제거 패치 실패: "${p.what}" 패턴이 ${hits}번 잡힘(1이어야 함). ` +
+    `벤더 패치 실패: "${p.what}" 패턴이 ${hits}번 잡힘(1이어야 함). ` +
     `Excalidraw 버전이 바뀌어 코드 모양이 달라졌을 수 있으니 패턴을 다시 확인할 것.`);
-  console.log(`회전 제거: ${p.what} ✔`);
+  console.log(`패치: ${p.what} ✔`);
 }
 
 /* ───────────────── 2. 폰트 복사 ─────────────────
