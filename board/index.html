@@ -692,7 +692,15 @@ async function doMount(){
     } },
     /* 기본 '캔버스 초기화'는 그냥 날려 버리는 기능이라 끈다 — 상단 [새 캔버스]가 대신한다 */
     UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false, clearCanvas:false } },
-  });
+  },
+  /* 기본 메뉴에는 Excalidraw 홍보 링크(GitHub·X·Discord)와 캔버스 배경색·다크 모드가 붙어 있다.
+     사내 도구에 남길 이유가 없고, 배경색·테마는 우리 쪽(반전 버튼)에서 관리하므로
+     메뉴를 직접 짜서 쓸 것만 남긴다. */
+  R.createElement(Ex.MainMenu, null,
+    R.createElement(Ex.MainMenu.DefaultItems.SaveAsImage, null),
+    R.createElement(Ex.MainMenu.DefaultItems.SearchMenu, null),
+    R.createElement(Ex.MainMenu.DefaultItems.Help, null),
+  ));
   (ReactDOM.default || ReactDOM).createRoot($('#ex')).render(R.createElement(App));
   await new Promise(r => {
     const t = setInterval(() => { if (api) { clearInterval(t); r(); } }, 40);
@@ -1784,7 +1792,9 @@ async function openHistory(){
       UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false, export:false,
         saveAsImage:false, toggleTheme:false, changeViewBackgroundColor:false, clearCanvas:false } },
       onChange: () => { $('#h-import').disabled = !hasPick(); },
-    });
+    },
+    R.createElement(Ex.MainMenu, null,      // 기록 뷰어도 홍보 링크는 뺀다
+      R.createElement(Ex.MainMenu.DefaultItems.SearchMenu, null)));
     hRoot = RD.createRoot($('#h-canvas'));       // 컨테이너가 다르므로 본 보드 루트와 충돌하지 않는다
     hRoot.render(R.createElement(App));
   }
