@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@400;600;700&display=swap">
 <!-- CSS 구조가 바뀌면 v를 올린다 — 캐시된 옛 스타일시트로 새 섹션이 깨져 보이는 것을 막는다 -->
-<link rel="stylesheet" href="css/style.css?v=20260803">
+<link rel="stylesheet" href="css/style.css?v=20260804">
 </head>
 <body>
 
@@ -35,6 +35,8 @@
     <li><a href="#showreel">Showreel</a></li>
     <li><a href="#team">Team</a></li>
     <li><a href="#contact">Contact</a></li>
+    <!-- 회사소개서 — 파일만 교체하면 되도록 경로에 날짜를 넣지 않는다(files/saw-company-profile.pdf) -->
+    <li class="dl"><a href="files/saw-company-profile.pdf" download="SAW_회사소개서.pdf">회사소개서</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="메뉴">
     <span></span><span></span><span></span>
@@ -755,7 +757,14 @@
   <div class="in wrap">
     <div class="m rv" data-tx="contact_m">The Freedom to Create Without Limits</div>
     <p class="t rv d1" data-tx="contact_t">다음 장면을,<br>함께 만들 준비가 되어 있습니다</p>
-    <div class="cpeople rv d2">
+    <div class="dlwrap rv d2">
+      <a class="dlbtn" href="files/saw-company-profile.pdf" download="SAW_회사소개서.pdf">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+        회사소개서 다운받기
+      </a>
+      <span class="dlmeta">PDF · 30페이지 · 26MB</span>
+    </div>
+    <div class="cpeople rv d3">
       <div class="card">
         <div class="role">CEO · Content Strategy</div>
         <h3>정태우</h3>
