@@ -304,23 +304,28 @@
 <div class="gate" id="seal" style="display:none">
   <div class="box">
     <h1>토큰 봉인</h1>
-    <p class="sub">GitHub 토큰(과 선택적으로 Anthropic API 키)을 공용 비밀번호로 암호화합니다.
+    <p class="sub">GitHub 토큰과 Anthropic API 키를 공용 비밀번호로 암호화합니다.
       <b>원문과 비밀번호는 이 브라우저 밖으로 나가지 않습니다.</b>
-      결과로 나오는 봉인 문자열만 페이지에 심으면, 이후 다른 사람은 이름·비밀번호만으로 들어옵니다.</p>
-    <label>GitHub Personal Access Token</label>
+      결과로 나오는 봉인 문자열만 페이지에 심으면, 이후 다른 사람은 이름·비밀번호만으로 들어옵니다.<br>
+      <b>둘 중 필요한 것만 채워도 됩니다.</b> 예를 들어 API 키만 새로 추가할 때는 아래 칸만 채우세요.</p>
+    <label>GitHub Personal Access Token <span style="color:var(--dim2);font-weight:400">— 이미 심어 뒀다면 비워 두세요</span></label>
     <input class="fld" id="z-tk" type="password" placeholder="github_pat_… 또는 ghp_…" autocomplete="off">
-    <label>Anthropic API 키 <span style="color:var(--dim2);font-weight:400">— 선택. Claude 대화 패널용</span></label>
-    <input class="fld" id="z-ak" type="password" placeholder="sk-ant-… (비워두면 Claude 기능이 꺼집니다)" autocomplete="off">
+    <label>Anthropic API 키 <span style="color:var(--dim2);font-weight:400">— Claude 대화 패널용</span></label>
+    <input class="fld" id="z-ak" type="password" placeholder="sk-ant-…" autocomplete="off">
     <label>공용 비밀번호 (12자 이상)</label>
+    <p class="hint" style="margin:-2px 0 8px">⚠️ <b>지금 로그인에 쓰는 그 비밀번호를 그대로 넣으세요.</b>
+      다른 비밀번호로 봉인하면 로그인할 때 풀리지 않습니다.</p>
     <input class="fld" id="z-pw" type="password" autocomplete="new-password">
     <label>비밀번호 확인</label>
     <input class="fld" id="z-pw2" type="password" autocomplete="new-password">
     <button class="btn wide" id="z-go">봉인하기</button>
     <p class="msg" id="z-msg"></p>
     <div id="z-wrap" style="display:none">
-      <label>봉인 문자열 — <code>SEALED</code> 에 넣을 값</label>
-      <textarea class="out" id="z-out" readonly onclick="this.select()"></textarea>
-      <button class="btn ghost wide" id="z-copy" style="margin-top:8px">복사</button>
+      <div id="z-tkwrap" style="display:none">
+        <label>봉인 문자열 — <code>SEALED</code> 에 넣을 값</label>
+        <textarea class="out" id="z-out" readonly onclick="this.select()"></textarea>
+        <button class="btn ghost wide" id="z-copy" style="margin-top:8px">복사</button>
+      </div>
       <div id="z-awrap" style="display:none">
         <label style="margin-top:14px">API 키 봉인 문자열 — <code>SEALED_AI</code> 에 넣을 값</label>
         <textarea class="out" id="z-aout" readonly onclick="this.select()"></textarea>
@@ -676,28 +681,46 @@ $('#z-go').onclick = async () => {
   const tk = $('#z-tk').value.trim(), ak = $('#z-ak').value.trim();
   const pw = $('#z-pw').value, pw2 = $('#z-pw2').value, m = $('#z-msg');
   const err = t => { m.className='msg err'; m.textContent = t; };
-  if (!/^(github_pat_|ghp_)[\w]{20,}/.test(tk)) return err('GitHub 토큰 형식이 아닙니다.');
+  /* 둘 중 필요한 것만 봉인할 수 있다 — 이미 심어 둔 것을 다시 넣게 하면
+     그때마다 원문을 꺼내 와야 해서, 오히려 토큰이 돌아다니게 된다. */
+  if (!tk && !ak)  return err('GitHub 토큰이나 Anthropic API 키 중 하나는 넣어 주세요.');
+  if (tk && !/^(github_pat_|ghp_)[\w]{20,}/.test(tk)) return err('GitHub 토큰 형식이 아닙니다.');
   if (ak && !/^sk-ant-[\w-]{20,}/.test(ak)) return err('Anthropic API 키 형식이 아닙니다 (sk-ant-… ).');
   if (pw.length < 12) return err('공용 비밀번호는 12자 이상이어야 합니다.');
   if (pw !== pw2)     return err('비밀번호 확인이 일치하지 않습니다.');
-  m.className='msg'; m.textContent='토큰 권한 확인 중…';
-  let r;
-  try { r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:{Authorization:'Bearer '+tk, Accept:'application/vnd.github+json'}}); }
-  catch { return err('네트워크 오류로 토큰을 확인하지 못했습니다.'); }
-  if (!r.ok) return err(r.status === 404
-    ? '이 토큰으로 saw-board 저장소에 접근할 수 없습니다. Resource owner와 저장소 선택을 확인해 주세요.'
-    : '토큰이 유효하지 않습니다 (' + r.status + ').');
-  m.textContent='봉인 중…';
-  const blob = await sealToken(tk, pw);
-  if (await unsealToken(blob, pw) !== tk) return err('봉인 검증에 실패했습니다. 다시 시도해 주세요.');
-  $('#z-out').value = blob; $('#z-wrap').style.display='block'; $('#z-tk').value='';
+  /* 이미 봉인된 토큰이 있으면, 지금 넣은 비밀번호로 그게 풀리는지 먼저 확인한다.
+     비밀번호가 다르면 새로 봉인한 API 키는 로그인할 때 절대 안 풀린다 — 여기서 잡아 준다. */
+  if (SEALED){
+    m.className='msg'; m.textContent='비밀번호 확인 중…';
+    try { await unsealToken(SEALED, pw); }
+    catch { return err('지금 보드에 심어 둔 비밀번호와 다릅니다. 로그인에 쓰는 그 비밀번호를 넣어 주세요.'); }
+  }
+  if (tk){
+    m.className='msg'; m.textContent='토큰 권한 확인 중…';
+    let r;
+    try { r = await fetch(`https://api.github.com/repos/${REPO}`, {headers:{Authorization:'Bearer '+tk, Accept:'application/vnd.github+json'}}); }
+    catch { return err('네트워크 오류로 토큰을 확인하지 못했습니다.'); }
+    if (!r.ok) return err(r.status === 404
+      ? '이 토큰으로 saw-board 저장소에 접근할 수 없습니다. Resource owner와 저장소 선택을 확인해 주세요.'
+      : '토큰이 유효하지 않습니다 (' + r.status + ').');
+  }
+  m.className='msg'; m.textContent='봉인 중…';
+  const done = [];
+  if (tk){
+    const blob = await sealToken(tk, pw);
+    if (await unsealToken(blob, pw) !== tk) return err('봉인 검증에 실패했습니다. 다시 시도해 주세요.');
+    $('#z-out').value = blob; $('#z-tk').value=''; done.push('SEALED');
+  }
   if (ak){
     const ablob = await sealToken(ak, pw);
     if (await unsealToken(ablob, pw) !== ak) return err('API 키 봉인 검증에 실패했습니다. 다시 시도해 주세요.');
-    $('#z-aout').value = ablob; $('#z-awrap').style.display='block'; $('#z-ak').value='';
-  } else { $('#z-awrap').style.display='none'; }
+    $('#z-aout').value = ablob; $('#z-ak').value=''; done.push('SEALED_AI');
+  }
+  $('#z-wrap').style.display   = 'block';               // 결과 영역
+  $('#z-tkwrap').style.display = tk ? 'block' : 'none'; //  └ 이번에 봉인한 것만 보여 준다
+  $('#z-awrap').style.display  = ak ? 'block' : 'none';
   m.className='msg ok';
-  m.textContent = '✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열' + (ak ? '들' : '') + '만 전달하세요.';
+  m.textContent = '✅ ' + done.join(' · ') + ' 봉인 완료 — 아래 문자열만 전달하세요.';
 };
 const copyOut = (src, label) => async () => {
   try { await navigator.clipboard.writeText($(src).value);
