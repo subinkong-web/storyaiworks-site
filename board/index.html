@@ -161,6 +161,34 @@
   .brow:hover .act{opacity:1}
   .brow .act:hover{color:var(--ink)}
 
+  /* ── 지난 기록 보기 (읽기 전용) ── */
+  #hist{position:fixed;inset:0;z-index:140;display:none;background:rgba(0,0,0,.72);padding:26px}
+  #hist.on{display:block}
+  #hist .hbox{height:100%;display:flex;flex-direction:column;background:var(--panel);
+    border:1px solid var(--hair);box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  #hist .hhead{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--hair)}
+  #hist .hhead b{font-size:14px;color:var(--ink);letter-spacing:-.01em}
+  #hist .hnote{flex:1;font-size:11.5px;color:var(--warn);word-break:keep-all}
+  #hist .hbody{flex:1;display:flex;min-height:0}
+  #h-list{width:230px;flex-shrink:0;overflow:auto;border-right:1px solid var(--hair);padding:8px}
+  #h-list .hrow{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:6px;
+    font-size:12.5px;color:var(--txt);line-height:1.35}
+  #h-list .hrow:hover{background:rgba(255,255,255,.06)}
+  #h-list .hrow.on{background:var(--accd);color:#fff}
+  #h-list .hrow i{display:block;font-style:normal;font-size:10.5px;color:var(--dim2);margin-top:2px}
+  #h-list .hrow.on i{color:rgba(255,255,255,.75)}
+  #h-list .empty{padding:14px 10px;font-size:12px;color:var(--dim2);word-break:keep-all}
+  #hist .hview{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+  #h-canvas{flex:1;min-height:0;position:relative}
+  #h-empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim2);font-size:12.5px;
+    text-align:center;padding:20px;word-break:keep-all;pointer-events:none}
+  #hist .hbar{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--hair)}
+  #hist .hbar .sp{flex:1}
+  #hist .hbar button{font-size:12px;padding:7px 13px;border:1px solid var(--hair);border-radius:6px}
+  #hist .hbar button:hover:not(:disabled){background:rgba(255,255,255,.07);color:var(--ink)}
+  #hist .hbar button:disabled{opacity:.4;cursor:default}
+  #h-import{background:var(--accd);color:#fff;border-color:transparent!important}
+
   /* ── 토스트 / 배너 ── */
   #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:130;
     background:#000c;border:1px solid var(--hair);color:var(--ink);font-size:12.5px;padding:9px 16px;
@@ -257,7 +285,8 @@
     <span class="mini" id="b-who"></span>
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
-    <button class="tb" id="b-save">저장</button>
+    <button class="tb" id="b-hist" title="지난 기록 보기 (읽기 전용)">기록</button>
+    <button class="tb" id="b-save" title="지금 저장 (⌘S)">저장</button>
     <button class="tb" id="b-help">?</button>
     <button class="tb" id="b-out">로그아웃</button>
   </div>
@@ -311,6 +340,30 @@
   </div>
 </div>
 
+<!-- ══ 지난 기록 보기 ══ 읽기 전용. 여기서 현재 보드를 덮어쓰는 경로는 없다. -->
+<div id="hist">
+  <div class="hbox">
+    <div class="hhead">
+      <b>지난 기록</b>
+      <span class="hnote">읽기 전용입니다. 여기서 무엇을 고쳐도 저장되지 않고, 현재 보드를 덮어쓰지도 않습니다.
+        필요한 것만 골라 현재 보드로 가져오세요.</span>
+      <button class="tb" id="h-close">닫기</button>
+    </div>
+    <div class="hbody">
+      <div id="h-list"></div>
+      <div class="hview">
+        <div id="h-canvas"></div>
+        <div id="h-empty">왼쪽에서 시점을 고르면 그때의 보드가 여기에 열립니다.</div>
+        <div class="hbar">
+          <span class="mini" id="h-when">—</span>
+          <span class="sp"></span>
+          <button id="h-import" disabled>선택한 것 현재 보드로 가져오기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="banner">
   <span id="ban-tx"></span>
   <button id="ban-reload">불러오기</button>
@@ -340,10 +393,15 @@
       <tr><td>실행취소 / 복제</td><td><kbd>⌘</kbd><kbd>Z</kbd> · <kbd>⌘</kbd><kbd>D</kbd> · <kbd>Alt</kbd>+드래그</td></tr>
       <tr><td>전체 맞춤</td><td><kbd>⇧</kbd><kbd>0</kbd>(FLOWMARK와 같은 키) 또는 <kbd>⇧</kbd><kbd>1</kbd> · 배율 100%는 <kbd>⌘</kbd><kbd>0</kbd></td></tr>
       <tr><td>이름표</td><td>상단 [이름표] 버튼으로 켜고 끕니다. 요소마다 마지막으로 손댄 사람이 표시됩니다</td></tr>
-      <tr><td>저장</td><td>변경 후 3초 뒤 자동 저장 · <kbd>⌘</kbd><kbd>S</kbd> 즉시 저장</td></tr>
+      <tr><td>저장</td><td>바뀐 것이 있으면 <b>2분마다 자동 저장</b>되고, 탭을 닫거나 다른 탭으로 옮길 때도 저장됩니다.
+        지금 당장 저장하려면 상단 [저장] 또는 <kbd>⌘</kbd><kbd>S</kbd></td></tr>
+      <tr><td>기록</td><td>상단 [기록] — <b>하루 두 번(오전·오후)</b>, 그 사이에 바뀐 것이 있을 때만 그때의 보드가 기록으로 남습니다. 3년치를 보관합니다</td></tr>
+      <tr><td>기록에서 가져오기</td><td>기록 창에서 시점을 고른 뒤 필요한 박스를 선택하고
+        [선택한 것 현재 보드로 가져오기]. <b>기록은 읽기 전용이라 현재 보드를 덮어쓰지 않습니다</b></td></tr>
     </table>
     <p class="hint">보드는 비공개 저장소에 저장됩니다. 다른 사람이 같은 보드를 저장하면 상단에 알림이 뜨니,
-      동시에 같은 보드를 편집하는 것은 피해 주세요.</p>
+      동시에 같은 보드를 편집하는 것은 피해 주세요.<br>
+      지난 기록이 참조하므로 <b>붙여넣은 이미지 등 첨부파일은 지워지지 않습니다.</b></p>
     <button class="btn wide" id="h-x">닫기</button>
   </div>
 </div>
@@ -356,6 +414,18 @@
    ※ 비밀번호를 바꾸려면 /board/?seal 에서 다시 봉인해 SEALED를 교체하세요.
    ══════════════════════════════════════════════════════════ */
 const REPO = 'subinkong-web/saw-board';
+
+/* ══ 저장·기록 정책 ══════════════════════════════════════════
+   이 보드는 경영진이 서로 무슨 일이 돌아가는지 보는 용도라, "지금 상태"와 "지난 기록"을
+   확실히 나눈다.
+   · 현재 보드  : 2분마다(변경이 있을 때만) + 창을 닫을 때 + ⌘S 로 저장 — 작업이 날아가지 않게
+   · 기록점     : 하루 두 번(오전/오후)만, 그 사이에 실제로 바뀐 게 있을 때만 남긴다
+   · 기록은 읽기 전용이다. **어떤 경우에도 지난 기록이 현재 보드를 덮어쓰지 않는다.**
+     지난 기록에서 필요한 박스만 골라 현재 보드로 가져오는 것만 된다.
+   · 첨부파일(assets/)은 지난 기록이 참조하므로 절대 지우지 않는다. */
+const MULTI_BOARD = false;              // 지금은 보드 하나만. true 로 바꾸면 예전 다중 보드 UI가 살아난다
+const SAVE_EVERY  = 2 * 60 * 1000;      // 현재 보드 자동저장 간격
+const HIST_KEEP_DAYS = 3 * 365;         // 기록점 보관 기간
 const SEALED = 'eyJ2IjoxLCJzIjoidXI4RFNSTm1hTklTRE9VMGcxQVBnZz09IiwiaSI6IkF5UUVwaVFsdDFqbWc1WEQiLCJjIjoiM0l5bDViMHJMaUkyYUhoQVBKek9aVzUzbWdjOEdvb0daWWNydVZiWWRsWVlZTGMwRHNEQTE3WThldFJmWTF3T3dBUWZqdTMrQk5rS3J5dFV1WEdGclROOW5pYm50ZGVxVU5kVHRZY1JTNTBNWWlRSnpOd1NWKzlsMGtmQUJKM3YzT2JxM2pWaG9hQ21OQzhEVnc9PSJ9';
 const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이는 예비 비밀번호
 const USERS = [
@@ -387,6 +457,7 @@ let S = {
   me:'', boards:[], boardId:null, name:'', idxSha:null,
   sha:null, etag:null, dirty:false, saving:false, loading:false,
   authors:{}, fileMeta:{}, uploaded:new Set(), showTags:true, lastVer:-1,
+  savedAt:0, lastCommit:null, hist:[], histSha:null,
   /* 캔버스 보기 설정 — 사람마다 다르므로 보드 데이터가 아니라 localStorage 에 둔다 */
   theme: localStorage.getItem('saw_board_theme') || 'dark',
   grid:  localStorage.getItem('saw_board_grid') !== '0',
@@ -534,10 +605,11 @@ async function doBoot(){
   }
   try {
     await loadIndex();
+    /* 지금은 보드 하나만 쓴다(추후 여러 개로 확장 예정). 여러 개가 있어도 항상 첫 번째를 연다. */
     const last = localStorage.getItem('saw_board_last');
-    const pick = S.boards.find(b => b.id === last) || S.boards[0];
+    const pick = MULTI_BOARD ? (S.boards.find(b => b.id === last) || S.boards[0]) : S.boards[0];
     if (pick) await openBoard(pick.id);
-    else await newBoard('첫 번째 보드');
+    else await newBoard('경영 보드');
   } catch (e) {
     if (/→ 40[13]$/.test(e.message)){
       localStorage.removeItem('saw_board_token');
@@ -555,7 +627,17 @@ async function doBoot(){
     status('error'); toast('보드를 불러오지 못했습니다 — ' + e.message); return;
   }
   setInterval(poll, 25000);
-  setInterval(() => { if (S.dirty && !S.saving) save(); }, 3000);
+  await loadHistory();
+  setInterval(tick, 15000);
+  /* 탭을 숨기거나 닫기 직전에 밀린 변경을 흘려보낸다. 그래도 못 보낸 게 있으면 붙잡는다. */
+  addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && S.dirty && !S.saving) save(); });
+  addEventListener('beforeunload', e => { if (S.dirty){ e.preventDefault(); e.returnValue = ''; } });
+}
+
+/* 15초마다 확인: 저장할 때가 됐는지, 오늘 기록점을 남길 때가 됐는지 */
+function tick(){
+  if (S.dirty && !S.saving && Date.now() - S.savedAt >= SAVE_EVERY) save();
+  maybeCheckpoint();
 }
 
 /* ══ Excalidraw 마운트 ══
@@ -1114,9 +1196,15 @@ async function newBoard(preset){
 }
 const blank = () => ({v:2, elements:[], appState:{viewBackgroundColor:'#ffffff'}, files:{}, authors:{},
   updatedBy:S.me, updatedAt:Date.now()});
-$('#b-new').onclick = () => newBoard();
-$('#b-boards').onclick = () => { renderList(); $('#drawer').classList.add('on'); };
-$('#drawer').onclick = () => $('#drawer').classList.remove('on');
+/* 지금은 단일 보드. 여러 보드 코드(목록·생성·삭제)는 나중에 다시 켤 수 있게 그대로 두고
+   진입만 막는다 — MULTI_BOARD 를 true 로 바꾸면 예전처럼 동작한다. */
+if (MULTI_BOARD){
+  $('#b-new').onclick = () => newBoard();
+  $('#b-boards').onclick = () => { renderList(); $('#drawer').classList.add('on'); };
+  $('#drawer').onclick = () => $('#drawer').classList.remove('on');
+} else {
+  $('#b-boards').style.display = 'none';
+}
 
 /* ══ 보드 열기 ══ */
 async function openBoard(id){
@@ -1191,6 +1279,67 @@ async function loadFiles(){
 }
 
 /* ══ 저장 ══ */
+/* ══════════ 기록점 (하루 두 번) ══════════
+   내용을 복제해 쌓지 않는다. 저장소가 git이라 저장할 때마다 그 시점 상태가 이미 남으므로,
+   `history/index.json` 에는 "언제 · 누가 · 어느 커밋"만 적어 둔다 → 3년치라도 용량이 거의 안 는다.
+   구간은 오전(0~11시)/오후(12~23시) 둘. 각 구간에 하나씩만, 직전 기록점 이후 실제로
+   바뀐 게 있을 때만 남긴다. */
+const halfKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-` +
+  `${String(d.getDate()).padStart(2,'0')}-${d.getHours() < 12 ? 'AM' : 'PM'}`;
+const halfLabel = k => { const [y,m,dd,h] = k.split('-'); return `${y}.${m}.${dd} ${h === 'AM' ? '오전' : '오후'}`; };
+
+async function loadHistory(){
+  try {
+    const f = await ghGet('history/index.json');
+    S.histSha = f ? f.sha : null;
+    S.hist = f ? (JSON.parse(b64dec(f.content)).points || []) : [];
+  } catch(e){ S.hist = []; S.histSha = null; }
+}
+
+/* data/<board>.json 을 마지막으로 바꾼 커밋. 기록점은 이 커밋을 가리킨다. */
+async function boardCommitSha(){
+  if (S.lastCommit) return S.lastCommit;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/commits?path=data/${S.boardId}.json&per_page=1`,
+    { headers: auth(), cache:'no-store' });
+  if (!r.ok) return null;
+  const j = await r.json();
+  return (j[0] && j[0].sha) || null;
+}
+
+let cpBusy = false;
+async function maybeCheckpoint(){
+  if (cpBusy || !api || !S.boardId || S.loading) return;
+  const key = halfKey(new Date());
+  if (S.hist.some(h => h.key === key)) return;                 // 이번 구간은 이미 남겼다
+  const ver = Ex.getSceneVersion(api.getSceneElements());
+  const last = S.hist[S.hist.length - 1];
+  if (last && last.ver === ver) return;                        // 그 사이에 바뀐 게 없다
+  cpBusy = true;
+  try {
+    if (S.dirty) await save();                                 // 최신 상태를 먼저 커밋
+    const sha = await boardCommitSha();
+    if (!sha) return;
+    const now = Date.now();
+    S.hist.push({ key, at:now, sha, by:S.me, ver,
+      n: api.getSceneElements().filter(e => !e.isDeleted).length });
+    const cut = now - HIST_KEEP_DAYS * 86400000;               // 3년치만 목록에 유지
+    S.hist = S.hist.filter(h => h.at >= cut);
+    const r = await ghPutJson('history/index.json', { points:S.hist },
+      `기록점 ${halfLabel(key)} — ${S.me}`, S.histSha);
+    S.histSha = r.content.sha;
+  } catch(e){
+    // 기록점이 실패해도 현재 보드 저장에는 영향이 없어야 한다. 다음 15초 뒤에 다시 시도된다.
+  } finally { cpBusy = false; }
+}
+
+/* 그 시점의 보드 내용. 읽기만 한다 — 이 값이 현재 보드로 흘러가는 경로는 없다. */
+async function fetchSnapshot(sha){
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/data/${S.boardId}.json?ref=${sha}`,
+    { headers: auth(), cache:'no-store' });
+  if (!r.ok) throw new Error('기록을 불러오지 못했습니다 (' + r.status + ')');
+  return JSON.parse(b64dec((await r.json()).content));
+}
+
 function sceneJson(){
   const elements = api.getSceneElements();
   const alive = new Set(elements.map(e => e.id));
@@ -1222,7 +1371,8 @@ async function save(force){
     await uploadNewFiles();
     const sha = force ? await currentRemoteSha() : S.sha;
     const r = await ghPut(`data/${S.boardId}.json`, b64enc(JSON.stringify(sceneJson())), `${S.name} — ${S.me}`, sha);
-    S.sha = r.content.sha; S.etag = null; S.dirty = false;
+    S.sha = r.content.sha; S.etag = null; S.dirty = false; S.savedAt = Date.now();
+    S.lastCommit = (r.commit && r.commit.sha) || S.lastCommit;   // 기록점이 가리킬 커밋
     status('saved'); $('#banner').classList.remove('on');
   } catch (e) {
     if (e.conflict){ status('conflict');
@@ -1277,11 +1427,155 @@ addEventListener('beforeunload', e => { if (S.dirty){ e.preventDefault(); e.retu
 let tt;
 function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on');
   clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2800); }
+/* ══════════ 지난 기록 보기 창 ══════════
+   현재 보드와 **완전히 분리된** 두 번째 Excalidraw 를 띄워 그 시점 내용을 보여준다.
+   이쪽 api(hApi)는 save() 어디에도 연결돼 있지 않다 — 구조적으로 현재 보드를 덮어쓸 수 없다.
+   보기 전용 모드로 두면 요소를 고를 수가 없어 "가져오기"가 불가능해지므로, 조작은 열어 두되
+   저장 경로를 아예 만들지 않는 방식으로 요구사항(기록은 수정 대상이 아님)을 지킨다. */
+let hApi = null, hRoot = null, hPick = null;   // hPick = 지금 보고 있는 기록의 key
+
+async function openHistory(){
+  $('#hist').classList.add('on');
+  renderHistList();
+  if (!hRoot){
+    const R  = Ex.__React.default || Ex.__React;
+    const RD = Ex.__ReactDOMClient.default || Ex.__ReactDOMClient;
+    const App = () => R.createElement(Ex.Excalidraw, {
+      excalidrawAPI: a => { hApi = a; },
+      langCode: 'ko-KR',
+      initialData: { appState:{ viewBackgroundColor:'#ffffff', theme:S.theme } },
+      UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false, export:false,
+        saveAsImage:false, toggleTheme:false, changeViewBackgroundColor:false, clearCanvas:false } },
+      onChange: () => { $('#h-import').disabled = !hasPick(); },
+    });
+    hRoot = RD.createRoot($('#h-canvas'));       // 컨테이너가 다르므로 본 보드 루트와 충돌하지 않는다
+    hRoot.render(R.createElement(App));
+  }
+}
+const hasPick = () => hApi && Object.values(hApi.getAppState().selectedElementIds || {}).some(Boolean);
+
+function renderHistList(){
+  const el = $('#h-list');
+  el.textContent = '';
+  if (!S.hist.length){
+    const d = document.createElement('div');
+    d.className = 'empty';
+    d.textContent = '아직 남은 기록이 없습니다. 기록은 하루 두 번(오전·오후), 그 사이에 바뀐 것이 있을 때만 남습니다.';
+    el.appendChild(d);
+    return;
+  }
+  [...S.hist].reverse().forEach(h => {
+    const b = document.createElement('button');
+    b.className = 'hrow' + (hPick === h.key ? ' on' : '');
+    b.innerHTML = '<span></span><i></i>';
+    b.firstChild.textContent = halfLabel(h.key);
+    b.lastChild.textContent  = `${h.by} · 요소 ${h.n}개`;
+    b.onclick = () => showSnapshot(h);
+    el.appendChild(b);
+  });
+}
+
+async function showSnapshot(h){
+  if (!hApi) return;
+  hPick = h.key; renderHistList();
+  $('#h-when').textContent = '불러오는 중…';
+  $('#h-empty').style.display = 'none';
+  try {
+    const d = await fetchSnapshot(h.sha);
+    const els = straighten(Ex.restoreElements(d.elements || [], null, {refreshDimensions:false}));
+    hApi.updateScene({ elements: els, appState:{ viewBackgroundColor:'#ffffff', theme:S.theme },
+      captureUpdate: CAP.never });
+    // fitToViewport 는 요소가 몇 개 없으면 수백 %까지 확대해 버린다.
+    // fitToContent 는 화면에 맞추되 등배(100%)를 넘기지 않는다.
+    hApi.scrollToContent(els, { fitToContent:true, animate:false });
+    hSnapFiles = d.files || {};
+    await loadSnapshotFiles(hSnapFiles);
+    $('#h-when').textContent = `${halfLabel(h.key)} · ${h.by} · 요소 ${h.n}개 — 읽기 전용`;
+  } catch(e){
+    $('#h-when').textContent = '';
+    $('#h-empty').style.display = 'grid';
+    toast(e.message);
+  }
+  $('#h-import').disabled = !hasPick();
+}
+
+let hSnapFiles = {};
+async function loadSnapshotFiles(meta){
+  const ids = Object.keys(meta || {});
+  if (!ids.length || !hApi) return;
+  const out = [];
+  for (const id of ids){
+    try {
+      const f = await ghGet('assets/' + id);       // 첨부파일은 지우지 않으므로 옛 기록에서도 그대로 열린다
+      if (!f || !f.content) continue;
+      out.push({ id, mimeType: meta[id].mimeType,
+        dataURL: `data:${meta[id].mimeType};base64,${f.content.replace(/\n/g,'')}`, created: Date.now() });
+    } catch(e){}
+  }
+  if (out.length) hApi.addFiles(out);
+}
+
+/* 고른 것만 현재 보드로 복사해 온다. 그룹·글자·이미지가 딸려 오도록 함께 챙기고
+   id 를 전부 새로 발급해 원본과 얽히지 않게 한다. */
+$('#h-import').onclick = async () => {
+  if (!hApi || !api) return;
+  const all = hApi.getSceneElements().filter(e => !e.isDeleted);
+  const sel = hApi.getAppState().selectedElementIds || {};
+  const groups = new Set();
+  for (const e of all) if (sel[e.id]) (e.groupIds || []).forEach(g => groups.add(g));
+  const take = all.filter(e =>
+    sel[e.id] ||
+    (e.groupIds || []).some(g => groups.has(g)) ||
+    (e.containerId && (sel[e.containerId] || all.some(p => p.id === e.containerId && (p.groupIds||[]).some(g => groups.has(g))))));
+  if (!take.length) return toast('가져올 것을 먼저 선택해 주세요.');
+
+  const idMap = new Map(), grpMap = new Map();
+  const nid = () => 'im' + uid();
+  take.forEach(e => idMap.set(e.id, nid()));
+  const cur = api.getSceneElements();
+  const box = cur.filter(e => !e.isDeleted);
+  const dx = box.length ? Math.max(...box.map(e => e.x + e.width)) + 60 - Math.min(...take.map(e => e.x)) : 0;
+  const copies = take.map(e => ({
+    ...e, id: idMap.get(e.id), x: e.x + dx,
+    groupIds: (e.groupIds || []).map(g => (grpMap.has(g) || grpMap.set(g, 'g' + uid()), grpMap.get(g))),
+    containerId: e.containerId ? (idMap.get(e.containerId) || null) : null,
+    // 같이 가져오지 않은 것을 가리키는 연결은 끊는다(끊지 않으면 없는 요소를 참조해 깨진다)
+    boundElements: (e.boundElements || []).filter(b => idMap.has(b.id))
+                                          .map(b => ({ ...b, id: idMap.get(b.id) })),
+    version: 1, versionNonce: Math.floor(Math.random() * 1e9), updated: Date.now(),
+  }));
+
+  // 이미지가 섞여 있으면 그림 데이터도 함께 옮긴다(에셋은 이미 저장소에 있으니 다시 올리지 않는다)
+  const fileIds = [...new Set(copies.map(e => e.fileId).filter(Boolean))];
+  if (fileIds.length){
+    const files = hApi.getFiles() || {};
+    const add = fileIds.filter(id => files[id]).map(id => ({ ...files[id], created: Date.now() }));
+    if (add.length) api.addFiles(add);
+    for (const id of fileIds){
+      if (hSnapFiles[id]) S.fileMeta[id] = hSnapFiles[id];
+      S.uploaded.add(id);                       // 이미 assets/ 에 있으므로 재업로드 금지
+    }
+  }
+
+  api.updateScene({ elements: [...cur, ...copies], captureUpdate: CAP.now });
+  api.updateScene({ appState:{ selectedElementIds: Object.fromEntries(copies.map(e => [e.id, true])) },
+    captureUpdate: CAP.never });
+  api.scrollToContent(copies, { fitToViewport:false });
+  markDirty();
+  $('#hist').classList.remove('on');
+  toast(`${copies.length}개를 현재 보드로 가져왔습니다. 원래 기록은 그대로 남아 있습니다.`);
+};
+
+$('#b-hist').onclick  = () => openHistory();
+$('#h-close').onclick = () => $('#hist').classList.remove('on');
+$('#hist').onclick    = e => { if (e.target.id === 'hist') $('#hist').classList.remove('on'); };
+
 $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
 
-window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, boot, enter, openBoard, save, drawTags, drawMinimap };
+window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, get hApi(){ return hApi; },
+  boot, enter, openBoard, save, drawTags, drawMinimap, openHistory, maybeCheckpoint };
 
 if (/[?&]seal\b/.test(location.search)){
   $('#gate').style.display = 'none';
