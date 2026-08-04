@@ -117,6 +117,24 @@
   #boot{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim2);font-size:13px;
     text-align:center;padding:24px;word-break:keep-all}
 
+  /* ── 미니맵 (FLOWMARK 하단 미니맵 표현을 옮겨온 것) ── */
+  #minimap{position:fixed;right:12px;bottom:52px;z-index:6;display:none;gap:3px;
+    padding:4px;background:rgba(19,19,22,.92);border:1px solid var(--hair);border-radius:8px;
+    backdrop-filter:blur(6px)}
+  #app.on #minimap{display:flex}
+  #mm-invert{width:24px;flex-shrink:0;border:1px solid rgba(255,255,255,.14);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;padding:0}
+  #mm-invert:hover{background:rgba(255,255,255,.08)}
+  #mm-body{display:flex;flex-direction:column;min-width:0}
+  #mm-head{display:flex;align-items:center;gap:6px;padding:0 2px 3px;
+    font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--dim2)}
+  #mm-head .sp{flex:1}
+  #mm-fold{font-size:11px;line-height:1;color:var(--dim2);padding:0 3px}
+  #mm-fold:hover{color:var(--ink)}
+  #mm-canvas{width:212px;height:132px;display:block;border-radius:3px;background:#111;cursor:pointer}
+  #minimap.folded #mm-canvas{display:none}
+  #minimap.folded #mm-invert{display:none}
+
   /* ── 작성자 태그 ── */
   #tags{position:fixed;inset:0;pointer-events:none;z-index:4}
   .tag{position:absolute;transform:translateY(-100%);
@@ -238,6 +256,7 @@
     <span class="mini" id="b-state"><span class="dot"></span>저장됨</span>
     <span class="mini" id="b-who"></span>
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
+    <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
     <button class="tb" id="b-save">저장</button>
     <button class="tb" id="b-help">?</button>
     <button class="tb" id="b-out">로그아웃</button>
@@ -249,6 +268,21 @@
       <div id="cardhint">놓을 자리를 클릭하세요 — 드래그하면 크기를 정할 수 있습니다 (Esc 취소)</div>
     </div>
     <div id="boot">화이트보드를 불러오는 중…</div>
+  </div>
+
+  <!-- ══ 미니맵 (FLOWMARK 우하단 미니맵을 옮겨온 것) ══
+       position:fixed 라 #app 의 grid 행을 차지하지 않는다. -->
+  <div id="minimap">
+    <button id="mm-invert" type="button" title="캔버스 밝기 반전">
+      <svg width="14" height="28" viewBox="0 0 16 32">
+        <rect x="2" y="2" width="12" height="12" rx="2" fill="#444"/>
+        <rect x="2" y="18" width="12" height="12" rx="2" fill="#fff" opacity=".9"/>
+      </svg>
+    </button>
+    <div id="mm-body">
+      <div id="mm-head"><span>미니맵</span><span class="sp"></span><button id="mm-fold" type="button" title="접기">–</button></div>
+      <canvas id="mm-canvas"></canvas>
+    </div>
   </div>
 </div>
 
@@ -296,10 +330,15 @@
       <tr><td>박스 색</td><td>[＋ 텍스트 박스] 옆 색 버튼으로 다음에 만들 색을 고릅니다.
         이미 만든 박스는 선택한 뒤 왼쪽 패널의 <b>배경색</b>을 바꾸면 제목·본문이 함께 바뀝니다</td></tr>
       <tr><td>도형</td><td>상단 [도형 ▾] — 사각형 · 마름모 · 원 · 선 · 화살표 · 펜</td></tr>
-      <tr><td>화면 이동 / 확대</td><td>휠·두 손가락 이동, <kbd>⌘</kbd>+휠 확대, <kbd>Space</kbd>+드래그</td></tr>
+      <tr><td>확대 / 축소</td><td><b>휠을 굴리면 바로 확대·축소됩니다</b>(FLOWMARK와 같은 조작).
+        두 손가락 벌리기도 같습니다</td></tr>
+      <tr><td>화면 이동</td><td><kbd>Space</kbd>+드래그, 마우스 가운데 버튼 드래그, 또는 <b>미니맵을 클릭·드래그</b></td></tr>
+      <tr><td>미니맵</td><td>우측 아래. 전체 그림에서 지금 어디를 보고 있는지 하늘색 사각형으로 표시합니다.
+        옆의 작은 버튼은 <b>캔버스 밝기 반전</b>, 제목 옆 <kbd>–</kbd> 는 접기</td></tr>
+      <tr><td>격자</td><td>상단 [격자] 버튼으로 켜고 끕니다</td></tr>
       <tr><td>이미지</td><td>스크린샷을 <kbd>⌘</kbd><kbd>V</kbd> 로 붙여넣거나 드래그해서 놓기</td></tr>
       <tr><td>실행취소 / 복제</td><td><kbd>⌘</kbd><kbd>Z</kbd> · <kbd>⌘</kbd><kbd>D</kbd> · <kbd>Alt</kbd>+드래그</td></tr>
-      <tr><td>전체 맞춤</td><td><kbd>⇧</kbd><kbd>1</kbd> · 배율 100%는 <kbd>⌘</kbd><kbd>0</kbd></td></tr>
+      <tr><td>전체 맞춤</td><td><kbd>⇧</kbd><kbd>0</kbd>(FLOWMARK와 같은 키) 또는 <kbd>⇧</kbd><kbd>1</kbd> · 배율 100%는 <kbd>⌘</kbd><kbd>0</kbd></td></tr>
       <tr><td>이름표</td><td>상단 [이름표] 버튼으로 켜고 끕니다. 요소마다 마지막으로 손댄 사람이 표시됩니다</td></tr>
       <tr><td>저장</td><td>변경 후 3초 뒤 자동 저장 · <kbd>⌘</kbd><kbd>S</kbd> 즉시 저장</td></tr>
     </table>
@@ -338,7 +377,12 @@ let S = {
   me:'', boards:[], boardId:null, name:'', idxSha:null,
   sha:null, etag:null, dirty:false, saving:false, loading:false,
   authors:{}, fileMeta:{}, uploaded:new Set(), showTags:true, lastVer:-1,
+  /* 캔버스 보기 설정 — 사람마다 다르므로 보드 데이터가 아니라 localStorage 에 둔다 */
+  theme: localStorage.getItem('saw_board_theme') || 'dark',
+  grid:  localStorage.getItem('saw_board_grid') !== '0',
+  mmFold: localStorage.getItem('saw_board_mm') === '0',
 };
+const GRID_SIZE = 20, GRID_STEP = 5;   // 20px 잔격자 + 100px마다 굵은 선 (FLOWMARK의 2단 격자)
 const prevVer = new Map();      // elementId → element.version
 
 /* ══ GitHub API ══ */
@@ -515,12 +559,19 @@ async function doMount(){
   const React = ExMod.__React, ReactDOM = ExMod.__ReactDOMClient;
   Ex = ExMod;
   const R = React.default || React;
+  /* theme 을 prop 으로 주면 고정되어 반전 버튼이 먹지 않는다. initialData 로만 넣고
+     이후에는 updateScene({appState:{theme}}) 으로 바꾼다.
+     ⚠️ viewBackgroundColor 는 항상 흰색이어야 한다 — 다크 테마가 캔버스에 invert 필터를
+     걸기 때문에 어두운 값을 넣으면 오히려 밝게 렌더된다. */
   const App = () => R.createElement(Ex.Excalidraw, {
     excalidrawAPI: a => { api = a; },
-    theme: 'dark',
     langCode: 'ko-KR',
     onChange: onSceneChange,
-    initialData: { appState: { viewBackgroundColor:'#ffffff' } },
+    initialData: { appState: {
+      viewBackgroundColor:'#ffffff',
+      theme: S.theme,
+      gridModeEnabled: S.grid, gridSize: GRID_SIZE, gridStep: GRID_STEP,
+    } },
     UIOptions: { canvasActions: { saveToActiveFile:false, loadScene:false } },
   });
   (ReactDOM.default || ReactDOM).createRoot($('#ex')).render(R.createElement(App));
@@ -531,6 +582,7 @@ async function doMount(){
   if (!api) throw new Error('Excalidraw 초기화 시간 초과');
   $('#boot').style.display = 'none';
   placeTools();
+  initCanvasView();
   const tb = document.querySelector('.excalidraw .App-toolbar');
   if (tb && window.ResizeObserver) new ResizeObserver(placeTools).observe(tb);
 }
@@ -542,7 +594,7 @@ function onSceneChange(elements, appState){
   const v = Ex.getSceneVersion(elements);
   if (!S.loading && S.lastVer !== -1 && v !== S.lastVer) markDirty();
   S.lastVer = v;
-  if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); placeTools(); });
+  if (!tagRaf) tagRaf = requestAnimationFrame(() => { tagRaf = 0; drawTags(); placeTools(); drawMinimap(); });
 }
 
 /* 자체 도구 섬을 Excalidraw 툴바 왼쪽에 나란히 붙인다(좁으면 툴바 아래 가운데로). */
@@ -627,6 +679,187 @@ $('#b-tags').onclick = () => {
   drawTags();
 };
 addEventListener('resize', drawTags);
+
+/* ══════════ 캔버스 보기 — FLOWMARK에서 옮겨온 것 ══════════
+   1) 휠만 굴려도 줌 (FLOWMARK와 같은 조작감: deltaY 크기에 비례해 6~42%)
+   2) 2단 격자 (잔격자 + 굵은 선) — Excalidraw 자체 격자 기능을 FLOWMARK 비율로 맞춤
+   3) 캔버스 밝기 반전 버튼
+   4) 우하단 미니맵 — 콘텐츠·뷰포트 표시 + 클릭/드래그로 이동
+   Excalidraw는 무한 캔버스라 FLOWMARK의 유한 캔버스 경계(점선)와 바깥 void 는 옮기지 않았다. */
+
+const ZOOM_MIN = 0.1, ZOOM_MAX = 5;
+const mmEl = $('#minimap'), mmCv = $('#mm-canvas'), mmCtx = mmCv.getContext('2d');
+
+function initCanvasView(){
+  applyGrid(); applyTheme(); applyFold();
+  const host = $('#ex');
+
+  /* 휠 = 줌. Excalidraw 기본은 "휠=스크롤, Ctrl+휠=줌"이지만 FLOWMARK와 손이 달라져서
+     캡처 단계에서 가로챈다. stopPropagation 을 안 하면 Excalidraw가 스크롤까지 겹쳐 먹는다. */
+  host.addEventListener('wheel', e => {
+    // 좌측 속성 패널·라이브러리 같은 UI 위에서는 원래대로 스크롤되게 둔다
+    if (!e.target.closest || !e.target.closest('.excalidraw__canvas')) return;
+    e.preventDefault(); e.stopPropagation();
+    const st = api.getAppState();
+    const intensity = Math.min(Math.abs(e.deltaY) / 100, 1);   // 0..1
+    const step = 0.36 * intensity + 0.06;                      // 6%~42%
+    const factor = e.deltaY < 0 ? (1 + step) : 1 / (1 + step);
+    const z0 = st.zoom.value;
+    const z1 = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z0 * factor));
+    if (z1 === z0) return;
+    // 포인터 밑의 장면 좌표가 제자리에 남도록 scroll 을 보정한다
+    const w = Ex.viewportCoordsToSceneCoords({clientX:e.clientX, clientY:e.clientY}, st);
+    api.updateScene({ appState:{
+      zoom:{ value:z1 },
+      scrollX: (w.x + st.scrollX) * z0 / z1 - w.x,
+      scrollY: (w.y + st.scrollY) * z0 / z1 - w.y,
+    }});
+    drawMinimap();
+  }, { capture:true, passive:false });
+
+  /* Shift+0 = 전체 맞추기 (FLOWMARK와 같은 키. Excalidraw 기본 Shift+1도 그대로 둔다).
+     Excalidraw가 키 이벤트를 도중에 삼켜서 버블 단계로는 안 온다 — 캡처 단계로 받아야 한다. */
+  addEventListener('keydown', e => {
+    if (!e.shiftKey || e.code !== 'Digit0') return;
+    const t = e.target;
+    if (t && (t.isContentEditable || (t.closest && t.closest('input, textarea, select')))) return;
+    e.preventDefault(); e.stopPropagation();
+    // animate:true 를 주면 트윈이 걸리는 대신 실제로 반영이 안 되는 경우가 있어 즉시 맞춘다
+    api.scrollToContent(api.getSceneElements(), { fitToViewport:true });
+    setTimeout(drawMinimap, 60);
+  }, { capture:true });
+
+  addEventListener('resize', drawMinimap);
+  setInterval(drawMinimap, 200);          // 팬/줌이 onChange를 안 태우는 경로가 있어 폴백을 둔다
+  drawMinimap();
+}
+
+function applyGrid(){
+  $('#b-grid').classList.toggle('on', S.grid);
+  if (api) api.updateScene({ appState:{ gridModeEnabled:S.grid, gridSize:GRID_SIZE, gridStep:GRID_STEP } });
+}
+function applyTheme(){
+  if (api) api.updateScene({ appState:{ theme:S.theme } });
+  drawMinimap();
+}
+function applyFold(){
+  mmEl.classList.toggle('folded', S.mmFold);
+  $('#mm-fold').textContent = S.mmFold ? '+' : '–';
+  $('#mm-fold').title = S.mmFold ? '펼치기' : '접기';
+  if (!S.mmFold) drawMinimap();
+}
+$('#b-grid').onclick = () => {
+  S.grid = !S.grid; localStorage.setItem('saw_board_grid', S.grid ? '1' : '0'); applyGrid();
+};
+$('#mm-invert').onclick = () => {
+  S.theme = S.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('saw_board_theme', S.theme); applyTheme();
+};
+$('#mm-fold').onclick = () => {
+  S.mmFold = !S.mmFold; localStorage.setItem('saw_board_mm', S.mmFold ? '0' : '1'); applyFold();
+};
+
+/* ── 미니맵 그리기 ──
+   콘텐츠 전체 범위와 현재 뷰포트를 합친 영역에 15% 여백을 두고 축소해 넣는다.
+   요소가 하나도 없으면 뷰포트 주변만 보여준다. */
+const MM_PAD = 4;
+let mmTf = null;
+function mmViewport(){
+  const st = api.getAppState();
+  const z = st.zoom.value;
+  const r = $('#ex').getBoundingClientRect();
+  const w = (st.width || r.width) / z, h = (st.height || r.height) / z;
+  return { x:-st.scrollX, y:-st.scrollY, w, h, zoom:z, st };
+}
+function drawMinimap(){
+  // position:fixed 요소는 offsetParent 가 항상 null 이라 그걸로 표시 여부를 판단하면 안 된다
+  if (!api || S.mmFold || !$('#app').classList.contains('on')) return;
+  const dpr = devicePixelRatio || 1;
+  const cw = mmCv.clientWidth, ch = mmCv.clientHeight;
+  if (!cw || !ch) return;
+  // 백킹스토어 재할당은 크기가 바뀔 때만 — 팬 중 매 프레임 재할당하면 눈에 띄게 느려진다
+  const bw = Math.round(cw * dpr), bh = Math.round(ch * dpr);
+  if (mmCv.width !== bw || mmCv.height !== bh){ mmCv.width = bw; mmCv.height = bh; }
+  mmCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  mmCtx.clearRect(0, 0, cw, ch);
+
+  const dark = S.theme === 'dark';
+  mmCtx.fillStyle = dark ? '#17171b' : '#c9c9cd';
+  mmCtx.fillRect(0, 0, cw, ch);
+
+  const els = api.getSceneElements().filter(e => !e.isDeleted);
+  const vp = mmViewport();
+  let minX = vp.x, minY = vp.y, maxX = vp.x + vp.w, maxY = vp.y + vp.h;
+  if (els.length){
+    let eminX = Infinity, eminY = Infinity, emaxX = -Infinity, emaxY = -Infinity;
+    for (const el of els){
+      if (el.x < eminX) eminX = el.x;
+      if (el.y < eminY) eminY = el.y;
+      if (el.x + el.width  > emaxX) emaxX = el.x + el.width;
+      if (el.y + el.height > emaxY) emaxY = el.y + el.height;
+    }
+    minX = Math.min(minX, eminX); minY = Math.min(minY, eminY);
+    maxX = Math.max(maxX, emaxX); maxY = Math.max(maxY, emaxY);
+  }
+  const padX = (maxX - minX) * 0.15, padY = (maxY - minY) * 0.15;
+  minX -= padX; maxX += padX; minY -= padY; maxY += padY;
+
+  const worldW = (maxX - minX) || 1, worldH = (maxY - minY) || 1;
+  const drawW = cw - MM_PAD * 2, drawH = ch - MM_PAD * 2;
+  const scale = Math.min(drawW / worldW, drawH / worldH);
+  const offX = MM_PAD + (drawW - worldW * scale) / 2;
+  const offY = MM_PAD + (drawH - worldH * scale) / 2;
+  mmTf = { minX, minY, scale, offX, offY };
+  const toMM = (wx, wy) => ({ x: offX + (wx - minX) * scale, y: offY + (wy - minY) * scale });
+
+  const sel = vp.st.selectedElementIds || {};
+  for (const el of els){
+    if (el.containerId) continue;                        // 도형에 묶인 텍스트는 도형이 대표한다
+    const p = toMM(el.x, el.y);
+    const w = Math.max(el.width  * scale, 2), h = Math.max(el.height * scale, 2);
+    const c = el.backgroundColor && el.backgroundColor !== 'transparent'
+      ? el.backgroundColor : (el.strokeColor || '#888');
+    mmCtx.globalAlpha = sel[el.id] ? 1 : .75;
+    mmCtx.fillStyle = c;
+    mmCtx.fillRect(p.x, p.y, w, h);
+    if (sel[el.id]){
+      mmCtx.strokeStyle = '#fff'; mmCtx.lineWidth = 1;
+      mmCtx.strokeRect(p.x, p.y, w, h);
+    }
+  }
+  mmCtx.globalAlpha = 1;
+
+  // 현재 보고 있는 영역
+  const tl = toMM(vp.x, vp.y), vw = vp.w * scale, vh = vp.h * scale;
+  mmCtx.fillStyle = 'rgba(100,200,255,.18)';
+  mmCtx.fillRect(tl.x, tl.y, vw, vh);
+  mmCtx.strokeStyle = '#64c8ff'; mmCtx.lineWidth = 2; mmCtx.globalAlpha = .9;
+  mmCtx.strokeRect(tl.x, tl.y, vw, vh);
+  mmCtx.globalAlpha = 1;
+  mmCtx.fillStyle = '#64c8ff';
+  for (const [x, y] of [[tl.x,tl.y],[tl.x+vw,tl.y],[tl.x,tl.y+vh],[tl.x+vw,tl.y+vh]]){
+    mmCtx.beginPath(); mmCtx.arc(x, y, 2, 0, Math.PI * 2); mmCtx.fill();
+  }
+}
+
+/* ── 미니맵 클릭/드래그로 이동 ── */
+let mmDrag = false;
+function mmPanTo(e){
+  if (!api || !mmTf) return;
+  const r = mmCv.getBoundingClientRect();
+  const wx = (e.clientX - r.left - mmTf.offX) / mmTf.scale + mmTf.minX;
+  const wy = (e.clientY - r.top  - mmTf.offY) / mmTf.scale + mmTf.minY;
+  const vp = mmViewport();
+  // 클릭한 지점이 화면 한가운데 오도록. scroll 은 장면 좌표계라 이 식이 offset 과 무관하다.
+  api.updateScene({ appState:{ scrollX: vp.w / 2 - wx, scrollY: vp.h / 2 - wy } });
+  drawMinimap();
+}
+mmCv.addEventListener('pointerdown', e => {
+  mmDrag = true; mmCv.setPointerCapture(e.pointerId); mmPanTo(e);
+});
+mmCv.addEventListener('pointermove', e => { if (mmDrag) mmPanTo(e); });
+mmCv.addEventListener('pointerup',     () => { mmDrag = false; });
+mmCv.addEventListener('pointercancel', () => { mmDrag = false; });
 
 /* ══════════ 텍스트 박스 (헤더 + 본문 카드) ══════════
    사각형 컨테이너 두 개(헤더/본문)를 한 그룹으로 묶는다. 각 컨테이너의 글자는
@@ -987,7 +1220,7 @@ $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
 
-window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, boot, enter, openBoard, save, drawTags };
+window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, boot, enter, openBoard, save, drawTags, drawMinimap };
 
 if (/[?&]seal\b/.test(location.search)){
   $('#gate').style.display = 'none';
