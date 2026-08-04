@@ -1250,6 +1250,7 @@ function initPlayers() {
       ifr.allow = 'autoplay; encrypted-media; picture-in-picture';
       ifr.allowFullscreen = true;
       ph.appendChild(ifr);
+      ph.classList.add('playing');
     }, { once: true });
   });
 }
