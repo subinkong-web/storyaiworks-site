@@ -18,6 +18,7 @@
     --bg:#0B0B0C;--panel:#131316;--panel2:#1A1A1E;--ink:#F4F3F0;--txt:#C6C6CB;
     --dim:#93939A;--dim2:#616168;--acc:#B49BE2;--accd:#674498;
     --hair:rgba(255,255,255,.09);--ok:#7BC98A;--warn:#E2A75B;--err:#E27B7B;
+    --chatw:min(400px,38vw);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;overflow:hidden}
@@ -159,6 +160,41 @@
   .tag i{font-style:normal;color:#9E9E9E;font-weight:500;font-size:9.5px}
   #tags.dark .tag{filter:invert(93%) hue-rotate(180deg)}
 
+  /* ── Claude 대화 패널 ──
+     캔버스를 덮지 않고 오른쪽을 실제로 비켜 준다(#ex 를 좁힌다). 그래야 Excalidraw 가
+     제 크기를 다시 재서, 화면 좌표로 그리는 이름표·체크박스도 어긋나지 않는다. */
+  #chat{position:fixed;top:52px;right:0;bottom:0;width:var(--chatw);z-index:20;display:none;
+    flex-direction:column;background:var(--panel);border-left:1px solid var(--hair)}
+  #app.chat #chat{display:flex}
+  #app.chat #ex{right:var(--chatw)}
+  #app.chat #minimap{right:calc(var(--chatw) + 12px)}
+  #chat .chead{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--hair)}
+  #chat .chead b{font-size:13px;color:var(--ink);letter-spacing:-.01em}
+  #chat .chead .sp{flex:1}
+  #chat .chead button{font-size:11.5px;color:var(--dim2);padding:3px 7px}
+  #chat .chead button:hover{color:var(--ink)}
+  #c-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  #c-log .m{font-size:12.8px;line-height:1.62;word-break:break-word;white-space:pre-wrap}
+  #c-log .m.me{align-self:flex-end;max-width:88%;background:var(--accd);color:#fff;
+    padding:8px 12px;border-radius:12px 12px 3px 12px}
+  #c-log .m.ai{color:var(--txt)}
+  #c-log .m.err{color:var(--err)}
+  #c-log .act{font-size:11.5px;color:var(--dim2);display:flex;align-items:center;gap:6px;
+    padding:3px 0;word-break:keep-all}
+  #c-log .act::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accd);flex-shrink:0}
+  #c-log .hi{color:var(--dim2);font-size:12px;line-height:1.7;word-break:keep-all}
+  #c-log .hi b{color:var(--txt);font-weight:600}
+  #c-foot{border-top:1px solid var(--hair);padding:10px 12px}
+  #c-in{width:100%;min-height:62px;max-height:180px;resize:none;background:var(--panel2);
+    border:1px solid var(--hair);color:var(--ink);font:inherit;font-size:12.8px;line-height:1.55;
+    padding:9px 11px;outline:none}
+  #c-in:focus{border-color:var(--accd)}
+  #c-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+  #c-row .sp{flex:1}
+  #c-row .tip{font-size:10.5px;color:var(--dim2)}
+  #c-send{background:var(--accd);color:#fff;font-size:12px;font-weight:700;padding:7px 16px}
+  #c-send:disabled{opacity:.45;cursor:default}
+
   /* ── 보드 목록 서랍 ── */
   #drawer{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.6);display:none}
   #drawer.on{display:block}
@@ -268,10 +304,13 @@
 <div class="gate" id="seal" style="display:none">
   <div class="box">
     <h1>토큰 봉인</h1>
-    <p class="sub">GitHub 토큰을 공용 비밀번호로 암호화합니다. <b>토큰과 비밀번호는 이 브라우저 밖으로 나가지 않습니다.</b>
+    <p class="sub">GitHub 토큰(과 선택적으로 Anthropic API 키)을 공용 비밀번호로 암호화합니다.
+      <b>원문과 비밀번호는 이 브라우저 밖으로 나가지 않습니다.</b>
       결과로 나오는 봉인 문자열만 페이지에 심으면, 이후 다른 사람은 이름·비밀번호만으로 들어옵니다.</p>
     <label>GitHub Personal Access Token</label>
     <input class="fld" id="z-tk" type="password" placeholder="github_pat_… 또는 ghp_…" autocomplete="off">
+    <label>Anthropic API 키 <span style="color:var(--dim2);font-weight:400">— 선택. Claude 대화 패널용</span></label>
+    <input class="fld" id="z-ak" type="password" placeholder="sk-ant-… (비워두면 Claude 기능이 꺼집니다)" autocomplete="off">
     <label>공용 비밀번호 (12자 이상)</label>
     <input class="fld" id="z-pw" type="password" autocomplete="new-password">
     <label>비밀번호 확인</label>
@@ -279,11 +318,16 @@
     <button class="btn wide" id="z-go">봉인하기</button>
     <p class="msg" id="z-msg"></p>
     <div id="z-wrap" style="display:none">
-      <label>봉인 문자열</label>
+      <label>봉인 문자열 — <code>SEALED</code> 에 넣을 값</label>
       <textarea class="out" id="z-out" readonly onclick="this.select()"></textarea>
       <button class="btn ghost wide" id="z-copy" style="margin-top:8px">복사</button>
+      <div id="z-awrap" style="display:none">
+        <label style="margin-top:14px">API 키 봉인 문자열 — <code>SEALED_AI</code> 에 넣을 값</label>
+        <textarea class="out" id="z-aout" readonly onclick="this.select()"></textarea>
+        <button class="btn ghost wide" id="z-acopy" style="margin-top:8px">복사</button>
+      </div>
       <p class="hint">이 문자열은 비밀번호 없이는 아무 의미가 없으므로 그대로 전달해도 안전합니다.
-        <b>토큰 원문과 비밀번호는 절대 전달하지 마세요.</b></p>
+        <b>토큰·API 키 원문과 비밀번호는 절대 전달하지 마세요.</b></p>
     </div>
   </div>
 </div>
@@ -299,6 +343,7 @@
     <span class="mini" id="b-who"></span>
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
+    <button class="tb" id="b-ai" title="Claude 에게 카드 배치·정리를 맡깁니다">Claude</button>
     <button class="tb" id="b-hist" title="지난 기록 보기 (읽기 전용)">기록</button>
     <button class="tb" id="b-fresh" title="지금 내용을 기록으로 남기고 빈 캔버스에서 시작">새 캔버스</button>
     <button class="tb" id="b-save" title="지금 저장 (⌘S)">저장</button>
@@ -312,6 +357,27 @@
       <div id="cardhint">카드를 놓을 자리를 클릭하세요 — 드래그하면 크기를 정할 수 있습니다 (Esc 취소)</div>
     </div>
     <div id="boot">화이트보드를 불러오는 중…</div>
+  </div>
+
+  <!-- ══ Claude 대화 패널 ══
+       카드를 만들고·고치고·정리·통합하는 일을 말로 시킨다. 모든 변경은 보통 편집과 똑같이
+       ⌘Z 로 되돌아가고, 평소의 자동저장·기록점 흐름을 그대로 탄다. -->
+  <div id="chat">
+    <div class="chead">
+      <b>Claude</b>
+      <span class="sp"></span>
+      <button id="c-clear" type="button" title="대화 내용 지우기 (보드는 그대로)">대화 비우기</button>
+      <button id="c-x" type="button" title="닫기">✕</button>
+    </div>
+    <div id="c-log"></div>
+    <div id="c-foot">
+      <textarea id="c-in" placeholder="예) 이번 주 할 일을 카드 3장으로 나눠서 만들어줘"></textarea>
+      <div id="c-row">
+        <span class="tip">⌘Enter 로 전송</span>
+        <span class="sp"></span>
+        <button id="c-send" type="button">보내기</button>
+      </div>
+    </div>
   </div>
 
   <!-- ══ 미니맵 (FLOWMARK 우하단 미니맵을 옮겨온 것) ══
@@ -406,6 +472,11 @@
       <tr><td>체크 목록</td><td>카드를 고른 뒤 [체크] — 본문에 <b>☐ 할 일</b> 줄이 붙습니다.
         네모를 클릭하면 ☑ 로 바뀌어 했다/안 했다를 표시할 수 있습니다</td></tr>
       <tr><td>도형</td><td>상단 [도형 ▾] — 사각형 · 마름모 · 원 · 선 · 화살표 · 펜</td></tr>
+      <tr><td>Claude</td><td>상단 [Claude] — 오른쪽에 대화창이 열립니다. 말로 시키면 <b>카드를 만들고,
+        내용을 고치고, 격자로 정리하고, 여러 장을 하나로 합쳐</b> 줍니다.
+        예) “회의 안건 4개를 카드로 만들어줘”, “흩어진 카드 정리해줘”, “비슷한 카드 두 장 합쳐줘”.<br>
+        Claude 가 바꾼 것도 <kbd>⌘</kbd><kbd>Z</kbd> 로 되돌아가고 평소처럼 자동 저장되며,
+        이름표에는 <b>Claude</b> 로 표시됩니다. 대화 내용은 보드에 저장되지 않습니다</td></tr>
       <tr><td>확대 / 축소</td><td><b>휠을 굴리면 바로 확대·축소됩니다</b>(FLOWMARK와 같은 조작).
         두 손가락 벌리기도 같습니다</td></tr>
       <tr><td>화면 이동</td><td><kbd>Space</kbd>+드래그, 마우스 가운데 버튼 드래그, 또는 <b>미니맵을 클릭·드래그</b></td></tr>
@@ -453,6 +524,18 @@ const SAVE_EVERY  = 2 * 60 * 1000;      // 현재 보드 자동저장 간격
 const HIST_KEEP_DAYS = 3 * 365;         // 기록점 보관 기간
 const SEALED = 'eyJ2IjoxLCJzIjoidXI4RFNSTm1hTklTRE9VMGcxQVBnZz09IiwiaSI6IkF5UUVwaVFsdDFqbWc1WEQiLCJjIjoiM0l5bDViMHJMaUkyYUhoQVBKek9aVzUzbWdjOEdvb0daWWNydVZiWWRsWVlZTGMwRHNEQTE3WThldFJmWTF3T3dBUWZqdTMrQk5rS3J5dFV1WEdGclROOW5pYm50ZGVxVU5kVHRZY1JTNTBNWWlRSnpOd1NWKzlsMGtmQUJKM3YzT2JxM2pWaG9hQ21OQzhEVnc9PSJ9';
 const PW = '00000';                    // SEALED가 비어 있을 때만 쓰이는 예비 비밀번호
+
+/* ══ Claude 대화 패널 ══════════════════════════════════════
+   이 보드는 서버가 없는 정적 페이지라(GitHub Pages) API 키를 둘 곳이 페이지 안뿐이다.
+   그래서 GitHub 토큰과 **똑같은 방식**으로 공용 비밀번호로 봉인해 둔다 — 저장소에 남는 것은
+   암호문이고, 로그인할 때 그 비밀번호로 풀어 sessionStorage 에만 잠깐 둔다(창을 닫으면 사라진다).
+   ⚠️ 알아 둘 것: 비밀번호를 아는 사람은 키를 꺼내 쓸 수 있다. 즉 **비밀번호 = API 사용 요금 권한**이다.
+      Anthropic 콘솔에서 이 보드 전용 키를 따로 발급하고 지출 한도를 걸어 두는 편이 좋다.
+   ※ 키를 심으려면 /board/?seal 에서 GitHub 토큰과 함께 봉인해 SEALED_AI 를 교체하세요.
+      비워 두면 Claude 버튼이 "키가 없습니다" 안내만 띄우고 아무 요청도 보내지 않는다. */
+const SEALED_AI = '';
+const AI_MODEL = 'claude-opus-5';
+const AI_EFFORT = 'medium';            // 카드 정리 정도에는 medium 이면 충분하고 응답이 빠르다
 const USERS = [
   { id:'정태우', alias:['taewoo','jungtaewoo','jung.taewoo'],  name:'정태우' },
   { id:'공수빈', alias:['subin','kongsubin','subin.kong'],     name:'공수빈' },
@@ -548,6 +631,12 @@ async function enter(){
     let tk;
     try { tk = await unsealToken(SEALED, pw); } catch { return bad(); }
     localStorage.setItem('saw_board_token', tk);
+    /* API 키는 같은 비밀번호로 함께 풀어 둔다. 돈이 나가는 키라 localStorage 가 아니라
+       sessionStorage 에만 둔다 — 창을 닫으면 사라진다. */
+    if (SEALED_AI){
+      try { sessionStorage.setItem('saw_board_ai', await unsealToken(SEALED_AI, pw)); }
+      catch { sessionStorage.removeItem('saw_board_ai'); }
+    }
     $('#g-msg').textContent = '';
   } else if (pw !== PW) return bad();
   localStorage.setItem('saw_board_me', u.name);
@@ -572,6 +661,7 @@ $('#s-go').onclick = async () => {
 };
 function logout(){
   sessionStorage.removeItem('saw_board_in');
+  sessionStorage.removeItem('saw_board_ai');
   if (SEALED) localStorage.removeItem('saw_board_token');
   location.reload();
 }
@@ -583,9 +673,11 @@ $('#b-out').onclick = () => {
 
 /* ══ 토큰 봉인 화면 ══ */
 $('#z-go').onclick = async () => {
-  const tk = $('#z-tk').value.trim(), pw = $('#z-pw').value, pw2 = $('#z-pw2').value, m = $('#z-msg');
+  const tk = $('#z-tk').value.trim(), ak = $('#z-ak').value.trim();
+  const pw = $('#z-pw').value, pw2 = $('#z-pw2').value, m = $('#z-msg');
   const err = t => { m.className='msg err'; m.textContent = t; };
   if (!/^(github_pat_|ghp_)[\w]{20,}/.test(tk)) return err('GitHub 토큰 형식이 아닙니다.');
+  if (ak && !/^sk-ant-[\w-]{20,}/.test(ak)) return err('Anthropic API 키 형식이 아닙니다 (sk-ant-… ).');
   if (pw.length < 12) return err('공용 비밀번호는 12자 이상이어야 합니다.');
   if (pw !== pw2)     return err('비밀번호 확인이 일치하지 않습니다.');
   m.className='msg'; m.textContent='토큰 권한 확인 중…';
@@ -599,13 +691,21 @@ $('#z-go').onclick = async () => {
   const blob = await sealToken(tk, pw);
   if (await unsealToken(blob, pw) !== tk) return err('봉인 검증에 실패했습니다. 다시 시도해 주세요.');
   $('#z-out').value = blob; $('#z-wrap').style.display='block'; $('#z-tk').value='';
-  m.className='msg ok'; m.textContent='✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열만 전달하세요.';
+  if (ak){
+    const ablob = await sealToken(ak, pw);
+    if (await unsealToken(ablob, pw) !== ak) return err('API 키 봉인 검증에 실패했습니다. 다시 시도해 주세요.');
+    $('#z-aout').value = ablob; $('#z-awrap').style.display='block'; $('#z-ak').value='';
+  } else { $('#z-awrap').style.display='none'; }
+  m.className='msg ok';
+  m.textContent = '✅ 봉인 완료 — 토큰 권한까지 확인했습니다. 아래 문자열' + (ak ? '들' : '') + '만 전달하세요.';
 };
-$('#z-copy').onclick = async () => {
-  try { await navigator.clipboard.writeText($('#z-out').value);
-    $('#z-msg').className='msg ok'; $('#z-msg').textContent='복사했습니다.'; }
-  catch { $('#z-out').select(); }
+const copyOut = (src, label) => async () => {
+  try { await navigator.clipboard.writeText($(src).value);
+    $('#z-msg').className='msg ok'; $('#z-msg').textContent = label + ' 복사했습니다.'; }
+  catch { $(src).select(); }
 };
+$('#z-copy').onclick  = copyOut('#z-out',  'SEALED 값을');
+$('#z-acopy').onclick = copyOut('#z-aout', 'SEALED_AI 값을');
 
 /* ══ 부팅 ══ */
 let booting = null;
@@ -738,11 +838,16 @@ function placeTools(){
   el.style.top  = top + 'px';
 }
 addEventListener('resize', placeTools);
+/* ⚠️ Excalidraw 는 updateScene 직후가 아니라 다시 그린 **뒤에** onChange 를 부른다. 그래서
+   Claude 가 바꾼 요소의 작성자를 나중에 덮어쓰려 하면 이 함수가 먼저 사람 이름을 찍어 버린다.
+   대신 Claude 가 장면을 건드린 시각을 남겨 두고, 그 직후의 변경만 'Claude' 로 적는다. */
+let aiTouchAt = 0;
 function trackAuthors(elements){
   const now = Date.now();
+  const by = (now - aiTouchAt < 500) ? 'Claude' : S.me;
   for (const el of elements){
     const pv = prevVer.get(el.id);
-    if (!el.isDeleted && (pv === undefined || el.version > pv)) S.authors[el.id] = {by:S.me, at:now};
+    if (!el.isDeleted && (pv === undefined || el.version > pv)) S.authors[el.id] = {by, at:now};
     prevVer.set(el.id, el.version);
   }
 }
@@ -1048,7 +1153,13 @@ let cardColor = localStorage.getItem('saw_board_cardcolor') || CARD_COLORS[0];
 let arming = false, ghostFrom = null;
 
 function paintChip(){ $('#cc-sw').style.background = cardColor; }
-function makeCard(x, y, w, h){
+/* 카드 한 장을 이루는 요소 3개를 만들어 돌려준다(장면에는 아직 넣지 않는다).
+   손으로 만들 때와 Claude 가 만들 때가 같은 모양이 되도록 여기 한 곳만 쓴다. */
+function buildCard(x, y, w, h, opt){
+  opt = opt || {};
+  const color = CARD_COLORS.includes(opt.color) ? opt.color : cardColor;
+  const title = opt.title != null ? String(opt.title) : '제목';
+  const body  = opt.body  != null ? String(opt.body)  : '내용을 입력하세요';
   w = Math.max(200, w || CARD_W);
   h = Math.max(CARD_PAD*2 + TITLE_H + TITLE_GAP + 60, h || CARD_H);
   const g = 'card' + uid();
@@ -1056,24 +1167,34 @@ function makeCard(x, y, w, h){
   /* ⚠️ 글상자 배경을 'transparent' 로 두면 **안쪽을 클릭해도 안 잡힌다**(Excalidraw는 투명
      도형을 테두리로만 집는다). 그래서 카드와 같은 색으로 채우고 테두리만 없앤다 —
      배경 사각형 위에 같은 색이 얹히므로 보기엔 똑같고, 글자를 고치려 클릭하면 바로 잡힌다. */
-  const clear = { ...base, strokeColor:'transparent', backgroundColor:cardColor,
+  const clear = { ...base, strokeColor:'transparent', backgroundColor:color,
     fillStyle:'solid', roundness:null };
   const iw = w - CARD_PAD*2;
-  const els = Ex.convertToExcalidrawElements([
+  /* 본문 길이에 맞춰 높이를 잡는다 — 짧으면 아래가 허전하지 않게, 길면 잘리지 않게.
+     손으로 만든 카드는 사용자가 정한 크기가 있으니(keepHeight) 건드리지 않는다. */
+  if (!opt.keepHeight){
+    const need = wrapText(body, BODY_SIZE, iw - BT_PAD*2).length * BODY_SIZE * BODY_LH + BT_PAD*2;
+    h = CARD_PAD*2 + TITLE_H + TITLE_GAP + Math.max(52, Math.ceil(need));
+  }
+  return Ex.convertToExcalidrawElements([
     { ...base, type:'rectangle', x, y, width:w, height:h,
-      strokeColor:borderFor(cardColor), strokeWidth:1, backgroundColor:cardColor, fillStyle:'solid',
+      strokeColor:borderFor(color), strokeWidth:1, backgroundColor:color, fillStyle:'solid',
       roundness:{ type:3, value:10 },             // 과하지 않게 살짝만 둥글게
       customData:{ ...CARD_MARK, role:'bg' } },
     { ...clear, type:'rectangle', x:x + CARD_PAD, y:y + CARD_PAD, width:iw, height:TITLE_H,
       customData:{ ...CARD_MARK, role:'title' },
-      label:{ text:'제목', fontSize:TITLE_SIZE, fontFamily:2, textAlign:'left',
+      label:{ text:title, fontSize:TITLE_SIZE, fontFamily:2, textAlign:'left',
         verticalAlign:'middle', strokeColor:CARD_INK, lineHeight:TITLE_LH } },
     { ...clear, type:'rectangle', x:x + CARD_PAD, y:y + CARD_PAD + TITLE_H + TITLE_GAP,
       width:iw, height:h - CARD_PAD*2 - TITLE_H - TITLE_GAP,
       customData:{ ...CARD_MARK, role:'body' },
-      label:{ text:'내용을 입력하세요', fontSize:BODY_SIZE, fontFamily:2, textAlign:'left',
+      label:{ text:body, fontSize:BODY_SIZE, fontFamily:2, textAlign:'left',
         verticalAlign:'top', strokeColor:CARD_INK2, lineHeight:BODY_LH } },
   ]);
+}
+function makeCard(x, y, w, h){
+  const els = buildCard(x, y, w, h, { keepHeight:true });
+  const g = els[0].groupIds[0];
   api.updateScene({ elements: [...api.getSceneElements(), ...els], captureUpdate: CAP.now });
   const ids = {};
   els.forEach(e => { ids[e.id] = true; });
@@ -1917,6 +2038,398 @@ $('#b-hist').onclick  = () => openHistory();
 $('#b-fresh').onclick = () => startFreshCanvas();
 $('#h-close').onclick = () => $('#hist').classList.remove('on');
 $('#hist').onclick    = e => { if (e.target.id === 'hist') $('#hist').classList.remove('on'); };
+
+/* ══════════════════════════════════════════════════════════
+   Claude 대화 패널
+   ──────────────────────────────────────────────────────────
+   Claude 가 보드를 직접 만지도록 도구(tool)를 열어 준다. 도구는 전부 아래 CARD_TOOLS 에
+   적힌 것뿐이고, 실제 실행은 runTool() 안에서만 일어난다. 즉 **Claude 가 할 수 있는 일은
+   여기 적은 목록이 전부**다.
+
+   지켜야 할 세 가지:
+   1) 모든 변경은 captureUpdate: CAP.now 로 넣는다 → ⌘Z 로 되돌아간다.
+   2) 변경 뒤 markDirty() → 평소 자동저장·기록점 흐름을 그대로 탄다.
+   3) 대화 내용은 저장하지 않는다(보드 파일에 들어가지 않고, 창을 닫으면 사라진다).
+   ══════════════════════════════════════════════════════════ */
+const aiKey = () => sessionStorage.getItem('saw_board_ai') || '';
+const AI = { busy:false, msgs:[], greeted:false };
+
+/* ── 보드 읽기 ── 카드 한 장을 {id, 제목, 본문, 위치, 색}으로 납작하게 편다. */
+function cardParts(bgEl, els){
+  const g = new Set(bgEl.groupIds || []);
+  const boxes = els.filter(e => !e.isDeleted && isCardRect(e) && (e.groupIds || []).some(x => g.has(x)));
+  const pick = role => boxes.find(e => cardRole(e) === role);
+  const textOf = box => box && els.find(e => e.type === 'text' && e.containerId === box.id);
+  const title = pick('title'), body = pick('body') || boxes[boxes.length - 1];
+  return { bg:bgEl, titleBox:title, bodyBox:body, titleText:textOf(title), bodyText:textOf(body) };
+}
+function listCards(){
+  const els = api.getSceneElements().filter(e => !e.isDeleted);
+  const out = [];
+  for (const bg of els){
+    if (cardRole(bg) !== 'bg') continue;
+    const p = cardParts(bg, els);
+    const raw = t => t ? (t.originalText || t.text) : '';
+    out.push({ id:bg.id, title:raw(p.titleText), body:raw(p.bodyText),
+      x:Math.round(bg.x), y:Math.round(bg.y),
+      width:Math.round(bg.width), height:Math.round(bg.height),
+      color:bg.backgroundColor, author:(S.authors[bg.id] || {}).by || null });
+  }
+  return out;
+}
+const findBg = id => api.getSceneElements().find(e => e.id === id && !e.isDeleted && cardRole(e) === 'bg');
+
+/* 카드를 새로 놓을 자리. 위치를 안 준 카드는 기존 카드들 오른쪽에 줄 세워 놓는다
+   (보드가 비어 있으면 지금 보고 있는 화면 왼쪽 위). 겹쳐 쌓이는 것보다 훨씬 낫다. */
+let aiFlow = null;
+function nextSpot(w, h){
+  const cards = listCards();
+  if (!aiFlow){
+    if (cards.length){
+      aiFlow = { x: Math.max(...cards.map(c => c.x + c.width)) + 40,
+                 y: Math.min(...cards.map(c => c.y)), top: Math.min(...cards.map(c => c.y)), n:0 };
+    } else {
+      const st = api.getAppState();
+      const p = { x: -st.scrollX + 80 / st.zoom.value, y: -st.scrollY + 80 / st.zoom.value };
+      aiFlow = { x:Math.round(p.x), y:Math.round(p.y), top:Math.round(p.y), n:0 };
+    }
+  }
+  const spot = { x: aiFlow.x, y: aiFlow.y };
+  aiFlow.y += h + 28;
+  if (++aiFlow.n % 4 === 0){ aiFlow.x += w + 40; aiFlow.y = aiFlow.top; }   // 4장마다 다음 열로
+  return spot;
+}
+
+const groupIdsOf = el => new Set(el.groupIds || []);
+const inGroup = (el, g) => (el.groupIds || []).some(x => g.has(x));
+
+/* ── Claude 에게 열어 주는 도구 목록 ── */
+const CARD_TOOLS = [
+  { name:'list_cards',
+    description:'보드에 있는 카드를 모두 읽는다. 기존 카드를 고치거나 정리·통합하기 전에 반드시 먼저 부른다. ' +
+      '각 카드의 id·제목·본문·위치·크기·색·작성자를 돌려준다.',
+    input_schema:{ type:'object', properties:{}, required:[] } },
+
+  { name:'create_card',
+    description:'카드를 새로 만든다. 위치(x,y)를 주지 않으면 기존 카드 오른쪽에 알아서 줄 세워 놓는다. ' +
+      '본문 줄 맨 앞에 "▢ "를 붙이면 체크박스가 되고, 사용자가 클릭해서 완료 표시할 수 있다.',
+    input_schema:{ type:'object', properties:{
+      title:{ type:'string', description:'카드 제목. 한 줄로 짧게.' },
+      body:{ type:'string', description:'카드 본문. 줄바꿈 가능. 할 일 목록은 각 줄을 "▢ "로 시작한다.' },
+      color:{ type:'string', enum:CARD_COLORS, description:'카드 색. 생략하면 사용자가 고른 현재 색.' },
+      x:{ type:'number' }, y:{ type:'number' },
+      width:{ type:'number', description:'기본 320' },
+    }, required:['title','body'] } },
+
+  { name:'update_card',
+    description:'기존 카드의 제목·본문·색을 바꾼다. 준 항목만 바뀐다. id 는 list_cards 로 먼저 확인한다.',
+    input_schema:{ type:'object', properties:{
+      id:{ type:'string' }, title:{ type:'string' }, body:{ type:'string' },
+      color:{ type:'string', enum:CARD_COLORS },
+    }, required:['id'] } },
+
+  { name:'move_cards',
+    description:'카드를 옮긴다. 여러 장을 한 번에 옮길 수 있다.',
+    input_schema:{ type:'object', properties:{
+      moves:{ type:'array', items:{ type:'object', properties:{
+        id:{ type:'string' }, x:{ type:'number' }, y:{ type:'number' },
+      }, required:['id','x','y'] } },
+    }, required:['moves'] } },
+
+  { name:'arrange_cards',
+    description:'카드들을 격자로 가지런히 재배치한다. 흩어진 카드를 정리할 때 쓴다. ' +
+      'ids 를 주지 않으면 보드의 모든 카드를 정리한다.',
+    input_schema:{ type:'object', properties:{
+      ids:{ type:'array', items:{ type:'string' } },
+      columns:{ type:'integer', description:'한 줄에 놓을 장 수. 기본 4' },
+    }, required:[] } },
+
+  { name:'merge_cards',
+    description:'카드 여러 장을 한 장으로 합친다. 원래 카드들은 지워지고 합친 카드가 첫 카드 자리에 생긴다. ' +
+      '내용을 어떻게 합칠지는 title·body 로 직접 정해서 넘긴다.',
+    input_schema:{ type:'object', properties:{
+      ids:{ type:'array', items:{ type:'string' }, minItems:2 },
+      title:{ type:'string' }, body:{ type:'string' },
+      color:{ type:'string', enum:CARD_COLORS },
+    }, required:['ids','title','body'] } },
+
+  { name:'delete_cards',
+    description:'카드를 지운다. 되돌리기(⌘Z)로 복구할 수 있지만, 지우기 전에 사용자에게 확인받는 편이 좋다.',
+    input_schema:{ type:'object', properties:{
+      ids:{ type:'array', items:{ type:'string' } },
+    }, required:['ids'] } },
+];
+
+/* ── 도구 실행 ── 여기 적힌 것 말고는 아무 일도 하지 않는다. */
+function runTool(name, a){
+  a = a || {};
+  const els = () => api.getSceneElements();
+  const commit = next => {
+    aiTouchAt = Date.now();                 // 이 변경의 작성자는 'Claude' 로 남는다
+    api.updateScene({ elements: next, captureUpdate: CAP.now });
+    markDirty();
+    requestAnimationFrame(() => { drawTags(); drawChecks(); drawMinimap(); });
+  };
+
+  if (name === 'list_cards') return { cards: listCards() };
+
+  if (name === 'create_card'){
+    const w = Math.max(200, Math.min(720, a.width || CARD_W));
+    const probe = buildCard(0, 0, w, CARD_H, { title:a.title, body:a.body, color:a.color });
+    const h = probe[0].height;
+    const p = (a.x != null && a.y != null) ? { x:a.x, y:a.y } : nextSpot(w, h);
+    const made = buildCard(p.x, p.y, w, CARD_H, { title:a.title, body:a.body, color:a.color });
+    commit([...els(), ...made]);
+    return { id: made[0].id, x:p.x, y:p.y, width:w, height:made[0].height };
+  }
+
+  if (name === 'update_card'){
+    const bg = findBg(a.id);
+    if (!bg) return { error:'그런 id 의 카드가 없습니다: ' + a.id };
+    let cur = els();
+    const p = cardParts(bg, cur);
+    if (a.title != null && p.titleBox && p.titleText){
+      cur = writeBoundText(cur, cur.find(e => e.id === p.titleBox.id), cur.find(e => e.id === p.titleText.id), a.title);
+    }
+    if (a.body != null && p.bodyBox && p.bodyText){
+      cur = writeBoundText(cur, cur.find(e => e.id === p.bodyBox.id), cur.find(e => e.id === p.bodyText.id), a.body);
+    }
+    if (a.color && CARD_COLORS.includes(a.color)){
+      const g = groupIdsOf(bg);
+      // version 을 올려야 Excalidraw 가 "바뀐 요소"로 받아 다시 그리고 저장에도 실린다
+      const rev = o => ({ ...o, version:o.version + 1, versionNonce:Math.floor(Math.random() * 1e9) });
+      cur = cur.map(e => !inGroup(e, g) ? e
+        : (cardRole(e) === 'bg' ? rev({ ...e, backgroundColor:a.color, strokeColor:borderFor(a.color) })
+          : (isCardRect(e) ? rev({ ...e, backgroundColor:a.color }) : e)));
+    }
+    commit(cur);
+    return { ok:true, id:a.id };
+  }
+
+  if (name === 'move_cards'){
+    const moves = (a.moves || []).map(m => ({ ...m, bg: findBg(m.id) })).filter(m => m.bg);
+    if (!moves.length) return { error:'옮길 카드를 찾지 못했습니다.' };
+    const shift = new Map();                       // 그룹 id → {dx,dy}
+    for (const m of moves) for (const g of m.bg.groupIds || [])
+      shift.set(g, { dx: m.x - m.bg.x, dy: m.y - m.bg.y });
+    const next = els().map(e => {
+      const d = (e.groupIds || []).map(g => shift.get(g)).find(Boolean);
+      if (!d) return e;
+      return { ...e, x:e.x + d.dx, y:e.y + d.dy,
+        version:e.version + 1, versionNonce:Math.floor(Math.random() * 1e9) };
+    });
+    commit(next);
+    return { ok:true, moved: moves.length };
+  }
+
+  if (name === 'arrange_cards'){
+    const all = listCards();
+    const pick = (a.ids && a.ids.length) ? all.filter(c => a.ids.includes(c.id)) : all;
+    if (!pick.length) return { error:'정리할 카드가 없습니다.' };
+    const cols = Math.max(1, Math.min(8, a.columns || 4));
+    const x0 = Math.min(...pick.map(c => c.x)), y0 = Math.min(...pick.map(c => c.y));
+    const colW = Math.max(...pick.map(c => c.width)) + 40;
+    const rows = Math.ceil(pick.length / cols);
+    const rowH = [];
+    for (let r = 0; r < rows; r++)
+      rowH.push(Math.max(...pick.slice(r * cols, r * cols + cols).map(c => c.height)) + 32);
+    const moves = pick.map((c, i) => {
+      const r = Math.floor(i / cols);
+      return { id:c.id, x: x0 + (i % cols) * colW,
+        y: y0 + rowH.slice(0, r).reduce((s, v) => s + v, 0) };
+    });
+    return runTool('move_cards', { moves });
+  }
+
+  if (name === 'merge_cards'){
+    const bgs = (a.ids || []).map(findBg).filter(Boolean);
+    if (bgs.length < 2) return { error:'합칠 카드를 두 장 이상 찾지 못했습니다.' };
+    const anchor = bgs.reduce((m, b) => (b.y < m.y || (b.y === m.y && b.x < m.x)) ? b : m, bgs[0]);
+    const w = Math.max(...bgs.map(b => b.width));
+    const groups = new Set(bgs.flatMap(b => b.groupIds || []));
+    const made = buildCard(anchor.x, anchor.y, w, CARD_H,
+      { title:a.title, body:a.body, color:a.color || anchor.backgroundColor });
+    /* 지운 카드에 딸린 글자 요소까지 함께 빠지도록 컨테이너 기준으로 한 번 더 거른다 */
+    const goneIds = new Set(els().filter(e => inGroup(e, groups)).map(e => e.id));
+    const survivors = els().filter(e => !goneIds.has(e.id) && !goneIds.has(e.containerId));
+    commit([...survivors, ...made]);
+    return { ok:true, id: made[0].id, merged: bgs.length };
+  }
+
+  if (name === 'delete_cards'){
+    const bgs = (a.ids || []).map(findBg).filter(Boolean);
+    if (!bgs.length) return { error:'지울 카드를 찾지 못했습니다.' };
+    const groups = new Set(bgs.flatMap(b => b.groupIds || []));
+    const goneIds = new Set(els().filter(e => inGroup(e, groups)).map(e => e.id));
+    const next = els().filter(e => !goneIds.has(e.id) && !goneIds.has(e.containerId));
+    commit(next);
+    return { ok:true, deleted: bgs.length };
+  }
+
+  return { error:'알 수 없는 도구: ' + name };
+}
+
+/* ── 시스템 프롬프트 ── 앞부분이 매번 같아야 프롬프트 캐시가 먹는다(가변 정보는 뒤에 붙인다). */
+const AI_SYSTEM = [
+  '너는 SAW(주식회사 스토리에이아이웍스) 경영진이 함께 쓰는 사내 화이트보드의 도우미다.',
+  '보드는 "카드"들로 되어 있다. 카드 한 장 = 제목 한 줄 + 본문. 본문 줄 맨 앞의 "▢ "는 체크박스로 보이고,',
+  '사용자가 눌러서 완료 표시(▣)를 할 수 있다. 할 일 목록을 만들 때는 각 줄을 "▢ "로 시작해라.',
+  '',
+  '규칙:',
+  '- 기존 카드를 고치거나 옮기거나 합치기 전에는 반드시 list_cards 로 먼저 지금 보드를 읽어라.',
+  '- 카드를 지우는 것은 되돌릴 수 있지만 놀랄 만한 일이다. 사용자가 분명히 지우라고 하지 않았으면 먼저 물어봐라.',
+  '- 여러 장을 만들 때는 create_card 를 여러 번 부르면 된다. 위치는 대개 비워 두면 알아서 줄 세운다.',
+  '- 카드 하나에 너무 많이 담지 마라. 주제가 다르면 카드를 나눠라. 본문은 8줄 안쪽이 읽기 좋다.',
+  '- 색은 의미를 담아 쓰면 좋다(예: 급한 일 #FFEBEE, 완료 #E8F5E9). 확신이 없으면 색을 생략해라.',
+  '- 답은 한국어로, 짧게. 무엇을 했는지 한두 문장이면 충분하다. 카드 내용을 답변에 그대로 옮겨 적지 마라.',
+  '- 보드를 바꾸는 일이 아니라 그냥 물어보는 것이면 도구를 쓰지 말고 말로만 답해라.',
+].join('\n');
+
+/* ── 대화 화면 ── */
+const cLog = $('#c-log');
+function cAdd(cls, text){
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = text;
+  cLog.appendChild(d);
+  cLog.scrollTop = cLog.scrollHeight;
+  return d;
+}
+function cGreet(){
+  if (AI.greeted) return;
+  AI.greeted = true;
+  const d = document.createElement('div');
+  d.className = 'hi';
+  d.innerHTML = aiKey()
+    ? '보드 위에 <b>카드를 만들고, 내용을 고치고, 정리하고, 합치는</b> 일을 시킬 수 있습니다.<br><br>' +
+      '· “회의 안건 4개를 카드로 만들어줘”<br>' +
+      '· “흩어진 카드들 격자로 정리해줘”<br>' +
+      '· “비슷한 카드 두 장을 하나로 합쳐줘”<br>' +
+      '· “이 카드 할 일을 체크리스트로 바꿔줘”<br><br>' +
+      'Claude 가 바꾼 것도 <b>⌘Z 로 되돌아가고</b>, 평소처럼 자동저장됩니다.'
+    : 'API 키가 심어져 있지 않아 아직 쓸 수 없습니다.<br><br>' +
+      '<b>/board/?seal</b> 에서 GitHub 토큰과 함께 Anthropic API 키를 봉인한 뒤, ' +
+      '나온 <b>SEALED_AI</b> 값을 페이지에 심으면 켜집니다.';
+  cLog.appendChild(d);
+}
+function aiOpen(on){
+  const app = $('#app');
+  const show = on === undefined ? !app.classList.contains('chat') : on;
+  app.classList.toggle('chat', show);
+  $('#b-ai').classList.toggle('on', show);
+  if (show){ cGreet(); setTimeout(() => $('#c-in').focus(), 30); }
+  // 캔버스 폭이 바뀌었으니 화면 좌표로 그리는 것들을 다시 맞춘다
+  setTimeout(() => { drawTags(); drawChecks(); placeTools(); drawMinimap(); }, 260);
+}
+$('#b-ai').onclick = () => aiOpen();
+$('#c-x').onclick  = () => aiOpen(false);
+$('#c-clear').onclick = () => { AI.msgs = []; cLog.textContent = ''; AI.greeted = false; cGreet(); };
+
+const TOOL_LABEL = {
+  list_cards:'보드를 읽는 중…', create_card:'카드 만드는 중…', update_card:'카드 고치는 중…',
+  move_cards:'카드 옮기는 중…', arrange_cards:'카드 정리하는 중…',
+  merge_cards:'카드 합치는 중…', delete_cards:'카드 지우는 중…',
+};
+
+async function aiSend(){
+  const inp = $('#c-in');
+  const text = inp.value.trim();
+  if (!text || AI.busy) return;
+  const key = aiKey();
+  if (!key) return cAdd('m err', 'API 키가 없습니다. /board/?seal 에서 봉인해 SEALED_AI 를 심어 주세요.');
+  if (!api) return cAdd('m err', '보드가 아직 안 열렸습니다.');
+
+  inp.value = ''; inp.style.height = '';
+  cAdd('m me', text);
+  AI.msgs.push({ role:'user', content:text });
+  AI.busy = true; $('#c-send').disabled = true;
+  aiFlow = null;                                   // 이번 턴에 만들 카드는 새로 자리를 잡는다
+  const wait = cAdd('act', '생각하는 중…');
+
+  try {
+    for (let round = 0; round < 12; round++){       // 도구를 무한히 부르지 않도록 상한
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{
+          'content-type':'application/json',
+          'x-api-key':key,
+          'anthropic-version':'2023-06-01',
+          /* 브라우저에서 직접 부르려면 이 헤더가 필요하다. 이름 그대로 "위험"한 이유는
+             키가 클라이언트에 있다는 뜻이기 때문 — 그래서 봉인해 두고 사내에서만 연다. */
+          'anthropic-dangerous-direct-browser-access':'true',
+        },
+        body: JSON.stringify({
+          model: AI_MODEL,
+          max_tokens: 16000,
+          system: AI_SYSTEM,
+          output_config: { effort: AI_EFFORT },
+          tools: CARD_TOOLS,
+          messages: AI.msgs,
+        }),
+      });
+      if (!r.ok){
+        let detail = '';
+        try { detail = (await r.json()).error?.message || ''; } catch {}
+        throw new Error(`Anthropic API 오류 ${r.status}${detail ? ' — ' + detail : ''}`);
+      }
+      const res = await r.json();
+
+      /* ⚠️ content 를 읽기 전에 stop_reason 을 먼저 본다 — 거부된 응답은 내용이 비어 있다. */
+      if (res.stop_reason === 'refusal'){
+        cAdd('m err', 'Claude 가 이 요청에는 답하지 않았습니다.');
+        AI.msgs.push({ role:'assistant', content: res.content });
+        break;
+      }
+
+      const say = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+      if (say) cAdd('m ai', say);
+      AI.msgs.push({ role:'assistant', content: res.content });
+
+      const calls = res.content.filter(b => b.type === 'tool_use');
+      if (!calls.length) break;
+
+      const results = [];
+      for (const c of calls){
+        wait.textContent = TOOL_LABEL[c.name] || (c.name + ' 실행 중…');
+        cLog.appendChild(wait);                     // 진행 표시를 항상 맨 아래로
+        let out;
+        try { out = runTool(c.name, c.input); }
+        catch (e){ out = { error: String(e && e.message || e) }; }
+        if (!out || !out.error){
+          const n = c.name === 'create_card' ? '카드 “' + (c.input.title || '') + '” 추가'
+            : c.name === 'update_card'  ? '카드 수정'
+            : c.name === 'move_cards'   ? `카드 ${out.moved || 0}장 이동`
+            : c.name === 'arrange_cards'? '카드 정리'
+            : c.name === 'merge_cards'  ? `카드 ${out.merged || 0}장 통합`
+            : c.name === 'delete_cards' ? `카드 ${out.deleted || 0}장 삭제`
+            : null;
+          if (n){ const a = cAdd('act', n); cLog.insertBefore(a, wait); }
+        }
+        results.push({ type:'tool_result', tool_use_id:c.id, content: JSON.stringify(out),
+          ...(out && out.error ? { is_error:true } : {}) });
+      }
+      AI.msgs.push({ role:'user', content: results });
+      wait.textContent = '생각하는 중…';
+      cLog.appendChild(wait);
+      cLog.scrollTop = cLog.scrollHeight;
+    }
+  } catch (e){
+    cAdd('m err', String(e && e.message || e));
+  } finally {
+    wait.remove();
+    AI.busy = false; $('#c-send').disabled = false;
+    cLog.scrollTop = cLog.scrollHeight;
+    inp.focus();
+  }
+}
+$('#c-send').onclick = aiSend;
+$('#c-in').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)){ e.preventDefault(); aiSend(); }
+});
+$('#c-in').addEventListener('input', e => {          // 입력이 길어지면 칸도 같이 늘린다
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(180, e.target.scrollHeight) + 'px';
+});
 
 $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
