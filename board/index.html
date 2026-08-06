@@ -270,6 +270,99 @@
   #help td:first-child{color:var(--ink);font-weight:600;width:42%}
   kbd{background:var(--panel2);border:1px solid var(--hair);padding:1px 6px;font-size:11px;
     font-family:ui-monospace,monospace;color:var(--txt)}
+
+  /* ── 예산 시뮬레이터 ──
+     보드와 같은 어두운 톤을 쓰되, 항목 색만은 밝은 캔버스(카드)에 붙였을 때도 그대로
+     읽히도록 중간 명도로 골라 둔 값을 쓴다(아래 BUD_ITEMS 의 색과 같은 값). */
+  #budget{position:fixed;inset:0;z-index:140;display:none;background:rgba(0,0,0,.72);padding:26px;
+    overflow:auto}
+  #budget.on{display:block}
+  #budget .bdbox{max-width:1180px;margin:0 auto;background:var(--panel);border:1px solid var(--hair);
+    box-shadow:0 24px 70px rgba(0,0,0,.6)}
+  #budget .bdhead{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--hair);
+    position:sticky;top:0;background:var(--panel);z-index:2}
+  #budget .bdhead b{font-size:14px;color:var(--ink);letter-spacing:-.01em}
+  #budget .bdhead .note{font-size:11.5px;color:var(--dim2);word-break:keep-all}
+  #budget .bdhead .sp{flex:1}
+  #budget .bdhead button{font-size:12px;padding:6px 12px;border:1px solid var(--hair);color:var(--txt);
+    white-space:nowrap;transition:.18s}
+  #budget .bdhead button:hover{background:rgba(255,255,255,.07);color:var(--ink)}
+  #bd-paste{background:var(--accd);color:#fff!important;border-color:transparent!important;font-weight:700}
+  #budget .bdbody{padding:18px 16px 22px}
+  #budget .bdtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  #budget .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--hair);padding:3px}
+  #budget .seg button{font-size:12px;padding:5px 12px;color:var(--dim)}
+  #budget .seg button[aria-pressed="true"]{background:var(--accd);color:#fff;font-weight:700}
+  #budget .fieldbox{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--hair);
+    padding:5px 11px;font-size:12px;color:var(--dim)}
+  #budget .bdtools .gbtn{font-size:12px;padding:6px 12px;border:1px solid var(--hair);color:var(--txt)}
+  #budget .bdtools .gbtn:hover{background:rgba(255,255,255,.07);color:var(--ink)}
+  #budget input[type=number]{width:64px;background:var(--bg);border:1px solid var(--hair);color:var(--ink);
+    font:inherit;font-size:13px;padding:4px 7px;text-align:right;font-variant-numeric:tabular-nums;outline:none}
+  #budget input[type=number]:focus{border-color:var(--accd)}
+  #budget .bdcols{display:grid;grid-template-columns:minmax(290px,380px) 1fr;gap:22px;align-items:start}
+  @media (max-width:960px){ #budget .bdcols{grid-template-columns:1fr} }
+  #budget .bdpanel{background:var(--panel2);border:1px solid var(--hair);padding:18px}
+  #bd-donut{display:block;width:100%;height:auto}
+  #budget .cval{font-size:50px;font-weight:700;fill:var(--ink)}
+  #budget .cunit{font-size:11px;fill:var(--dim2);letter-spacing:.28em}
+  #budget .alab{font-size:12px;font-weight:700;fill:#fff;paint-order:stroke;
+    stroke:rgba(0,0,0,.38);stroke-width:2.5px;pointer-events:none}
+  #budget .arc{transition:opacity .12s}
+  #budget .dim{opacity:.26}
+  #bd-stack{display:flex;height:14px;overflow:hidden;gap:2px;margin-top:18px}
+  #bd-stack i{display:block;height:100%;transition:opacity .12s}
+  #budget .stackcap{display:flex;justify-content:space-between;color:var(--dim2);font-size:11px;margin-top:7px}
+  #budget .delta{margin-top:16px;padding-top:13px;border-top:1px solid var(--hair);
+    display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--dim)}
+  #budget .delta b{font-size:17px;font-variant-numeric:tabular-nums}
+  #budget .over{color:var(--err)} #budget .under{color:var(--warn)} #budget .even{color:var(--ok)}
+  #budget table{width:100%;border-collapse:collapse}
+  #budget thead th{font-size:10.5px;color:var(--dim2);font-weight:600;text-align:right;padding:0 6px 9px;
+    letter-spacing:.04em;border-bottom:1px solid var(--hair);white-space:nowrap}
+  #budget thead th.l{text-align:left}
+  #budget tbody tr{border-bottom:1px solid var(--hair)}
+  #budget tbody tr.hl{background:rgba(255,255,255,.045)}
+  #budget td{padding:9px 6px;vertical-align:middle}
+  #budget .sw{width:10px;height:10px;display:inline-block;margin-right:9px;flex:none}
+  #budget .nm{display:flex;align-items:center;font-size:13px;color:var(--ink);white-space:nowrap}
+  #budget .nm small{color:var(--dim2);font-size:10.5px;margin-left:7px;font-weight:400}
+  #budget .r{text-align:right;font-variant-numeric:tabular-nums}
+  #budget .amt{font-size:17px;color:var(--ink)}
+  #budget .pct{font-size:12px;color:var(--dim);width:54px}
+  #budget .dlt{font-size:11px;color:var(--dim2);width:56px}
+  #budget input[type=range]{-webkit-appearance:none;appearance:none;width:100%;min-width:100px;
+    background:transparent;margin:0;cursor:pointer}
+  #budget input[type=range]::-webkit-slider-runnable-track{height:3px;background:rgba(255,255,255,.16)}
+  #budget input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    margin-top:-5.5px;background:var(--c,#fff);border:2px solid var(--panel2)}
+  #budget input[type=range]:disabled{opacity:.32;cursor:not-allowed}
+  #budget .ctrl{display:flex;align-items:center;gap:5px;justify-content:flex-end}
+  #budget .step{width:22px;height:22px;background:var(--bg);border:1px solid var(--hair);color:var(--dim);
+    font-size:13px;line-height:1}
+  #budget .step:hover{color:var(--ink)}
+  #budget .lock{border:1px solid var(--hair);color:var(--dim2);font-size:10.5px;padding:3px 8px;white-space:nowrap}
+  #budget .lock[aria-pressed="true"]{border-color:var(--acc);color:var(--acc);background:rgba(180,155,226,.12)}
+  #budget tfoot td{padding-top:13px;font-size:13px;color:var(--acc);font-weight:700}
+  #budget tfoot .tot{font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums}
+  #bd-slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  #bd-slots .slot{flex:1;min-width:98px;background:var(--bg);border:1px solid var(--hair);padding:9px 10px}
+  #bd-slots .slot h4{font-size:11px;color:var(--dim);font-weight:700;margin-bottom:4px}
+  #bd-slots .slot .who{font-size:10px;color:var(--dim2);font-variant-numeric:tabular-nums;
+    min-height:26px;line-height:1.35;word-break:keep-all;margin-bottom:6px}
+  #bd-slots .slot .row{display:flex;gap:5px}
+  #bd-slots .slot button{flex:1;font-size:10.5px;padding:4px 0;background:var(--panel2);
+    border:1px solid var(--hair);color:var(--dim)}
+  #bd-slots .slot button:hover:not(:disabled){color:var(--ink)}
+  #bd-slots .slot button:disabled{opacity:.35;cursor:default}
+  #budget .bdhint{font-size:11.5px;color:var(--dim2);margin-top:14px;line-height:1.75;word-break:keep-all}
+  #budget .bdhint b{color:var(--dim)}
+  #bd-tip{position:fixed;pointer-events:none;opacity:0;transition:opacity .1s;background:#000;
+    border:1px solid var(--hair);padding:7px 11px;font-size:11.5px;z-index:160;white-space:nowrap;
+    box-shadow:0 6px 24px rgba(0,0,0,.6)}
+  #bd-tip b{display:block;font-size:12.5px;color:var(--ink);margin-bottom:2px}
+  #bd-tip span{color:var(--dim);font-variant-numeric:tabular-nums}
+
   @media (max-width:720px){ .bar .mini{display:none} .bar .bname{max-width:110px} }
 </style>
 </head>
@@ -367,6 +460,7 @@
     <button class="tb on" id="b-tags" title="누가 만들었는지 이름표 표시">이름표</button>
     <button class="tb" id="b-grid" title="격자 표시 (Ctrl+&apos;)">격자</button>
     <button class="tb" id="b-ai" title="Claude 에게 카드 배치·정리를 맡깁니다">Claude</button>
+    <button class="tb" id="b-budget" title="순제작비 예산 배분 시뮬레이터">예산</button>
     <button class="tb" id="b-hist" title="지난 기록 보기 (읽기 전용)">기록</button>
     <button class="tb" id="b-fresh" title="지금 내용을 기록으로 남기고 빈 캔버스에서 시작">새 캔버스</button>
     <button class="tb" id="b-save" title="지금 저장 (⌘S)">저장</button>
@@ -483,6 +577,76 @@
   </div>
 </div>
 
+<!-- ══ 예산 시뮬레이터 ══
+     순제작비를 어디에 얼마나 쓸지 같이 놓고 맞춰 보는 도구. 보드 자체와는 분리돼 있고,
+     결과를 [보드에 붙이기] 하면 그때 비로소 카드 + 구성 그림이 캔버스에 들어가
+     평소의 자동저장·기록·되돌리기 흐름을 그대로 탄다.
+     시나리오 A/B/C 는 보드와 같은 비공개 저장소(data/budget.json)에 있어 운영진이 함께 본다. -->
+<div id="budget">
+  <div class="bdbox">
+    <div class="bdhead">
+      <b>예산 시뮬레이터</b>
+      <span class="note">순제작비 · P&amp;A 별도 · 단위: 억 원 (0.1 = 천만 원)</span>
+      <span class="sp"></span>
+      <button id="bd-paste" title="지금 배분을 카드와 구성 그림으로 캔버스에 붙입니다">보드에 붙이기</button>
+      <button id="bd-copy" title="표를 탭 구분으로 복사 — 스프레드시트에 그대로 붙여넣기">표 복사</button>
+      <button id="bd-x">닫기</button>
+    </div>
+    <div class="bdbody">
+      <div class="bdtools">
+        <div class="seg" role="group" aria-label="조정 방식">
+          <button id="bd-fixed" aria-pressed="true">총액 고정</button>
+          <button id="bd-free" aria-pressed="false">자유 조정</button>
+        </div>
+        <label class="fieldbox">목표 총액
+          <input id="bd-target" type="number" min="1" max="200" step="0.1" value="20.0"> 억
+        </label>
+        <button class="gbtn" id="bd-norm">목표에 맞추기</button>
+        <button class="gbtn" id="bd-reset">초기값 복원</button>
+      </div>
+
+      <div class="bdcols">
+        <div class="bdpanel">
+          <svg id="bd-donut" viewBox="0 0 320 320" role="img" aria-label="예산 구성 도넛 차트"></svg>
+          <div id="bd-stack"></div>
+          <div class="stackcap"><span>구성 비율</span><span id="bd-stackcap">100%</span></div>
+          <div class="delta"><span>목표 대비</span><b id="bd-diff">±0.0 억</b></div>
+          <div id="bd-slots"></div>
+          <p class="bdhint" id="bd-slotnote">시나리오는 <b>운영진 모두가 함께</b> 봅니다.</p>
+        </div>
+
+        <div class="bdpanel">
+          <table>
+            <thead>
+              <tr>
+                <th class="l">항목</th>
+                <th class="l" style="width:32%">조정</th>
+                <th>금액(억)</th><th>비중</th><th>기준 대비</th>
+                <th style="width:50px">고정</th>
+              </tr>
+            </thead>
+            <tbody id="bd-rows"></tbody>
+            <tfoot>
+              <tr>
+                <td>합계</td><td></td>
+                <td class="r tot" id="bd-sumv">20.0</td>
+                <td class="r" id="bd-sump">100%</td>
+                <td class="r" id="bd-sumd"></td><td></td>
+              </tr>
+            </tfoot>
+          </table>
+          <p class="bdhint">
+            <b>총액 고정</b> — 한 항목을 올리면 나머지(고정 안 된 항목)가 현재 비율대로 자동으로 줄어 총액이 유지됩니다.<br>
+            <b>자유 조정</b> — 항목별로 따로 움직이고 합계가 그대로 늘거나 줄어듭니다.<br>
+            지키고 싶은 항목은 <b>고정</b>을 켜두세요. 슬라이더에 포커스를 두고 ←/→ 키로 0.1억씩 미세 조정할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="bd-tip" role="tooltip"></div>
+
 <div id="banner">
   <span id="ban-tx"></span>
   <button id="ban-reload">불러오기</button>
@@ -512,6 +676,12 @@
         <b>지난 기록과 비교</b>해 무엇이 남았는지도 답합니다.<br>
         Claude 가 바꾼 것도 <kbd>⌘</kbd><kbd>Z</kbd> 로 되돌아가고 평소처럼 자동 저장되며,
         이름표에는 <b>Claude</b> 로 표시됩니다. 대화 내용은 보드에 저장되지 않습니다</td></tr>
+      <tr><td>예산</td><td>상단 [예산] — <b>순제작비를 어디에 얼마나 쓸지</b> 밀고 당기며 맞춰 봅니다.
+        <b>총액 고정</b>이면 한 항목을 올린 만큼 나머지가 자동으로 줄어 총액이 유지되고,
+        지키고 싶은 항목은 [고정]으로 묶어 둡니다.<br>
+        <b>시나리오 A·B·C</b>는 운영진이 <b>함께 보는 저장 칸</b>입니다(보드와 같은 비공개 저장소).
+        [표 복사]는 스프레드시트에 그대로 붙여넣을 수 있고, <b>[보드에 붙이기]</b>를 누르면
+        캔버스에 <b>카드 한 장 + 구성 그림</b>이 들어갑니다 — 평소처럼 <kbd>⌘</kbd><kbd>Z</kbd>로 되돌아갑니다</td></tr>
       <tr><td>확대 / 축소</td><td><b>휠을 굴리면 바로 확대·축소됩니다</b>(FLOWMARK와 같은 조작).
         두 손가락 벌리기도 같습니다</td></tr>
       <tr><td>화면 이동</td><td><kbd>Space</kbd>+드래그, 마우스 가운데 버튼 드래그, 또는 <b>미니맵을 클릭·드래그</b></td></tr>
@@ -1208,7 +1378,10 @@ function drawMinimap(){
     if (el.containerId) continue;                        // 도형에 묶인 텍스트는 도형이 대표한다
     const p = toMM(el.x, el.y);
     const w = Math.max(el.width  * scale, 2), h = Math.max(el.height * scale, 2);
-    const c = el.backgroundColor && el.backgroundColor !== 'transparent'
+    /* 이미지는 배경도 테두리도 투명이라 그냥 두면 미니맵에서 사라진다(어두운 판에 어두운 사각형).
+       스크린샷·예산 그림 같은 것들이 어디쯤 붙어 있는지 보이도록 밝은 회색으로 찍는다. */
+    const c = el.type === 'image' ? '#D5D5D8'
+      : el.backgroundColor && el.backgroundColor !== 'transparent'
       ? el.backgroundColor : (el.strokeColor || '#888');
     mmCtx.globalAlpha = sel[el.id] ? 1 : .75;
     mmCtx.fillStyle = c;
@@ -2980,6 +3153,485 @@ $('#c-in').addEventListener('input', e => {          // 입력이 길어지면 �
 $('#b-help').onclick = () => $('#help').classList.add('on');
 $('#h-x').onclick    = () => $('#help').classList.remove('on');
 $('#help').onclick   = e => { if (e.target.id === 'help') $('#help').classList.remove('on'); };
+
+/* ══════════════════════════════════════════════════════════
+   예산 시뮬레이터 (순제작비)
+   상단 [예산] → 항목별 금액을 밀고 당기며 배분을 맞춰 보는 창.
+
+   보드와의 접점은 딱 두 곳뿐이라 서로를 망가뜨릴 수 없다.
+     1) [보드에 붙이기] — 카드 한 장 + 구성 그림(PNG) 을 캔버스에 넣는다.
+        평소 편집과 똑같이 CAP.now 로 넣으므로 ⌘Z 로 통째로 되돌아가고,
+        markDirty() 를 타므로 자동저장·기록점 흐름도 그대로다.
+     2) 시나리오 A/B/C — 보드와 같은 비공개 저장소의 **별도 파일**(data/budget.json).
+        보드 파일과 섞이지 않아 병합·충돌 로직을 건드리지 않는다.
+   ⚠️ 구성 그림은 **흰 바탕**으로 그린다. 다크 테마는 캔버스 전체에 invert 를 걸기 때문에
+      어두운 배경으로 그리면 다크에서 오히려 하얗게 뜬다(카드가 파스텔인 것과 같은 이유).
+   ══════════════════════════════════════════════════════════ */
+(function budgetTool(){
+  /* 내부 단위는 0.1억(천만 원) 정수 — 반올림 오차 없이 총액이 정확히 맞는다. */
+  const BASE = [
+    {name:'기획개발 · 원작 판권', sub:'',         u: 9, c:'#3987e5'},
+    {name:'제작진 인건비',        sub:'',         u:28, c:'#d95926'},
+    {name:'출연료',               sub:'',         u:30, c:'#199e70'},
+    {name:'데이터 확보 · 미장센', sub:'1~2단계',  u:22, c:'#c98500'},
+    {name:'AI 영화 제작',         sub:'3단계',    u:46, c:'#d55181'},
+    {name:'실사 촬영',            sub:'4단계',    u:22, c:'#008300'},
+    {name:'후반작업',             sub:'아날로그', u:33, c:'#9085e9'},
+    {name:'예비비',               sub:'',         u:10, c:'#e66767'},
+  ];
+  const SLIDER_MAX = 100;                 // 10.0억
+  const LS = 'saw_board_budget';          // 마지막으로 만지던 배분(사람마다 다르므로 이 브라우저에만)
+  const SLOT_PATH = 'data/budget.json';   // 시나리오 A/B/C — 운영진이 함께 본다
+
+  let items = BASE.map(b => ({...b, locked:false}));
+  let targetU = 200, mode = 'fixed', hover = -1;
+
+  const fmt  = u => (u/10).toFixed(1);
+  const sumU = () => items.reduce((s,i)=>s+i.u, 0);
+  const esc  = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  /* 최대잔여법 — 정수 total 을 weights 비율대로 나눈다(합이 정확히 total 이 된다) */
+  function apportion(total, weights){
+    const n = weights.length;
+    if (!n) return [];
+    const sum = weights.reduce((a,b)=>a+b, 0);
+    if (sum <= 0){
+      const base = Math.floor(total/n), arr = weights.map(()=>base);
+      for (let k=0; k<total-base*n; k++) arr[k]++;
+      return arr;
+    }
+    const raw = weights.map(w => w/sum*total);
+    const arr = raw.map(x => Math.floor(x));
+    const rem = total - arr.reduce((a,b)=>a+b, 0);
+    const order = raw.map((_,k)=>k).sort((a,b)=>(raw[b]-arr[b])-(raw[a]-arr[a]));
+    for (let k=0; k<rem; k++) arr[order[k%order.length]]++;
+    return arr;
+  }
+  function effMax(idx){
+    if (mode !== 'fixed') return SLIDER_MAX;
+    const lockedOthers = items.reduce((s,it,i)=> s + (i!==idx && it.locked ? it.u : 0), 0);
+    return Math.max(0, Math.min(SLIDER_MAX, targetU - lockedOthers));
+  }
+  function setValue(idx, u){
+    u = Math.max(0, Math.min(Math.round(u), mode==='fixed' ? effMax(idx) : SLIDER_MAX));
+    items[idx].u = u;
+    if (mode === 'fixed'){
+      const others = items.map((_,i)=>i).filter(i => i!==idx && !items[i].locked);
+      const lockedOthers = items.reduce((s,it,i)=> s + (i!==idx && it.locked ? it.u : 0), 0);
+      const alloc = apportion(Math.max(0, targetU - u - lockedOthers), others.map(i=>items[i].u));
+      others.forEach((i,k)=> items[i].u = alloc[k]);
+    }
+    render();
+  }
+  function normalize(){
+    const lockedSum = items.reduce((s,it)=> s + (it.locked ? it.u : 0), 0);
+    const free = items.map((_,i)=>i).filter(i => !items[i].locked);
+    if (!free.length) return;
+    const alloc = apportion(Math.max(0, targetU - lockedSum), free.map(i=>items[i].u));
+    free.forEach((i,k)=> items[i].u = alloc[k]);
+    render();
+  }
+
+  /* ── 행 만들기 (한 번만) ── */
+  const rowsEl = $('#bd-rows');
+  const R = items.map((it, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td><span class="nm"><i class="sw" style="background:${it.c}"></i>${esc(it.name)}` +
+        `${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></td>` +
+      `<td><input type="range" min="0" max="${SLIDER_MAX}" step="1" value="${it.u}" ` +
+        `style="--c:${it.c}" aria-label="${esc(it.name)} 금액"></td>` +
+      `<td class="r"><div class="ctrl">` +
+        `<button class="step" data-d="-1" aria-label="${esc(it.name)} 0.1억 감소">−</button>` +
+        `<input class="num" type="number" min="0" step="0.1" value="${fmt(it.u)}" aria-label="${esc(it.name)} 금액(억)">` +
+        `<button class="step" data-d="1" aria-label="${esc(it.name)} 0.1억 증가">+</button></div></td>` +
+      `<td class="r pct"></td><td class="r dlt"></td>` +
+      `<td class="r"><button class="lock" aria-pressed="false">고정</button></td>`;
+    rowsEl.appendChild(tr);
+
+    const range = tr.querySelector('input[type=range]');
+    const num   = tr.querySelector('.num');
+    const lock  = tr.querySelector('.lock');
+    range.addEventListener('input', e => setValue(i, +e.target.value));
+    num.addEventListener('change', e => {
+      const v = parseFloat(e.target.value);
+      setValue(i, isNaN(v) ? items[i].u : v*10);
+    });
+    tr.querySelectorAll('.step').forEach(b =>
+      b.addEventListener('click', () => setValue(i, items[i].u + (+b.dataset.d))));
+    lock.addEventListener('click', () => { items[i].locked = !items[i].locked; render(); });
+    tr.addEventListener('mouseenter', () => { hover = i; paintHover(); });
+    tr.addEventListener('mouseleave', () => { hover = -1; paintHover(); });
+    return { tr, range, num, lock, pct: tr.querySelector('.pct'), dlt: tr.querySelector('.dlt') };
+  });
+
+  /* ── 툴팁 · 하이라이트 ── */
+  const tipEl = $('#bd-tip');
+  function showTip(i, ev){
+    const t = sumU() || 1;
+    tipEl.innerHTML = `<b>${esc(items[i].name)}</b><span>${fmt(items[i].u)}억 · ${(items[i].u/t*100).toFixed(1)}%</span>`;
+    tipEl.style.opacity = 1;
+    tipEl.style.left = Math.min(ev.clientX + 14, innerWidth - 200) + 'px';
+    tipEl.style.top  = (ev.clientY + 16) + 'px';
+  }
+  const hideTip = () => tipEl.style.opacity = 0;
+  function paintHover(){
+    R.forEach((r,i) => r.tr.classList.toggle('hl', i === hover));
+    document.querySelectorAll('#budget .arc, #bd-stack i').forEach(el => {
+      el.classList.toggle('dim', hover >= 0 && +el.dataset.i !== hover);
+    });
+  }
+
+  /* ── 그리기 ── */
+  const donut = $('#bd-donut'), stack = $('#bd-stack');
+  function render(){
+    const total = sumU(), t = total || 1;
+    items.forEach((it,i) => {
+      const r = R[i];
+      r.range.value = it.u;
+      r.range.max   = Math.max(effMax(i), it.u);
+      r.range.disabled = it.locked;
+      if (document.activeElement !== r.num) r.num.value = fmt(it.u);
+      r.num.disabled = it.locked;
+      r.pct.textContent = (it.u/t*100).toFixed(1) + '%';
+      const d = it.u - BASE[i].u;
+      r.dlt.textContent = d === 0 ? '—' : (d>0 ? '▲ ' : '▼ ') + fmt(Math.abs(d));
+      r.lock.setAttribute('aria-pressed', it.locked);
+    });
+    $('#bd-sumv').textContent = fmt(total);
+    $('#bd-sump').textContent = '100%';
+    const sd = total - 200;
+    $('#bd-sumd').textContent = sd === 0 ? '—' : (sd>0 ? '▲ ' : '▼ ') + fmt(Math.abs(sd));
+
+    const diff = total - targetU, dEl = $('#bd-diff');
+    dEl.textContent = (diff>0 ? '+' : diff<0 ? '−' : '±') + fmt(Math.abs(diff)) + ' 억';
+    dEl.className = diff === 0 ? 'even' : diff > 0 ? 'over' : 'under';
+
+    drawDonut(total); drawStack(total); paintHover(); remember();
+  }
+  function drawDonut(total){
+    const CX=160, CY=160, RAD=112, W=44, C=2*Math.PI*RAD, GAP=3;
+    const t = total || 1;
+    let off = 0, arcs = '', labels = '';
+    items.forEach((it,i) => {
+      const len = it.u/t*C;
+      if (it.u > 0){
+        const draw = Math.max(len - GAP, 0.6);
+        arcs += `<circle class="arc" data-i="${i}" cx="${CX}" cy="${CY}" r="${RAD}" fill="none" ` +
+          `stroke="${it.c}" stroke-width="${W}" stroke-dasharray="${draw} ${C-draw}" ` +
+          `stroke-dashoffset="${-off}" transform="rotate(-90 ${CX} ${CY})"></circle>`;
+        const frac = it.u/t;
+        if (frac >= 0.062){                    // 이보다 얇으면 라벨끼리 겹친다
+          const a = (-90 + (off + len/2)/C*360) * Math.PI/180;
+          labels += `<text class="alab" x="${(CX+RAD*Math.cos(a)).toFixed(1)}" ` +
+            `y="${(CY+RAD*Math.sin(a)).toFixed(1)}" text-anchor="middle" dominant-baseline="central">` +
+            `${(frac*100).toFixed(1)}%</text>`;
+        }
+      }
+      off += len;
+    });
+    donut.innerHTML =
+      `<circle cx="${CX}" cy="${CY}" r="${RAD}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${W}"></circle>` +
+      arcs + labels +
+      `<text class="cval" x="${CX}" y="${CY-2}" text-anchor="middle">${fmt(total)}</text>` +
+      `<text class="cunit" x="${CX}" y="${CY+28}" text-anchor="middle">억 원</text>`;
+    donut.querySelectorAll('.arc').forEach(el => {
+      const i = +el.dataset.i;
+      el.addEventListener('mousemove', ev => { hover = i; paintHover(); showTip(i, ev); });
+      el.addEventListener('mouseleave', () => { hover = -1; paintHover(); hideTip(); });
+    });
+  }
+  function drawStack(total){
+    stack.innerHTML = items.map((it,i) =>
+      it.u > 0 ? `<i data-i="${i}" style="background:${it.c};flex:${it.u}"></i>` : '').join('');
+    stack.querySelectorAll('i').forEach(el => {
+      const i = +el.dataset.i;
+      el.addEventListener('mousemove', ev => { hover = i; paintHover(); showTip(i, ev); });
+      el.addEventListener('mouseleave', () => { hover = -1; paintHover(); hideTip(); });
+    });
+    $('#bd-stackcap').textContent = fmt(total) + '억 = 100%';
+  }
+
+  /* 만지던 배분은 이 브라우저에 남겨 둔다 — 창을 닫았다 열어도 이어서 본다 */
+  function remember(){
+    try { localStorage.setItem(LS, JSON.stringify(
+      { u:items.map(i=>i.u), l:items.map(i=>i.locked), t:targetU, m:mode })); } catch(e){}
+  }
+  function recall(){
+    try {
+      const d = JSON.parse(localStorage.getItem(LS) || 'null');
+      if (!d || !Array.isArray(d.u) || d.u.length !== BASE.length) return;
+      items = BASE.map((b,i) => ({...b, u:Math.max(0, Math.round(d.u[i]||0)), locked:!!(d.l||[])[i]}));
+      targetU = Math.max(10, Math.round(d.t || 200));
+      mode = d.m === 'free' ? 'free' : 'fixed';
+    } catch(e){}
+  }
+
+  /* ── 툴바 ── */
+  function setMode(m){
+    mode = m;
+    $('#bd-fixed').setAttribute('aria-pressed', m === 'fixed');
+    $('#bd-free').setAttribute('aria-pressed', m === 'free');
+    if (m === 'fixed') normalize(); else render();
+  }
+  $('#bd-fixed').onclick = () => setMode('fixed');
+  $('#bd-free').onclick  = () => setMode('free');
+  $('#bd-target').addEventListener('change', e => {
+    const v = parseFloat(e.target.value);
+    targetU = isNaN(v) ? targetU : Math.max(10, Math.round(v*10));
+    e.target.value = (targetU/10).toFixed(1);
+    if (mode === 'fixed') normalize(); else render();
+  });
+  $('#bd-norm').onclick  = normalize;
+  $('#bd-reset').onclick = () => {
+    items = BASE.map(b => ({...b, locked:false}));
+    targetU = 200; $('#bd-target').value = '20.0';
+    render();
+  };
+  function tableLines(){
+    const t = sumU() || 1;
+    return ['항목\t금액(억)\t비중(%)\t기준대비']
+      .concat(items.map((it,i) =>
+        `${it.name}\t${fmt(it.u)}\t${(it.u/t*100).toFixed(1)}\t${fmt(it.u - BASE[i].u)}`))
+      .concat([`합계\t${fmt(sumU())}\t100.0\t${fmt(sumU() - 200)}`]);
+  }
+  $('#bd-copy').onclick = async () => {
+    const txt = tableLines().join('\n');
+    try {
+      await navigator.clipboard.writeText(txt);
+      const b = $('#bd-copy'); b.textContent = '복사됨 ✓';
+      setTimeout(() => b.textContent = '표 복사', 1400);
+    } catch(e){ prompt('복사할 내용:', txt); }
+  };
+
+  /* ══ 보드에 붙이기 ══
+     카드(글자로 남아 고칠 수 있는 것) + 구성 그림(한눈에 보는 것) 을 나란히 놓는다. */
+  const CHART_W = 780, CHART_H = 440;
+  function chartPng(){
+    const dpr = 2, cv = document.createElement('canvas');
+    cv.width = CHART_W*dpr; cv.height = CHART_H*dpr;
+    const g = cv.getContext('2d');
+    g.scale(dpr, dpr);
+    const F = '"Pretendard Variable","Apple SD Gothic Neo",system-ui,sans-serif';
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, CHART_W, CHART_H);      // ⚠️ 흰 바탕 (다크 테마 invert 대응)
+    g.strokeStyle = '#E0E0E0'; g.lineWidth = 1;                       // 흰 캔버스에서도 그림의 경계가 보이게
+    g.strokeRect(.5, .5, CHART_W-1, CHART_H-1);
+    const total = sumU(), t = total || 1;
+
+    g.fillStyle = '#1A1A1A'; g.font = '700 21px ' + F;
+    g.fillText('순제작비 구성', 30, 44);
+    g.fillStyle = '#757575'; g.font = '12.5px ' + F;
+    const diff = total - targetU;
+    g.fillText(`${new Date().toLocaleDateString('ko-KR')} · 목표 ${fmt(targetU)}억 · ` +
+      `${diff === 0 ? '목표와 같음' : (diff>0?'+':'−') + fmt(Math.abs(diff)) + '억'}` +
+      `${S.me ? ' · ' + S.me : ''}`, 30, 66);
+    g.strokeStyle = '#E0E0E0'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(30, 84); g.lineTo(CHART_W-30, 84); g.stroke();
+
+    // 도넛
+    const CX = 175, CY = 262, RAD = 105, TH = 42;
+    g.lineWidth = TH; g.strokeStyle = '#F0F0F0';
+    g.beginPath(); g.arc(CX, CY, RAD, 0, Math.PI*2); g.stroke();
+    let a0 = -Math.PI/2;
+    const gap = total ? Math.min(0.035, Math.PI*2/Math.max(items.filter(i=>i.u>0).length,1)*0.06) : 0;
+    items.forEach(it => {
+      if (it.u <= 0) return;
+      const len = it.u/t*Math.PI*2;
+      g.strokeStyle = it.c;
+      g.beginPath(); g.arc(CX, CY, RAD, a0 + gap/2, a0 + Math.max(len - gap, 0.004) + gap/2); g.stroke();
+      const frac = it.u/t;
+      if (frac >= 0.062){
+        const mid = a0 + len/2;
+        g.fillStyle = '#ffffff'; g.font = '700 12.5px ' + F;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText((frac*100).toFixed(1) + '%', CX + RAD*Math.cos(mid), CY + RAD*Math.sin(mid));
+        g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+      }
+      a0 += len;
+    });
+    g.fillStyle = '#1A1A1A'; g.font = '600 42px ' + F;
+    g.textAlign = 'center';
+    g.fillText(fmt(total), CX, CY + 6);
+    g.fillStyle = '#9E9E9E'; g.font = '11px ' + F;
+    g.fillText('억 원', CX, CY + 30);
+    g.textAlign = 'left';
+
+    // 범례 = 항목 표
+    let y = 118;
+    items.forEach((it,i) => {
+      g.fillStyle = it.c; g.fillRect(330, y-9, 10, 10);
+      g.fillStyle = '#1A1A1A'; g.font = '13.5px ' + F;
+      g.fillText(it.name, 350, y);
+      if (it.sub){
+        const w = g.measureText(it.name).width;
+        g.fillStyle = '#9E9E9E'; g.font = '11px ' + F;
+        g.fillText(it.sub, 356 + w, y);
+      }
+      g.textAlign = 'right';
+      g.fillStyle = '#1A1A1A'; g.font = '600 13.5px ' + F;
+      g.fillText(fmt(it.u) + '억', CHART_W - 86, y);
+      g.fillStyle = '#757575'; g.font = '12px ' + F;
+      g.fillText((it.u/t*100).toFixed(1) + '%', CHART_W - 30, y);
+      g.textAlign = 'left';
+      g.strokeStyle = '#EEEEEE'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(330, y+11.5); g.lineTo(CHART_W-30, y+11.5); g.stroke();
+      y += 33;
+    });
+    g.fillStyle = '#1A1A1A'; g.font = '700 13.5px ' + F;
+    g.fillText('합계', 350, y + 8);
+    g.textAlign = 'right'; g.font = '700 15px ' + F;
+    g.fillText(fmt(total) + '억', CHART_W - 86, y + 8);
+    g.textAlign = 'left';
+    return cv.toDataURL('image/png');
+  }
+  /* 이미지 요소 만들기 — convertToExcalidrawElements 가 이미지를 못 받는 판이면
+     restoreElements 로 직접 채워 넣는다(둘 다 Excalidraw 가 내보내는 공개 API). */
+  function imageElement(x, y, w, h, fileId){
+    const raw = { type:'image', x, y, width:w, height:h, fileId, status:'saved' };
+    try {
+      const out = Ex.convertToExcalidrawElements([raw]);
+      if (out && out.length) return out;
+    } catch(e){}
+    return Ex.restoreElements([{ ...raw, id:uid()+uid(), version:1, versionNonce:1, seed:1, angle:0,
+      strokeColor:'transparent', backgroundColor:'transparent', fillStyle:'solid', strokeWidth:1,
+      strokeStyle:'solid', roughness:0, opacity:100, groupIds:[], scale:[1,1] }], null,
+      { refreshDimensions:false });
+  }
+  /* 있는 것들의 오른쪽 빈자리. 보드가 비어 있으면 지금 보고 있는 자리 근처. */
+  function pasteSpot(){
+    const els = (api.getSceneElements() || []).filter(e => !e.isDeleted);
+    if (els.length) return {
+      x: Math.round(Math.max(...els.map(e => e.x + (e.width||0))) + 60),
+      y: Math.round(Math.min(...els.map(e => e.y))) };
+    const st = api.getAppState(), z = st.zoom.value;
+    return { x: Math.round(-st.scrollX + 80/z), y: Math.round(-st.scrollY + 80/z) };
+  }
+  $('#bd-paste').onclick = () => {
+    if (!api || !Ex){ toast('보드가 아직 열리지 않았습니다.'); return; }
+    const total = sumU(), t = total || 1, diff = total - targetU;
+    const body = [
+      `총 ${fmt(total)}억 · 목표 ${fmt(targetU)}억` +
+        (diff === 0 ? '' : ` (${diff>0?'+':'−'}${fmt(Math.abs(diff))}억)`),
+      `${new Date().toLocaleDateString('ko-KR')}${S.me ? ' · ' + S.me : ''}`,
+      '',
+    ].concat(items.filter(it => it.u > 0).map(it =>
+      `${it.name}${it.sub ? ' (' + it.sub + ')' : ''} — ${fmt(it.u)}억 · ${(it.u/t*100).toFixed(1)}%`
+    )).join('\n');
+
+    const spot = pasteSpot();
+    const card = buildCard(spot.x, spot.y, 360, 0, { title:`예산안 · ${fmt(total)}억`, body });
+    let add = card;
+    try {
+      const fileId = 'bud' + uid();
+      api.addFiles([{ id:fileId, mimeType:'image/png', dataURL:chartPng(), created:Date.now() }]);
+      const iw = 520, ih = Math.round(iw * CHART_H / CHART_W);
+      add = [...card, ...imageElement(spot.x + 400, spot.y, iw, ih, fileId)];
+    } catch(e){
+      toast('구성 그림은 넣지 못했습니다 — 표는 카드로 들어갔습니다.');
+    }
+    api.updateScene({ elements:[...api.getSceneElements(), ...add], captureUpdate: CAP.now });
+    const ids = {}; add.forEach(e => ids[e.id] = true);
+    api.updateScene({ appState:{ selectedElementIds:ids,
+      selectedGroupIds:{ [card[0].groupIds[0]]:true } }, captureUpdate: CAP.never });
+    markDirty();
+    close();
+    api.scrollToContent(add, { fitToContent:true, animate:false });
+    toast('보드에 붙였습니다 — 되돌리려면 ⌘Z');
+  };
+
+  /* ══ 시나리오 A/B/C ══ 운영진이 함께 보는 별도 파일(data/budget.json) ══ */
+  let slots = [null,null,null], slotSha = null, slotState = 'idle';   // idle · loading · ready · error
+  const slotsEl = $('#bd-slots');
+  function drawSlots(){
+    slotsEl.innerHTML = ['A','B','C'].map((n,k) => {
+      const s = slots[k], ready = slotState === 'ready';
+      const who = !ready ? (slotState === 'loading' ? '불러오는 중…' : '—')
+        : s ? `${fmt((s.u||[]).reduce((a,b)=>a+b,0))}억<br>${esc(s.by||'')} · ${ago(s.at)}`
+            : '비어 있음';
+      return `<div class="slot"><h4>시나리오 ${n}</h4><div class="who">${who}</div>` +
+        `<div class="row">` +
+        `<button data-save="${k}" ${ready?'':'disabled'}>저장</button>` +
+        `<button data-load="${k}" ${ready && s ? '' : 'disabled'}>불러오기</button>` +
+        `</div></div>`;
+    }).join('');
+    slotsEl.querySelectorAll('[data-save]').forEach(b => b.onclick = () => saveSlot(+b.dataset.save));
+    slotsEl.querySelectorAll('[data-load]').forEach(b => b.onclick = () => loadSlot(+b.dataset.load));
+    $('#bd-slotnote').innerHTML = slotState === 'error'
+      ? '<b style="color:var(--warn)">시나리오를 불러오지 못했습니다.</b> 창을 닫았다 다시 열면 재시도합니다.'
+      : '시나리오는 <b>운영진 모두가 함께</b> 봅니다. 지금 만지던 배분은 이 브라우저에만 남습니다.';
+  }
+  function fillSlots(d){
+    slots = ((d && d.slots) || []).slice(0, 3);
+    while (slots.length < 3) slots.push(null);
+  }
+  async function loadSlots(){
+    slotState = 'loading'; drawSlots();
+    try {
+      const f = await ghGet(SLOT_PATH);
+      if (f){ fillSlots(JSON.parse(b64dec(f.content))); slotSha = f.sha; }
+      else  { slots = [null,null,null]; slotSha = null; }
+      slotState = 'ready';
+    } catch(e){ slotState = 'error'; }
+    drawSlots();
+  }
+  /* 저장 — 남이 먼저 저장해 sha 가 어긋나면 최신을 받아 **내 칸만** 얹고 한 번 더 시도한다 */
+  async function putSlots(k){
+    for (let n = 0; n < 2; n++){
+      try {
+        const r = await ghPutJson(SLOT_PATH, { v:1, slots }, `예산 시나리오 ${'ABC'[k]} — ${S.me}`, slotSha);
+        slotSha = r.content.sha;
+        return;
+      } catch(e){
+        if (!e.conflict || n) throw e;
+        const mine = slots[k];
+        const f = await ghGet(SLOT_PATH);
+        if (f){ fillSlots(JSON.parse(b64dec(f.content))); slotSha = f.sha; } else slotSha = null;
+        slots[k] = mine; drawSlots();
+      }
+    }
+  }
+  async function saveSlot(k){
+    const before = slots.slice();
+    slots[k] = { u:items.map(i=>i.u), l:items.map(i=>i.locked), t:targetU, by:S.me, at:Date.now() };
+    drawSlots();
+    try { await putSlots(k); toast(`시나리오 ${'ABC'[k]} 저장 — 운영진 모두에게 보입니다`); }
+    catch(e){ slots = before; drawSlots(); toast('시나리오 저장 실패 — ' + (e.message || e)); }
+  }
+  function loadSlot(k){
+    const d = slots[k];
+    if (!d || !Array.isArray(d.u)) return;
+    items = BASE.map((b,i) => ({...b, u:Math.max(0, Math.round(d.u[i]||0)), locked:!!(d.l||[])[i]}));
+    targetU = Math.max(10, Math.round(d.t || 200));
+    $('#bd-target').value = (targetU/10).toFixed(1);
+    render();
+    toast(`시나리오 ${'ABC'[k]} 불러옴`);
+  }
+
+  /* ── 열고 닫기 ── */
+  function open(){
+    $('#budget').classList.add('on');
+    $('#b-budget').classList.add('on');
+    if (slotState === 'idle' || slotState === 'error') loadSlots();
+  }
+  function close(){
+    $('#budget').classList.remove('on');
+    $('#b-budget').classList.remove('on');
+    hideTip();
+  }
+  $('#b-budget').onclick = () => $('#budget').classList.contains('on') ? close() : open();
+  $('#bd-x').onclick = close;
+  $('#budget').onclick = e => { if (e.target.id === 'budget') close(); };
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $('#budget').classList.contains('on')) close();
+  });
+
+  recall();
+  $('#bd-target').value = (targetU/10).toFixed(1);
+  $('#bd-fixed').setAttribute('aria-pressed', mode === 'fixed');
+  $('#bd-free').setAttribute('aria-pressed', mode === 'free');
+  drawSlots();
+  render();
+})();
 
 window.__board = { S, get api(){ return api; }, get Ex(){ return Ex; }, get hApi(){ return hApi; },
   boot, enter, openBoard, save, drawTags, drawMinimap, drawChecks, addCheckItem, openHistory, maybeCheckpoint, startFreshCanvas,
