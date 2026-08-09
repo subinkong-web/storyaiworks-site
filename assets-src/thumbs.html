@@ -32,29 +32,35 @@
   .corner.bl{left:32px;bottom:32px;border-right:0;border-top:0}
   .corner.br{right:32px;bottom:32px;border-left:0;border-top:0}
 
-  /* ══ 데모 필름 v2 — 장르 카드 그리드 ══ */
-  .demo .glowbg{position:absolute;right:-160px;top:-160px;width:820px;height:820px;z-index:0;
-    background:radial-gradient(circle,rgba(103,68,152,.32),transparent 62%)}
-  .demo .cards{position:absolute;right:64px;top:50%;transform:translateY(-50%) rotate(-4deg);z-index:4;
-    display:grid;grid-template-columns:288px 288px;gap:16px}
-  .demo .card{position:relative;height:184px;overflow:hidden;border:1px solid rgba(255,255,255,.22);
-    box-shadow:0 22px 54px rgba(0,0,0,.5)}
-  .demo .card img{width:100%;height:100%;object-fit:cover;filter:saturate(1.06) contrast(1.05)}
-  .demo .card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,12,.6),transparent 45%)}
-  .demo .card i{position:absolute;left:12px;bottom:11px;z-index:2;font-style:normal;
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;color:#F4F3F0;text-transform:uppercase;
-    background:rgba(11,11,12,.62);border:1px solid rgba(255,255,255,.25);padding:5px 11px;backdrop-filter:blur(4px)}
-  .demo .card i b{color:var(--acc);font-weight:800;margin-right:7px}
-  .demo .shade{position:absolute;inset:0;z-index:2;
-    background:linear-gradient(97deg,#0B0B0C 27%,rgba(11,11,12,.86) 40%,rgba(11,11,12,.08) 62%,rgba(11,11,12,.25));}
-  .demo .tt{position:absolute;left:52px;bottom:64px;z-index:7}
+  /* ══ 데모 필름 v3 — 3밴드 필름 스트립 포스터(작게 줄여도 한 방에 읽히게) ══ */
+  .demo .bands{position:absolute;inset:0;z-index:1;display:grid;grid-template-rows:repeat(3,1fr);
+    gap:3px;background:var(--acc)}
+  .demo .band{position:relative;overflow:hidden}
+  .demo .band img{width:100%;height:100%;object-fit:cover;filter:saturate(1.22) contrast(1.16) brightness(1.04)}
+  .demo .b1 img{object-position:50% 42%}
+  .demo .b2 img{object-position:50% 52%}
+  .demo .b3 img{object-position:50% 58%}
+  .demo .band i{position:absolute;right:26px;top:50%;transform:translateY(-50%);z-index:3;font-style:normal;
+    font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:#F4F3F0;text-transform:uppercase;
+    background:rgba(11,11,12,.55);border:1px solid rgba(255,255,255,.28);padding:6px 12px}
+  .demo .band i b{color:var(--acc);font-weight:800;margin-right:8px}
+  .demo .shade{position:absolute;inset:0;z-index:5;background:
+    radial-gradient(ellipse at 14% 55%,rgba(103,68,152,.3),transparent 46%),
+    linear-gradient(100deg,#0B0B0C 24%,rgba(11,11,12,.94) 40%,rgba(11,11,12,.05) 72%,rgba(11,11,12,.42));}
+  .demo .tt{position:absolute;left:52px;top:50%;transform:translateY(-50%);z-index:7}
   .demo .k{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:800;letter-spacing:.4em;color:var(--acc);text-transform:uppercase}
-  .demo .k::before{content:"";width:46px;height:2px;background:var(--accd)}
-  .demo h1{margin-top:22px;font-size:100px;line-height:1.02;font-weight:800;color:var(--ink);letter-spacing:-.015em}
-  .demo h1 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--acc);letter-spacing:0}
-  .demo .sub{margin-top:26px;font-size:15px;letter-spacing:.26em;color:var(--dim);text-transform:uppercase;font-weight:600}
-  .demo .sub b{color:var(--ink);font-weight:700}
-  .demo .meta{margin-top:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:#616168;text-transform:uppercase}
+  .demo .k::before{content:"";width:46px;height:2px;background:var(--acc);box-shadow:0 0 18px rgba(180,155,226,.9)}
+  .demo h1{margin-top:20px;font-size:112px;line-height:.94;font-weight:800;color:var(--ink);
+    letter-spacing:-.03em;text-shadow:0 18px 60px rgba(0,0,0,.9)}
+  .demo h1 em{display:block;font-family:var(--serif);font-style:italic;font-weight:400;color:var(--acc);
+    letter-spacing:0;text-shadow:0 0 50px rgba(180,155,226,.6)}
+  .demo .strip{display:flex;align-items:center;gap:16px;margin-top:28px;width:560px;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.3em;color:rgba(244,243,240,.85);text-transform:uppercase}
+  .demo .strip b{color:var(--acc);font-weight:700}
+  .demo .strip span{flex:1;height:1px;background:linear-gradient(to right,rgba(180,155,226,.75),transparent)}
+  .demo .rt{position:absolute;left:52px;bottom:44px;z-index:7;
+    font-family:var(--mono);font-size:12px;letter-spacing:.26em;color:rgba(244,243,240,.6);text-transform:uppercase}
+  .demo .rt b{color:var(--acc);font-weight:700}
 
   /* ══ 메이킹 필름 v2 ══ */
   .making .bg{position:absolute;inset:0;
@@ -86,14 +92,12 @@
 </head>
 <body>
 
-<!-- 데모 필름 썸네일 v2 -->
+<!-- 데모 필름 썸네일 v3 — 3밴드 필름 스트립 포스터 -->
 <div class="thumb demo" id="t-demo">
-  <div class="glowbg"></div>
-  <div class="cards">
-    <div class="card"><img src="../images/sf_whale.jpg" alt=""><i><b>01</b>SF</i></div>
-    <div class="card"><img src="../images/race_suit.jpg" alt=""><i><b>02</b>Racing</i></div>
-    <div class="card"><img src="../images/youth_train.jpg" alt=""><i><b>03</b>Youth</i></div>
-    <div class="card"><img src="../images/cf_drink.jpg" alt=""><i><b>04</b>Commercial</i></div>
+  <div class="bands">
+    <div class="band b1"><img src="../images/sf_whale.jpg" alt=""><i><b>01</b>SF</i></div>
+    <div class="band b2"><img src="../images/fire.jpg" alt=""><i><b>02</b>Action</i></div>
+    <div class="band b3"><img src="../images/race_car.jpg" alt=""><i><b>03</b>Racing</i></div>
   </div>
   <div class="shade"></div>
   <div class="grid"></div>
@@ -101,10 +105,10 @@
   <div class="tr">2026 · Made with AI</div>
   <div class="tt">
     <div class="k">SAW — Demo Film</div>
-    <h1>The First<br><em>Demo</em></h1>
-    <div class="sub">Generated &amp; Directed by <b>SAW</b></div>
-    <div class="meta">One Pipeline, Every Genre · RT 3:24</div>
+    <h1>The First<em>Demo</em></h1>
+    <div class="strip"><b>One Pipeline</b> · Every Genre<span></span></div>
   </div>
+  <div class="rt">Generated &amp; Directed by SAW · RT <b>3:24</b></div>
   <div class="vin"></div>
   <div class="grain"></div>
   <div class="corner bl"></div><div class="corner br"></div>

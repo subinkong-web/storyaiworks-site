@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@400;600;700&display=swap">
 <!-- CSS 구조가 바뀌면 v를 올린다 — 캐시된 옛 스타일시트로 새 섹션이 깨져 보이는 것을 막는다 -->
-<link rel="stylesheet" href="css/style.css?v=20260809a">
+<link rel="stylesheet" href="css/style.css?v=20260809b">
 </head>
 <body>
 
@@ -822,24 +822,22 @@
   </div>
 </section>
 
-<!-- ══ 플로팅 재생 독 — 어느 위치에서든 데모/메이킹 필름을 바로 열 수 있게 항상 떠 있다 ══ -->
+<!-- ══ 플로팅 재생 버튼 — 어느 위치에서든 필름을 열 수 있게 항상 떠 있다(한 개로 통합) ══ -->
 <div class="fdock" id="fdock">
-  <button class="fbtn main" type="button"
-          data-slot="film_demo" data-yt="65sRoCflCuo" data-title="데모 필름 — The First Demo">
+  <button class="fbtn main" type="button" data-slot="film_demo" data-yt="65sRoCflCuo">
     <span class="ic"></span><span class="lb">데모 필름</span>
-  </button>
-  <button class="fbtn" type="button"
-          data-slot="film_making" data-yt="poNytRVqcjs" data-title="메이킹 필름 — 데이터가 컷이 되기까지">
-    <span class="ic"></span><span class="lb">메이킹 필름</span>
   </button>
 </div>
 
-<!-- ══ 필름 라이트박스 — 히어로 카드·내비·플로팅 버튼이 모두 여기로 연결된다 ══ -->
+<!-- ══ 필름 라이트박스 — 데모/메이킹을 탭으로 전환한다 ══ -->
 <div class="vbox" id="vbox" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="vbk" id="vbox-bk"></div>
   <div class="vin">
     <div class="vhead">
-      <span id="vbox-t">데모 필름</span>
+      <div class="vtabs">
+        <button class="vtab on" type="button" data-slot="film_demo" data-yt="65sRoCflCuo">데모 필름</button>
+        <button class="vtab" type="button" data-slot="film_making" data-yt="poNytRVqcjs">메이킹 필름</button>
+      </div>
       <button class="vx" id="vbox-x" aria-label="닫기">×</button>
     </div>
     <div class="vframe" id="vbox-frame"></div>
@@ -1272,15 +1270,20 @@ document.getElementById('modal-bk').addEventListener('click', closeModal);
 document.getElementById('modal-x').addEventListener('click', closeModal);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ── 필름 라이트박스 — 히어로 카드 / 내비 버튼 / 플로팅 독에서 데모·메이킹을 바로 재생
+// ── 필름 라이트박스 — 히어로 카드 / 내비 버튼 / 플로팅 버튼에서 열고, 안에서 데모↔메이킹 전환
 const vbox = document.getElementById('vbox');
 const vFrame = document.getElementById('vbox-frame');
-const vTitle = document.getElementById('vbox-t');
-function openFilm(id, title) {
-  if (!id) return;
-  vTitle.textContent = title || '';
-  vFrame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0"
-    allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${title || 'SAW Film'}"></iframe>`;
+// 영상 ID의 정본은 탭 요소 — site-config.json이 data-slot으로 여기에도 반영된다
+function playFilm(slot) {
+  const tab = document.querySelector(`.vtab[data-slot="${slot}"]`);
+  if (!tab || !tab.dataset.yt) return false;
+  document.querySelectorAll('.vtab').forEach(t => t.classList.toggle('on', t === tab));
+  vFrame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${tab.dataset.yt}?autoplay=1&rel=0"
+    allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${tab.textContent}"></iframe>`;
+  return true;
+}
+function openFilm(slot) {
+  if (!playFilm(slot)) return;
   vbox.classList.add('open');
   vbox.setAttribute('aria-hidden', 'false');
   document.body.classList.add('vopen');
@@ -1297,15 +1300,16 @@ function closeFilm() {
 document.getElementById('vbox-bk').addEventListener('click', closeFilm);
 document.getElementById('vbox-x').addEventListener('click', closeFilm);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeFilm(); });
-// data-yt는 site-config.json 반영 후 바뀔 수 있으므로 클릭 시점에 읽는다
 document.querySelectorAll('.hfilm, .fbtn').forEach(el =>
-  el.addEventListener('click', () => openFilm(el.dataset.yt, el.dataset.title)));
+  el.addEventListener('click', () => openFilm(el.dataset.slot)));
+document.querySelectorAll('.vtab').forEach(t =>
+  t.addEventListener('click', () => { if (!t.classList.contains('on')) playFilm(t.dataset.slot); }));
 document.getElementById('navplay').addEventListener('click', e => {
-  const demo = document.querySelector('.fbtn[data-slot="film_demo"]');
-  if (demo && demo.dataset.yt) { e.preventDefault(); openFilm(demo.dataset.yt, demo.dataset.title); }
+  const tab = document.querySelector('.vtab[data-slot="film_demo"]');
+  if (tab && tab.dataset.yt) { e.preventDefault(); openFilm('film_demo'); }
   // 링크가 비어 있으면 기본 동작(#films 이동)을 그대로 둔다
 });
-// 링크가 비어 있는 슬롯은 재생 UI를 죽인다 — 히어로는 '준비 중', 플로팅 버튼은 숨김
+// 링크가 비어 있는 슬롯은 재생 UI를 죽인다 — 히어로는 '준비 중', 탭·플로팅 버튼은 숨김
 function syncFilmCTA() {
   document.querySelectorAll('.hfilm').forEach(el => {
     const on = !!el.dataset.yt;
@@ -1319,9 +1323,17 @@ function syncFilmCTA() {
       el.querySelector('.ph').appendChild(soon);
     } else if (on && soon) soon.remove();
   });
-  document.querySelectorAll('.fbtn').forEach(el => { el.hidden = !el.dataset.yt; });
+  document.querySelectorAll('.vtab').forEach(t => { t.hidden = !t.dataset.yt; });
   const dock = document.getElementById('fdock');
-  dock.hidden = !dock.querySelector('.fbtn:not([hidden])');
+  const fbtn = dock.querySelector('.fbtn');
+  // 데모가 비어 있으면 메이킹으로 대체, 둘 다 없으면 버튼 자체를 숨긴다
+  const alt = document.querySelector('.vtab[data-slot="film_making"]');
+  if (!fbtn.dataset.yt && alt && alt.dataset.yt) {
+    fbtn.dataset.slot = 'film_making';
+    fbtn.dataset.yt = alt.dataset.yt;
+    fbtn.querySelector('.lb').textContent = '메이킹 필름';
+  }
+  dock.hidden = !fbtn.dataset.yt;
 }
 
 // 유튜브 플레이어 — site-config.json의 링크를 반영한 뒤 data-yt 요소를 클릭 재생으로 활성화

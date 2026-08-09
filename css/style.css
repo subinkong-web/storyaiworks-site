@@ -251,11 +251,12 @@ body.hascur .cring{opacity:1}
 /* 메이킹 = 데모의 보조 — 세로 공간을 아끼려고 가로 한 줄 카드로 */
 .hfilm.sm{
   display:flex;align-items:center;gap:16px;padding:10px 18px 10px 10px;
-  border:1px solid var(--hair);background:rgba(11,11,12,.5);
+  border:1px solid var(--acchair);background:rgba(11,11,12,.5);
+  box-shadow:inset 3px 0 0 var(--accd);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  transition:border-color .35s,background .35s;
+  transition:border-color .35s,background .35s,box-shadow .35s;
 }
-.hfilm.sm:hover{border-color:var(--accline);background:rgba(11,11,12,.72)}
+.hfilm.sm:hover{border-color:var(--accline);background:rgba(11,11,12,.72);box-shadow:inset 3px 0 0 var(--acc)}
 .hfilm.sm .ph{flex:0 0 clamp(130px,13vw,168px);box-shadow:none}
 .hfilm.sm:hover .ph{transform:none;box-shadow:none}
 .hfilm.sm .cap{flex-direction:column;align-items:flex-start;gap:4px;padding:0}
@@ -266,10 +267,22 @@ body.hascur .cring{opacity:1}
   transition:border-color .35s,box-shadow .35s,transform .5s cubic-bezier(.2,.7,.2,1);
 }
 .hfilm .ph img{
-  width:100%;height:100%;object-fit:cover;filter:brightness(.9);
+  width:100%;height:100%;object-fit:cover;filter:brightness(.94);
   transition:transform 1s ease,filter .5s;
 }
 .hfilm:hover .ph,.hfilm:focus-visible .ph{border-color:var(--accline);transform:translateY(-4px);box-shadow:0 34px 76px rgba(0,0,0,.62)}
+/* 데모 카드 — 퍼플 테두리가 숨을 쉬면서 "누를 것"임을 알린다 */
+.hfilm.main .ph img{filter:none}
+.hfilm.main .ph{border-color:var(--accline);box-shadow:0 26px 64px rgba(0,0,0,.55),0 0 60px rgba(103,68,152,.3)}
+.hfilm.main .ph::after{
+  content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+  border:1px solid var(--acc);
+  box-shadow:0 0 30px rgba(180,155,226,.45),inset 0 0 40px rgba(103,68,152,.28);
+  animation:cardPulse 3.4s ease-in-out infinite;
+}
+@keyframes cardPulse{0%,100%{opacity:.45}50%{opacity:1}}
+.hfilm.main:hover .ph{box-shadow:0 34px 76px rgba(0,0,0,.62),0 0 84px rgba(103,68,152,.5)}
+.hfilm.main:hover .ph::after,.hfilm.main:focus-visible .ph::after{animation:none;opacity:1}
 .hfilm:hover .ph img{transform:scale(1.035);filter:brightness(1)}
 .hfilm:focus-visible{outline:0}
 .hfilm:focus-visible .ph{outline:2px solid var(--acc);outline-offset:3px}
@@ -358,8 +371,10 @@ body.hascur .cring{opacity:1}
 .film{position:relative}
 .film .ph{
   position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--panel);
-  cursor:pointer;
+  cursor:pointer;border:1px solid var(--acchair);
+  transition:border-color .35s,box-shadow .35s;
 }
+.film .ph:hover{border-color:var(--accline);box-shadow:0 0 60px rgba(103,68,152,.32)}
 .film .ph img{width:100%;height:100%;object-fit:cover;filter:brightness(.92);transition:transform 1s ease,filter .5s}
 .film .ph:hover img{transform:scale(1.03);filter:brightness(1)}
 .film .ph iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:4}
@@ -1170,10 +1185,17 @@ body.hascur .cring{opacity:1}
   padding:0 var(--pad);display:flex;flex-direction:column;justify-content:center;
 }
 .vhead{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:14px}
-.vhead span{
-  font-size:11px;font-weight:800;letter-spacing:.24em;color:var(--acc);
-  text-transform:uppercase;word-break:keep-all;
+/* 데모↔메이킹 전환 탭 — 플로팅 버튼을 하나로 합친 대신 여기서 고른다 */
+.vtabs{display:flex;gap:8px;flex-wrap:wrap}
+.vtab{
+  border:1px solid rgba(255,255,255,.18);background:none;color:var(--dim);
+  font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:.14em;
+  padding:9px 18px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:color .3s,border-color .3s,background .3s;
 }
+.vtab:hover{color:#F4F3F0;border-color:var(--accline)}
+.vtab.on{background:var(--acc);border-color:var(--acc);color:#0B0B0C}
+.vtab:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
 .vx{
   flex:0 0 auto;width:40px;height:40px;border:1px solid rgba(255,255,255,.18);
   background:none;color:#F4F3F0;font-size:20px;line-height:1;cursor:pointer;
@@ -1185,4 +1207,5 @@ body.hascur .cring{opacity:1}
 
 @media (prefers-reduced-motion:reduce){
   .hfilm.main .play::before,.fbtn.main .ic::before{animation:none}
+  .hfilm.main .ph::after{animation:none;opacity:.8}
 }
