@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@400;600;700&display=swap">
 <!-- CSS 구조가 바뀌면 v를 올린다 — 캐시된 옛 스타일시트로 새 섹션이 깨져 보이는 것을 막는다 -->
-<link rel="stylesheet" href="css/style.css?v=20260804b">
+<link rel="stylesheet" href="css/style.css?v=20260809a">
 </head>
 <body>
 
@@ -24,6 +24,8 @@
 <nav class="nav" id="nav">
   <a class="logo" href="#top"><img src="images/saw_logo_white.png" alt="SAW"></a>
   <ul id="navlinks">
+    <!-- 데모 필름 — 어디서든 한 번에 재생되도록 내비 맨 앞에 강조 버튼으로 둔다 -->
+    <li class="pf"><a href="#films" id="navplay">▶ 데모 필름</a></li>
     <li><a href="#films">Films</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#work">Work</a></li>
@@ -43,19 +45,42 @@
   </button>
 </nav>
 
-<!-- ══ HERO ══ -->
+<!-- ══ HERO — 첫 화면에서 데모/메이킹 필름을 바로 보여준다(클릭 시 라이트박스 재생) ══ -->
 <header class="hero grain" id="top">
   <div class="bg"><img src="images/sf_whale.jpg" alt="SAW 데모 필름 — SF 장면"></div>
   <canvas id="herofx" aria-hidden="true"></canvas>
   <div class="hero-in wrap">
-    <div class="hero-k rv">AI-Native Film Studio</div>
-    <h1 class="hero-t rv d1" data-tx="hero_t">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
-    <p class="hero-d rv d2" data-tx="hero_d">폭풍의 바다, 불타는 공장, 미래의 도시 — 물리적 한계가 지워온 장면들을
-    SAW는 데이터와 AI 파이프라인으로 만듭니다.</p>
-    <div class="hero-meta rv d3">
-      <div>Company<b>주식회사 스토리에이아이웍스</b></div>
-      <div>Founded<b>2026 · Goyang, Korea</b></div>
-      <div>Systems<b>Flowmark · Scripture Engine</b></div>
+    <div class="hero-copy">
+      <div class="hero-k rv">AI-Native Film Studio</div>
+      <h1 class="hero-t rv d1" data-tx="hero_t">영화의 크기를 정하는 것은<br>예산이 아니라, <em>상상력</em>입니다</h1>
+      <p class="hero-d rv d2" data-tx="hero_d">폭풍의 바다, 불타는 공장, 미래의 도시 — 물리적 한계가 지워온 장면들을
+      SAW는 데이터와 AI 파이프라인으로 만듭니다.</p>
+      <div class="hero-meta rv d3">
+        <div>Company<b>주식회사 스토리에이아이웍스</b></div>
+        <div>Founded<b>2026 · Goyang, Korea</b></div>
+        <div>Systems<b>Flowmark · Scripture Engine</b></div>
+      </div>
+    </div>
+
+    <!-- 히어로 필름 카드 — data-slot은 site-config.json의 영상 슬롯과 연결된다 -->
+    <div class="hero-films">
+      <button class="hfilm main rv d2" type="button"
+              data-slot="film_demo" data-yt="65sRoCflCuo" data-title="데모 필름 — The First Demo">
+        <span class="ph">
+          <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo" fetchpriority="high">
+          <span class="tag">지금 재생</span>
+          <span class="play"></span>
+        </span>
+        <span class="cap"><b data-tx="film_demo_ct">데모 필름</b><i>Demo Film · 전 컷 AI 제작</i></span>
+      </button>
+      <button class="hfilm sm rv d3" type="button"
+              data-slot="film_making" data-yt="poNytRVqcjs" data-title="메이킹 필름 — 데이터가 컷이 되기까지">
+        <span class="ph">
+          <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지" loading="lazy">
+          <span class="play"></span>
+        </span>
+        <span class="cap"><b data-tx="film_mk_ct">메이킹 필름</b><i>Making Film</i></span>
+      </button>
     </div>
   </div>
   <div class="scrollcue"></div>
@@ -767,8 +792,8 @@
       <div class="card">
         <div class="role">CEO · Content Strategy</div>
         <h3>정태우</h3>
+        <!-- 대표 전화번호는 노출하지 않는다(사용자 지시) — 이메일만 공개 -->
         <a class="cmail" href="mailto:ceo@storyaiworks.com">ceo@storyaiworks.com</a>
-        <a class="ctel" href="tel:+821046765412">+82 10 4676 5412</a>
       </div>
       <div class="card">
         <div class="role">CTO · Tech Direction</div>
@@ -790,12 +815,36 @@
       <div class="fmeta">
         <p><b>주식회사 스토리에이아이웍스</b><span>·</span>대표 정태우</p>
         <p>사업자등록번호 164-87-03772<span>·</span>경기도 고양시 일산동구 노첨길24번길 34-3, 1층 (장항동)</p>
-        <p><a href="mailto:ceo@storyaiworks.com">ceo@storyaiworks.com</a><span>·</span><a href="tel:+821046765412">+82 10 4676 5412</a></p>
+        <p><a href="mailto:ceo@storyaiworks.com">ceo@storyaiworks.com</a></p>
       </div>
       <div class="cr">© 2026 Story AI Works Inc.<br>All rights reserved.</div>
     </div>
   </div>
 </section>
+
+<!-- ══ 플로팅 재생 독 — 어느 위치에서든 데모/메이킹 필름을 바로 열 수 있게 항상 떠 있다 ══ -->
+<div class="fdock" id="fdock">
+  <button class="fbtn main" type="button"
+          data-slot="film_demo" data-yt="65sRoCflCuo" data-title="데모 필름 — The First Demo">
+    <span class="ic"></span><span class="lb">데모 필름</span>
+  </button>
+  <button class="fbtn" type="button"
+          data-slot="film_making" data-yt="poNytRVqcjs" data-title="메이킹 필름 — 데이터가 컷이 되기까지">
+    <span class="ic"></span><span class="lb">메이킹 필름</span>
+  </button>
+</div>
+
+<!-- ══ 필름 라이트박스 — 히어로 카드·내비·플로팅 버튼이 모두 여기로 연결된다 ══ -->
+<div class="vbox" id="vbox" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="vbk" id="vbox-bk"></div>
+  <div class="vin">
+    <div class="vhead">
+      <span id="vbox-t">데모 필름</span>
+      <button class="vx" id="vbox-x" aria-label="닫기">×</button>
+    </div>
+    <div class="vframe" id="vbox-frame"></div>
+  </div>
+</div>
 
 <!-- ══ 쇼케이스 모달 ══ -->
 <div class="modal" id="modal" role="dialog" aria-modal="true">
@@ -1223,9 +1272,61 @@ document.getElementById('modal-bk').addEventListener('click', closeModal);
 document.getElementById('modal-x').addEventListener('click', closeModal);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+// ── 필름 라이트박스 — 히어로 카드 / 내비 버튼 / 플로팅 독에서 데모·메이킹을 바로 재생
+const vbox = document.getElementById('vbox');
+const vFrame = document.getElementById('vbox-frame');
+const vTitle = document.getElementById('vbox-t');
+function openFilm(id, title) {
+  if (!id) return;
+  vTitle.textContent = title || '';
+  vFrame.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0"
+    allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${title || 'SAW Film'}"></iframe>`;
+  vbox.classList.add('open');
+  vbox.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('vopen');
+  document.body.style.overflow = 'hidden';
+}
+function closeFilm() {
+  if (!vbox.classList.contains('open')) return;
+  vbox.classList.remove('open');
+  vbox.setAttribute('aria-hidden', 'true');
+  vFrame.innerHTML = '';
+  document.body.classList.remove('vopen');
+  document.body.style.overflow = '';
+}
+document.getElementById('vbox-bk').addEventListener('click', closeFilm);
+document.getElementById('vbox-x').addEventListener('click', closeFilm);
+addEventListener('keydown', e => { if (e.key === 'Escape') closeFilm(); });
+// data-yt는 site-config.json 반영 후 바뀔 수 있으므로 클릭 시점에 읽는다
+document.querySelectorAll('.hfilm, .fbtn').forEach(el =>
+  el.addEventListener('click', () => openFilm(el.dataset.yt, el.dataset.title)));
+document.getElementById('navplay').addEventListener('click', e => {
+  const demo = document.querySelector('.fbtn[data-slot="film_demo"]');
+  if (demo && demo.dataset.yt) { e.preventDefault(); openFilm(demo.dataset.yt, demo.dataset.title); }
+  // 링크가 비어 있으면 기본 동작(#films 이동)을 그대로 둔다
+});
+// 링크가 비어 있는 슬롯은 재생 UI를 죽인다 — 히어로는 '준비 중', 플로팅 버튼은 숨김
+function syncFilmCTA() {
+  document.querySelectorAll('.hfilm').forEach(el => {
+    const on = !!el.dataset.yt;
+    el.classList.toggle('empty', !on);
+    el.disabled = !on;
+    let soon = el.querySelector('.soon');
+    if (!on && !soon) {
+      soon = document.createElement('span');
+      soon.className = 'soon';
+      soon.textContent = 'Coming Soon';
+      el.querySelector('.ph').appendChild(soon);
+    } else if (on && soon) soon.remove();
+  });
+  document.querySelectorAll('.fbtn').forEach(el => { el.hidden = !el.dataset.yt; });
+  const dock = document.getElementById('fdock');
+  dock.hidden = !dock.querySelector('.fbtn:not([hidden])');
+}
+
 // 유튜브 플레이어 — site-config.json의 링크를 반영한 뒤 data-yt 요소를 클릭 재생으로 활성화
 function initPlayers() {
-  document.querySelectorAll('[data-yt]').forEach(el => {
+  document.querySelectorAll('.film[data-yt], .reel-feature[data-yt]').forEach(el => {
     const id = el.dataset.yt;
     const ph = el.querySelector('.ph') || el;
     if (!id) {
@@ -1275,7 +1376,7 @@ fetch('site-config.json', { cache: 'no-store' })
     });
   })
   .catch(() => {})
-  .finally(() => { ktSplit(); initPlayers(); });
+  .finally(() => { ktSplit(); initPlayers(); syncFilmCTA(); });
 
 </script>
 </body>

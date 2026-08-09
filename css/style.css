@@ -172,6 +172,12 @@ body.hascur .cring{opacity:1}
   letter-spacing:.12em;transition:background .3s,color .3s,border-color .3s;
 }
 .nav ul li.dl a:hover{background:var(--acc);border-color:var(--acc);color:#0B0B0C}
+/* 데모 필름 — 가장 중요한 메뉴라 채운 알약으로 */
+.nav ul li.pf a{
+  background:var(--acc);color:#0B0B0C;border-radius:999px;padding:7px 15px;
+  letter-spacing:.1em;transition:background .3s,color .3s;
+}
+.nav ul li.pf a:hover{background:#F4F3F0;color:#0B0B0C}
 .nav .burger{display:none}
 
 @media (max-width:1120px){
@@ -185,6 +191,8 @@ body.hascur .cring{opacity:1}
   /* 모바일 메뉴에서는 다른 항목과 같은 줄 형태로 — 알약 테두리는 뺀다 */
   .nav.open ul li.dl a{border:0;border-radius:0;padding:13px var(--pad);color:var(--acc)}
   .nav.open ul li.dl a:hover{background:none;color:#F4F3F0}
+  .nav.open ul li.pf a{background:none;border-radius:0;padding:13px var(--pad);color:var(--acc)}
+  .nav.open ul li.pf a:hover{background:none;color:#F4F3F0}
   .nav .burger{
     display:block;background:none;border:0;cursor:pointer;padding:10px;
   }
@@ -198,35 +206,135 @@ body.hascur .cring{opacity:1}
 }
 
 /* ============ HERO ============ */
-.hero{position:relative;height:100svh;min-height:620px;display:flex;align-items:flex-end;overflow:hidden}
+/* 좌: 카피 / 우: 데모·메이킹 필름 카드 — 첫 화면에서 영상이 바로 보이는 것이 이 레이아웃의 목적 */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden}
 .hero .bg{position:absolute;inset:0}
 .hero .bg img{width:100%;height:100%;object-fit:cover;animation:heroZoom 14s ease-out forwards}
 @keyframes heroZoom{from{transform:scale(1.12)}to{transform:scale(1)}}
 .hero .bg::after{
   content:"";position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(11,11,12,.96) 0%,rgba(11,11,12,.35) 42%,rgba(11,11,12,.25) 100%);
+  background:
+    linear-gradient(to top,rgba(11,11,12,.92) 0%,rgba(11,11,12,.5) 45%,rgba(11,11,12,.3) 100%),
+    linear-gradient(to right,rgba(11,11,12,.86) 0%,rgba(11,11,12,.42) 52%,rgba(11,11,12,.6) 100%);
 }
-.hero-in{position:relative;z-index:2;width:100%;padding-bottom:clamp(60px,10vh,110px)}
+.hero-in{
+  position:relative;z-index:2;width:100%;
+  padding-top:clamp(96px,12vh,130px);padding-bottom:clamp(52px,7vh,86px);
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  column-gap:clamp(28px,4vw,64px);align-items:center;
+}
 .hero-k{
   font-size:12px;font-weight:800;letter-spacing:.42em;color:var(--acc);
   text-transform:uppercase;margin-bottom:22px;
 }
 .hero-t{
-  font-size:clamp(38px,6.4vw,86px);font-weight:800;color:var(--ink);
-  line-height:1.14;letter-spacing:-.035em;word-break:keep-all;max-width:15em;
+  font-size:clamp(32px,3.7vw,56px);font-weight:800;color:var(--ink);
+  line-height:1.18;letter-spacing:-.035em;word-break:keep-all;max-width:14em;
 }
 .hero-t em{font-family:var(--serifkr);font-style:normal;font-weight:600;color:var(--acc)}
 .hero-d{
-  margin-top:26px;font-size:clamp(14px,1.5vw,17px);color:var(--txt);max-width:560px;word-break:keep-all;
+  margin-top:24px;font-size:clamp(14px,1.4vw,17px);color:var(--txt);max-width:520px;word-break:keep-all;
 }
 .hero-meta{
-  margin-top:44px;display:flex;gap:clamp(24px,4vw,64px);flex-wrap:wrap;
-  border-top:1px solid var(--hair);padding-top:22px;
+  margin-top:30px;display:flex;gap:clamp(16px,2.2vw,34px);flex-wrap:wrap;
+  border-top:1px solid var(--hair);padding-top:18px;
 }
-.hero-meta div{font-size:11px;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase}
-.hero-meta b{display:block;font-size:13px;letter-spacing:.06em;color:var(--dim);margin-top:4px;font-weight:600}
+.hero-meta div{font-size:10px;letter-spacing:.18em;color:var(--dim2);text-transform:uppercase}
+.hero-meta b{display:block;font-size:12px;letter-spacing:.04em;color:var(--dim);margin-top:3px;font-weight:600}
+
+/* ---- 히어로 필름 카드 ---- */
+.hero-films{display:flex;flex-direction:column;gap:clamp(12px,1.4vw,16px)}
+.hfilm{
+  display:block;width:100%;background:none;border:0;padding:0;margin:0;
+  color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+/* 메이킹 = 데모의 보조 — 세로 공간을 아끼려고 가로 한 줄 카드로 */
+.hfilm.sm{
+  display:flex;align-items:center;gap:16px;padding:10px 18px 10px 10px;
+  border:1px solid var(--hair);background:rgba(11,11,12,.5);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .35s,background .35s;
+}
+.hfilm.sm:hover{border-color:var(--accline);background:rgba(11,11,12,.72)}
+.hfilm.sm .ph{flex:0 0 clamp(130px,13vw,168px);box-shadow:none}
+.hfilm.sm:hover .ph{transform:none;box-shadow:none}
+.hfilm.sm .cap{flex-direction:column;align-items:flex-start;gap:4px;padding:0}
+.hfilm .ph{
+  position:relative;display:block;aspect-ratio:16/9;overflow:hidden;
+  background:var(--panel);border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 26px 64px rgba(0,0,0,.55);
+  transition:border-color .35s,box-shadow .35s,transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.hfilm .ph img{
+  width:100%;height:100%;object-fit:cover;filter:brightness(.9);
+  transition:transform 1s ease,filter .5s;
+}
+.hfilm:hover .ph,.hfilm:focus-visible .ph{border-color:var(--accline);transform:translateY(-4px);box-shadow:0 34px 76px rgba(0,0,0,.62)}
+.hfilm:hover .ph img{transform:scale(1.035);filter:brightness(1)}
+.hfilm:focus-visible{outline:0}
+.hfilm:focus-visible .ph{outline:2px solid var(--acc);outline-offset:3px}
+.hfilm .play{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
+  width:66px;height:66px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.6);background:rgba(11,11,12,.4);
+  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  transition:background .3s,border-color .3s,transform .3s;pointer-events:none;
+}
+.hfilm.sm .play{width:38px;height:38px}
+.hfilm .play::after{
+  content:"";display:block;margin-left:4px;
+  border-left:14px solid #F4F3F0;border-top:9px solid transparent;border-bottom:9px solid transparent;
+}
+.hfilm.sm .play::after{border-left-width:9px;border-top-width:6px;border-bottom-width:6px}
+/* 시선 유도용 파장 — 데모 카드에만 */
+.hfilm.main .play::before{
+  content:"";position:absolute;inset:-2px;border-radius:50%;border:1px solid var(--acc);
+  animation:playRing 2.8s cubic-bezier(.2,.7,.2,1) infinite;
+}
+@keyframes playRing{0%{transform:scale(1);opacity:.75}70%{transform:scale(1.6);opacity:0}100%{transform:scale(1.6);opacity:0}}
+.hfilm:hover .play{background:rgba(103,68,152,.6);border-color:var(--acc);transform:translate(-50%,-50%) scale(1.06)}
+/* 키아트의 타이틀·로고를 가리지 않도록 비어 있는 우하단에 */
+.hfilm .tag{
+  position:absolute;right:0;bottom:0;z-index:3;
+  font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+  color:#0B0B0C;background:var(--acc);padding:6px 12px;
+}
+.hfilm .cap{display:flex;align-items:baseline;gap:12px;padding:13px 2px 0}
+.hfilm .cap b{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:.02em}
+.hfilm.sm .cap b{font-size:14px}
+.hfilm .cap i{font-style:normal;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2)}
+.hfilm .soon{
+  position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:3;
+  font-size:10px;font-weight:800;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;
+  border:1px solid var(--hair);padding:6px 14px;background:rgba(11,11,12,.5);white-space:nowrap;
+}
+.hfilm.empty{cursor:default}
+.hfilm.empty .ph img{filter:brightness(.38) saturate(.6)}
+.hfilm.empty:hover .ph{transform:none;border-color:rgba(255,255,255,.14)}
+.hfilm.empty:hover .ph img{transform:none;filter:brightness(.38) saturate(.6)}
+.hfilm.empty .play{opacity:.3}
+.hfilm.empty .play::before{display:none}
+.hfilm.empty .tag{display:none}
+
+@media (max-width:1000px){
+  .hero{min-height:0;align-items:flex-start}
+  /* 카피 래퍼를 흘려보내 헤드라인 바로 아래에 데모 카드가 오도록 순서를 바꾼다 */
+  .hero-in{display:flex;flex-direction:column;align-items:stretch;padding-top:clamp(92px,14vh,120px)}
+  .hero-copy{display:contents}
+  .hero-k{order:1}
+  .hero-t{order:2;max-width:none}
+  .hero-films{order:3;margin-top:30px;width:100%}
+  .hero-d{order:4;margin-top:30px;max-width:none}
+  .hero-meta{order:5}
+  .scrollcue{display:none}
+}
+@media (max-width:720px){
+  .hero-meta{display:none}
+  .hfilm .play{width:56px;height:56px}
+  .hfilm.sm .play{width:46px;height:46px}
+}
 .scrollcue{
-  position:absolute;right:var(--pad);bottom:36px;z-index:2;
+  position:absolute;left:var(--pad);bottom:30px;z-index:2;
   width:1px;height:64px;background:rgba(255,255,255,.08);overflow:hidden;
 }
 .scrollcue::after{
@@ -1004,3 +1112,77 @@ body.hascur .cring{opacity:1}
 .rmcta::after{content:"";width:22px;height:1px;background:currentColor;transition:width .35s ease}
 .rmcta:hover{background:var(--accd);border-color:var(--accd);color:#fff}
 .rmcta:hover::after{width:34px}
+
+/* ============ 플로팅 재생 독 + 필름 라이트박스 ============ */
+/* 어느 위치에서든 데모/메이킹 필름으로 갈 수 있게 우측 하단에 상시 노출한다 */
+.fdock{
+  position:fixed;right:clamp(16px,2.4vw,30px);bottom:clamp(16px,2.4vw,30px);z-index:120;
+  display:flex;flex-direction:column;align-items:flex-end;gap:10px;
+  transition:opacity .3s;
+}
+.fbtn{
+  display:flex;align-items:center;gap:0;height:56px;padding:0;
+  border:1px solid var(--accline);border-radius:999px;
+  background:rgba(11,11,12,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:#F4F3F0;font-family:inherit;cursor:pointer;overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,.45);
+  transition:background .3s,border-color .3s,transform .3s,box-shadow .3s;
+}
+.fbtn.main{background:var(--accd);border-color:var(--accd);color:#fff}
+.fbtn:hover{transform:translateY(-2px);box-shadow:0 22px 52px rgba(0,0,0,.55)}
+.fbtn.main:hover{background:#7A52B0;border-color:#7A52B0}
+.fbtn:not(.main):hover{background:rgba(11,11,12,.92);border-color:var(--acc)}
+.fbtn:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.fbtn .ic{
+  flex:0 0 56px;height:56px;display:flex;align-items:center;justify-content:center;
+}
+.fbtn .ic::after{
+  content:"";display:block;margin-left:3px;
+  border-left:12px solid currentColor;border-top:8px solid transparent;border-bottom:8px solid transparent;
+}
+/* 무엇을 누르는 버튼인지 바로 보이도록 라벨은 항상 펼쳐 둔다 */
+.fbtn .lb{
+  white-space:nowrap;padding-right:22px;
+  font-size:12px;font-weight:800;letter-spacing:.12em;
+}
+/* 데모 버튼 주위 파장 */
+.fbtn.main{position:relative}
+.fbtn.main .ic::before{
+  content:"";position:absolute;left:10px;top:50%;width:36px;height:36px;margin-top:-18px;
+  border-radius:50%;border:1px solid rgba(180,155,226,.85);
+  animation:playRing 2.8s cubic-bezier(.2,.7,.2,1) infinite;pointer-events:none;
+}
+.vopen .fdock{opacity:0;pointer-events:none}
+@media (max-width:600px){
+  .fbtn{height:48px}
+  .fbtn .ic{flex-basis:48px;height:48px}
+  .fbtn .lb{font-size:11.5px;padding-right:18px}
+  /* 좁은 화면에선 보조 버튼은 아이콘만 — 데모 버튼을 가리지 않게 */
+  .fbtn:not(.main) .lb{display:none}
+  .fbtn:not(.main){border-radius:50%;width:48px}
+}
+
+.vbox{position:fixed;inset:0;z-index:200;display:none}
+.vbox.open{display:block}
+.vbk{position:absolute;inset:0;background:rgba(6,6,7,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.vin{
+  position:relative;z-index:2;height:100%;max-width:1220px;margin:0 auto;
+  padding:0 var(--pad);display:flex;flex-direction:column;justify-content:center;
+}
+.vhead{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:14px}
+.vhead span{
+  font-size:11px;font-weight:800;letter-spacing:.24em;color:var(--acc);
+  text-transform:uppercase;word-break:keep-all;
+}
+.vx{
+  flex:0 0 auto;width:40px;height:40px;border:1px solid rgba(255,255,255,.18);
+  background:none;color:#F4F3F0;font-size:20px;line-height:1;cursor:pointer;
+  transition:background .3s,border-color .3s,color .3s;
+}
+.vx:hover{background:var(--acc);border-color:var(--acc);color:#0B0B0C}
+.vframe{position:relative;aspect-ratio:16/9;background:#000;box-shadow:0 40px 110px rgba(0,0,0,.7)}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+@media (prefers-reduced-motion:reduce){
+  .hfilm.main .play::before,.fbtn.main .ic::before{animation:none}
+}
