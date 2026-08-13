@@ -1,0 +1,80 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+  보관: 01 — Films 섹션 (2026-08-13 사이트에서 내림)
+
+  왜 내렸나
+    히어로가 데모/메이킹 필름 진열대로 바뀌면서(2026-08-09) 같은 영상 2개를
+    같은 썸네일로 다시 보여주는 섹션이 되어 중복으로 보였다. 코드는 나중에
+    쓸 수 있으니 지우지 않고 여기 보관한다.
+
+  원래 위치
+    index.html — 파이프라인 티커(.ticker) 바로 다음, 02 About(#about) 바로 앞.
+    지금 그 자리에 이 파일을 가리키는 주석이 남아 있다.
+
+  되살리는 방법 (전부 index.html)
+    1) 아래 <section> 블록을 원래 자리에 그대로 붙여넣는다.
+    2) 내비게이션에 <li><a href="#films">Films</a></li> 를 되살린다
+       (데모 필름 알약 li.pf 다음 자리). 알약의 href 도 #top → #films 로.
+    3) 섹션 번호를 한 칸씩 뒤로 민다 — 지금은 Films 를 뺀 채로
+       01 Company / 02 What We Do / 03 The Pipeline / 04 Broadcast VFX /
+       05 Showreel / 06 Founders / 07 Roadmap 으로 매겨져 있다.
+       (index.html 의 .klabel, admin/index.html 의 .mlabel 양쪽)
+    4) 어드민 미러(admin/index.html)에서 films_t / film_demo_cs / film_mk_cs
+       텍스트 필드를 되살린다. 영상 슬롯(film_demo·film_making)과 썸네일
+       타일(thumb_demo.jpg·thumb_making.jpg)은 히어로가 계속 쓰고 있어서
+       "Hero — 첫 화면" 블록으로 옮겨 두었다.
+
+  의존 관계 — 지금도 살아 있으니 건드리지 말 것
+    · CSS .film / .film-grid / .film .ph / .play / .soon (css/style.css 370~410)
+      → .film 은 쇼릴 대표작(.film.reel-feature)이 계속 쓴다. .film-grid 만 현재 미사용.
+    · JS initPlayers() 가 .film[data-yt] 를 클릭 재생으로 활성화한다 →
+      이 섹션을 되살리면 별도 작업 없이 인라인 재생이 붙는다(히어로·플로팅
+      버튼은 라이트박스 #vbox 담당이라 계열이 다르다).
+    · data-slot / data-tx 속성은 site-config.json(어드민 저장분)과 연결된 이름이라
+      바꾸지 말 것. film_demo_ct / film_mk_ct 는 히어로 카드 캡션에서도 쓰는 공용 키다.
+════════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ══ FILMS ══ -->
+<section class="sec" id="films">
+  <div class="wrap">
+    <div class="klabel rv">01 — Films</div>
+    <h2 class="ktitle rv d1" data-tx="films_t">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
+    <div class="film-grid">
+      <!-- data-yt에 유튜브 영상 ID(예: dQw4w9WgXcQ)를 넣으면 재생 가능 -->
+      <figure class="film rv d1" data-yt="65sRoCflCuo" data-slot="film_demo">
+        <div class="ph">
+          <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
+          <div class="play"></div>
+        </div>
+        <figcaption><b data-tx="film_demo_ct">데모 필름</b><span data-tx="film_demo_cs">Demo Film · 전 컷 AI 제작</span></figcaption>
+      </figure>
+      <figure class="film rv d2" data-yt="poNytRVqcjs" data-slot="film_making">
+        <div class="ph">
+          <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지">
+          <div class="play"></div>
+        </div>
+        <figcaption><b data-tx="film_mk_ct">메이킹 필름</b><span data-tx="film_mk_cs">Making Film · 데이터가 컷이 되는 과정</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 어드민 미러에서 함께 내린 블록 (admin/index.html) — 되살릴 때 참고
+  <div class="msec">
+    <div class="mlabel">01 — Films (영상 2개 + 썸네일)</div>
+    ${X('films_t', '섹션 제목', 2)}
+    <div class="g2" style="margin-top:14px">
+      <div>
+        ${T('thumb_demo.jpg', '16/9')}
+        ${V('film_demo', '데모 필름')}
+        ${X('film_demo_ct', '캡션 제목')}
+        ${X('film_demo_cs', '캡션 부제')}
+      </div>
+      <div>
+        ${T('thumb_making.jpg', '16/9')}
+        ${V('film_making', '메이킹 필름')}
+        ${X('film_mk_ct', '캡션 제목')}
+        ${X('film_mk_cs', '캡션 부제')}
+      </div>
+    </div>
+  </div>
+-->

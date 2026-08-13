@@ -25,8 +25,7 @@
   <a class="logo" href="#top"><img src="images/saw_logo_white.png" alt="SAW"></a>
   <ul id="navlinks">
     <!-- 데모 필름 — 어디서든 한 번에 재생되도록 내비 맨 앞에 강조 버튼으로 둔다 -->
-    <li class="pf"><a href="#films" id="navplay">▶ 데모 필름</a></li>
-    <li><a href="#films">Films</a></li>
+    <li class="pf"><a href="#top" id="navplay">▶ 데모 필름</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
@@ -104,35 +103,13 @@
   </div>
 </div>
 
-<!-- ══ FILMS ══ -->
-<section class="sec" id="films">
-  <div class="wrap">
-    <div class="klabel rv">01 — Films</div>
-    <h2 class="ktitle rv d1" data-tx="films_t">시스템이 만든 결과물을<br><em>직접</em> 확인하세요</h2>
-    <div class="film-grid">
-      <!-- data-yt에 유튜브 영상 ID(예: dQw4w9WgXcQ)를 넣으면 재생 가능 -->
-      <figure class="film rv d1" data-yt="65sRoCflCuo" data-slot="film_demo">
-        <div class="ph">
-          <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
-          <div class="play"></div>
-        </div>
-        <figcaption><b data-tx="film_demo_ct">데모 필름</b><span data-tx="film_demo_cs">Demo Film · 전 컷 AI 제작</span></figcaption>
-      </figure>
-      <figure class="film rv d2" data-yt="poNytRVqcjs" data-slot="film_making">
-        <div class="ph">
-          <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지">
-          <div class="play"></div>
-        </div>
-        <figcaption><b data-tx="film_mk_ct">메이킹 필름</b><span data-tx="film_mk_cs">Making Film · 데이터가 컷이 되는 과정</span></figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
+<!-- ══ FILMS — 히어로 필름 카드와 중복이라 2026-08-13 내림.
+     마크업·되살리는 방법은 assets-src/archive/01-films.html 에 보관 ══ -->
 
 <!-- ══ ABOUT (LIGHT) ══ -->
 <section class="sec light" id="about">
   <div class="wrap">
-    <div class="klabel rv">02 — Company</div>
+    <div class="klabel rv">01 — Company</div>
     <h2 class="ktitle rv d1" data-tx="about_t">AI로 영화를 만드는<br><em>제작사</em>입니다</h2>
     <div class="about-grid">
       <div>
@@ -165,7 +142,7 @@
 <!-- ══ WHAT WE DO ══ -->
 <section class="sec" id="work">
   <div class="wrap">
-    <div class="klabel rv">03 — What We Do</div>
+    <div class="klabel rv">02 — What We Do</div>
     <h2 class="ktitle rv d1" data-tx="work_t">IP의 발굴부터 영상의 완성까지,<br>다섯 영역이 <em>한 파이프라인</em> 안에서</h2>
     <div class="biz-grid">
       <div class="biz rv d1">
@@ -232,7 +209,7 @@
 <section class="sec light pipesec" id="pipeline">
   <div class="pipebg" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="klabel rv">04 — The Pipeline</div>
+    <div class="klabel rv">03 — The Pipeline</div>
     <h2 class="ktitle rv d1" data-tx="pipe_t">데이터에서 스크린까지,<br><em>다섯 단계</em>의 제작 공정</h2>
     <p class="klead rv d2" data-tx="pipe_lead">1–3단계는 순차로 진행하고, 4단계의 실사 촬영·색보정·음향은
     <b>세 갈래로 갈라져 동시에</b> 진행한 뒤 최종 믹싱에서 합류합니다.
@@ -327,7 +304,7 @@
 <section class="flowmark grain" id="infra">
   <div class="bg"><img src="images/flowmark_hero.jpg" alt="Flowmark 워크플로우 시스템"></div>
   <div class="in wrap">
-    <div class="fm-k rv">05 — Infrastructure · Proprietary System 01</div>
+    <div class="fm-k rv">Infrastructure · Proprietary System 01</div>
     <div class="fm-t rv d1">FLOWMARK</div>
     <p class="fm-s rv d2" data-tx="fm_s"><b>기다리지 않고, 직접 만들었습니다.</b>
     흩어져 있는 전 세계의 AI 엔진을 하나의 캔버스로 모아 —
@@ -604,7 +581,7 @@
 <!-- ══ 05 BROADCAST VFX — AI 오브젝트 리무빙 (LIGHT) ══ -->
 <section class="sec light" id="removal">
   <div class="wrap">
-    <div class="klabel rv">05 — Broadcast VFX</div>
+    <div class="klabel rv">04 — Broadcast VFX</div>
     <h2 class="ktitle rv d1" data-tx="rm_t">화면에 들어온 카메라와 장비를,<br><em>흔적 없이</em> 지웁니다</h2>
     <p class="klead rv d2" data-tx="rm_lead">여러 대의 카메라가 동시에 도는 현장에서는 서로가 서로의 화면에 잡힙니다.
     지미집과 조명 스탠드, 붐마이크, 바닥의 케이블, 그리고 제작진까지 —
@@ -677,7 +654,7 @@
   <div class="wrap">
     <div class="reel-head">
       <div>
-        <div class="klabel rv">06 — Showreel</div>
+        <div class="klabel rv">05 — Showreel</div>
         <h2 class="ktitle rv d1" data-tx="reel_t">하나의 파이프라인,<br><em>모든 장르</em></h2>
       </div>
       <p class="klead rv d2" style="max-width:420px;margin-top:0">SF·레이싱·액션·청춘·광고까지 —
@@ -708,7 +685,7 @@
 <!-- ══ TEAM (LIGHT) ══ -->
 <section class="sec light" id="team">
   <div class="wrap">
-    <div class="klabel rv">07 — Founders</div>
+    <div class="klabel rv">06 — Founders</div>
     <h2 class="ktitle rv d1">기획과 기술이<br><em>창업자 단위</em>에서 결합돼 있습니다</h2>
     <div class="team-grid">
       <div class="member rv d1">
@@ -761,7 +738,7 @@
 <!-- ══ ROADMAP ══ -->
 <section class="sec">
   <div class="wrap">
-    <div class="klabel rv">08 — Roadmap</div>
+    <div class="klabel rv">07 — Roadmap</div>
     <h2 class="ktitle rv d1">시스템은 완성되어 있습니다.<br>이제 <em>작품으로 증명</em>하는 단계입니다</h2>
     <div class="road">
       <div class="rv d1"><div class="y">2026 H1</div><b>설립 · 시스템 구축</b>
@@ -1307,7 +1284,7 @@ document.querySelectorAll('.vtab').forEach(t =>
 document.getElementById('navplay').addEventListener('click', e => {
   const tab = document.querySelector('.vtab[data-slot="film_demo"]');
   if (tab && tab.dataset.yt) { e.preventDefault(); openFilm('film_demo'); }
-  // 링크가 비어 있으면 기본 동작(#films 이동)을 그대로 둔다
+  // 링크가 비어 있으면 기본 동작(#top — 히어로 필름 카드로 이동)을 그대로 둔다
 });
 // 링크가 비어 있는 슬롯은 재생 UI를 죽인다 — 히어로는 '준비 중', 탭·플로팅 버튼은 숨김
 function syncFilmCTA() {
