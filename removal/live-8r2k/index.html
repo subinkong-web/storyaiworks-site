@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAW 리무빙 진행 현황</title>
+<style>
+:root{--ink:#1a1a1a;--sub:#666;--line:#e3e3e3;--bg:#fafafa;--card:#fff;--red:#c62828;--amber:#b26a00;--blue:#1565c0;--green:#2e7d32}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Helvetica Neue",sans-serif;font-size:14px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 24px 80px}
+h1{font-size:24px;margin:0 0 4px}.meta{color:var(--sub);margin-bottom:14px}.meta b{color:var(--ink)}code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:#f1f1f1;padding:0 4px;border-radius:3px}
+h2{font-size:19px;margin:40px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--ink);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 .due{font-size:13px;font-weight:600;padding:2px 8px;border-radius:4px;color:#fff}h2 .cnt{font-size:13px;color:var(--sub);font-weight:400}
+.d1{background:var(--red)}.d2{background:var(--amber)}.d3{background:var(--blue)}.d4{background:#555}
+h3{font-size:14px;margin:18px 0 6px;color:#333;font-weight:700}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);margin-bottom:4px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{background:#f4f4f4;font-weight:600;font-size:12px;color:var(--sub)}
+td.f{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;white-space:nowrap}td.tc{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--sub);white-space:nowrap}
+tr.mine td:first-child{border-left:4px solid var(--red)}tr.yuri td:first-child{border-left:4px solid var(--blue)}
+.half td{background:#e3f2fd}.half td.f::after{content:' ◀ 유리 중간본';color:var(--blue);font-weight:700;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+.skip td{color:#999;background:#f5f5f5}.skip td:first-child{border-left-color:#bbb}.ok td{background:#e8f5e9}.ok td:first-child{border-left-color:var(--green)}
+.new td{background:#fff3e0}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px}.card .n{font-size:28px;font-weight:700;line-height:1.1}.card .l{color:var(--sub);font-size:12px;margin-top:4px}.card .d{font-size:12px;font-weight:700;margin-top:6px}
+.box{border-radius:6px;padding:10px 14px;margin:10px 0}.warn{background:#fff8e1;border:1px solid #ffe082}.urgent{background:#ffebee;border:1px solid #ef9a9a}.todo{background:#fce4ec;border:1px solid #f8bbd0}
+ul{margin:6px 0 0 18px;padding:0}li{margin:3px 0}
+.legend{color:var(--sub);font-size:12px;margin:6px 0 0}.legend i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:middle}
+@media print{body{background:#fff}.wrap{padding:0}}
+
+th.ck,td.ck{width:44px;text-align:center;padding:6px 4px}
+td.ck input{width:18px;height:18px;cursor:pointer;accent-color:var(--blue)}
+td.ck input.done{accent-color:var(--green)}
+tr.working td{background:#fffde7!important}
+tr.working td.f::before{content:'▶ ';color:var(--amber)}
+tr.finished td{opacity:.45;text-decoration:line-through;background:#fafafa!important}
+tr.finished td.ck{opacity:1;text-decoration:none}
+tr.finished td.f::after{content:''}
+.ckhelp{font-size:12px;color:var(--sub);margin:4px 0 0}
+
+/* 납품 완료 행: 확실히 줄 긋고 흐리게 */
+tr.ok td{text-decoration:line-through;opacity:.5;background:#f1f8f1!important}
+tr.ok td:first-child{border-left-color:var(--green)}
+tr.ok td.f::after{content:'  ✔ 납품완료';text-decoration:none;color:var(--green);font-weight:700;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+tr.ok td.ck{opacity:1;text-decoration:none}
+/* 섹션별·전체 집계 */
+.tally{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;background:#eef;color:var(--blue);margin-left:6px}
+.tally b{color:var(--green)}
+#total{display:flex;gap:18px;align-items:baseline;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:12px 16px;margin:14px 0}
+#total .big{font-size:30px;font-weight:800}
+#total .lab{font-size:12px;color:var(--sub)}
+#total .g{color:var(--green)}#total .r{color:var(--red)}
+.pb{height:10px;background:#eee;border-radius:5px;overflow:hidden}.pf{height:100%}td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.rework td{background:#fdecea!important}tr.rework td:first-child{border-left-color:var(--red)}tr.rework td.f::after{content:'  ↺ 수정요청';color:var(--red);font-weight:700;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}
+</style></head><body><div class="wrap">
+
+<h1>SAW 리무빙 진행 현황</h1><div style="font-size:12px;color:#888;margin:-2px 0 6px">10분마다 납품 폴더를 자동 실측해 갱신됩니다 · 마지막 발행 2026-08-29 22:59 · 스토리에이아이웍스(SAW)</div>
+<div class="meta">2026-08-29(금) 22:59 기준 · 납품 드라이브 실측 반영<b>스튜디오 뉴원/</b> 실측 + 의뢰 폴더(클라우다이크·구글드라이브) 실측 + 카톡 4개 방 대조 · 담당 <b>공수빈 · 김유리</b></div>
+
+<div id="total"></div>
+<div id="stats"><h3 style="margin:14px 0 6px">프로그램별 진행률 <span style="font-weight:400;color:var(--sub);font-size:12px">— 납품 드라이브 실측 22:59 · 완료 = 납품된 컷</span></h3>
+<table><tr><th>프로그램</th><th>마감</th><th class="num">전체</th><th class="num">완료</th><th class="num">잔여</th><th>진행</th><th class="num">완료율</th><th class="num">잔여율</th></tr><tr><td>① 산지직송 7화</td><td style="white-space:nowrap;line-height:1.25"><b>08-30(토) 오후</b><br><small>훈이 08-27 12:06 토요일 오후 조율</small></td><td class="num">9</td><td class="num" style="color:var(--green)">3</td><td class="num" style="color:var(--red);font-weight:700">6</td><td style="width:34%"><div class="pb"><div class="pf" style="width:33%;background:var(--red)"></div></div></td><td class="num">33%</td><td class="num" style="color:var(--sub)">67%</td></tr><tr><td>③ 스레파 12화 통파일 1차</td><td style="white-space:nowrap;line-height:1.25"><b>08-31(일) 밤</b><br><small>김유리 08-27 12:50 제안, 본부장 조율</small></td><td class="num">54</td><td class="num" style="color:var(--green)">5</td><td class="num" style="color:var(--red);font-weight:700">49</td><td style="width:34%"><div class="pb"><div class="pf" style="width:9%;background:var(--red)"></div></div></td><td class="num">9%</td><td class="num" style="color:var(--sub)">91%</td></tr><tr><td>④ 더커뮤니티2 7화</td><td style="white-space:nowrap;line-height:1.25"><b>09-01(화)</b><br><small>공수빈 08-28 15:06 다음주 화요일</small></td><td class="num">4</td><td class="num" style="color:var(--green)">0</td><td class="num" style="color:var(--red);font-weight:700">4</td><td style="width:34%"><div class="pb"><div class="pf" style="width:0%;background:var(--red)"></div></div></td><td class="num">0%</td><td class="num" style="color:var(--sub)">100%</td></tr><tr><td>⑥ 스레파 12회 추가(2차의뢰)</td><td style="white-space:nowrap;line-height:1.25"><b>09-03(목) 오후</b><br><small>본부장 08-29 14:11</small></td><td class="num">55</td><td class="num" style="color:var(--green)">0</td><td class="num" style="color:var(--red);font-weight:700">55</td><td style="width:34%"><div class="pb"><div class="pf" style="width:0%;background:var(--red)"></div></div></td><td class="num">0%</td><td class="num" style="color:var(--sub)">100%</td></tr><tr><td>⑤ 산지직송 8회 (≈)</td><td style="white-space:nowrap;line-height:1.25"><b>미정</b><br><small>불가컷 회신 요청(08-29 11:37·14:42) 미답</small></td><td class="num">95</td><td class="num" style="color:var(--green)">0</td><td class="num" style="color:var(--red);font-weight:700">95</td><td style="width:34%"><div class="pb"><div class="pf" style="width:0%;background:var(--red)"></div></div></td><td class="num">0%</td><td class="num" style="color:var(--sub)">100%</td></tr><tr style="opacity:.55"><td>② 스레파 11화 (08-28·29 추가분) ✔</td><td style="white-space:nowrap;line-height:1.25"><b>08-30(토) 밤</b><br><small>본부장 08-28 15:17 · 08-29 22:20 완납</small></td><td class="num">63</td><td class="num" style="color:var(--green)">63</td><td class="num" style="color:var(--red);font-weight:700">0</td><td style="width:34%"><div class="pb"><div class="pf" style="width:100%;background:var(--green)"></div></div></td><td class="num">100%</td><td class="num" style="color:var(--sub)">0%</td></tr><tr style="font-weight:700;background:#f4f4f4"><td>합계</td><td></td><td class="num">280</td><td class="num" style="color:var(--green)">71</td><td class="num" style="color:var(--red)">209</td><td><div class="pb"><div class="pf" style="width:25%;background:var(--ink)"></div></div></td><td class="num">25%</td><td class="num">75%</td></tr></table></div>
+<div class="summary">
+  <div class="card"><div class="n">6</div><div class="l">① 산지직송 7화 잔여 (오늘 3 납품)</div><div class="d" style="color:var(--red)">토(08-30) 오후</div></div>
+  <div class="card"><div class="n">0</div><div class="l">② 스레파 11화 (A 0 + B 0 + C 0)</div><div class="d" style="color:var(--red)">토(08-30) 밤</div></div>
+  <div class="card"><div class="n">49</div><div class="l">③ 스레파 12화 통파일 (마커 54 · 납품 5)</div><div class="d" style="color:var(--amber)">일(08-31) 밤</div></div>
+  <div class="card"><div class="n">4</div><div class="l">④ 더커뮤니티2 7화</div><div class="d" style="color:var(--blue)">화(09-01)</div></div>
+  <div class="card"><div class="n">≈95</div><div class="l">⑤ 산지직송 8회 (신규)</div><div class="d" style="color:#555">일정 미정</div></div>
+  <div class="card"><div class="n">55</div><div class="l">⑥ 스레파 12회 추가(2차의뢰) 마커</div><div class="d" style="color:var(--blue)">목(09-03) 오후</div></div>
+</div>
+<div class="legend"><i style="background:var(--red)"></i>공수빈 &nbsp;<i style="background:var(--blue)"></i>김유리 &nbsp;<i style="background:#e3f2fd;border:1px solid #90caf9"></i>유리 중간본 있음 &nbsp;<i style="background:#e8f5e9"></i>납품 완료 &nbsp;<i style="background:#f5f5f5;border:1px solid #ccc"></i>건너뜀(중복) &nbsp;<i style="background:#fff3e0"></i>오늘 새로 올라옴</div>
+
+'+
+      '<div><div class="big g">'+all.done+'</div><div class="lab">완료 (납품)</div></div>'+
+      '<div><div class="big r">'+(all.tot-all.done)+'</div><div class="lab">잔여</div></div>'+
+      '<div class="lab" style="margin-left:auto">'+Math.round(all.done/all.tot*100)+'% 진행</div>';
+  }
+  reorderRows(); refresh(); window.__refreshTally=refresh;
+  document.addEventListener('change',function(e){ if(e.target.type==='checkbox') setTimeout(reorderRows,0); });
+  var rb=document.getElementById('ck-reset'); if(rb) rb.onclick=function(){ if(!confirm('이 브라우저의 체크 상태를 전부 지울까요?')) return; try{localStorage.removeItem('saw_removal_20260829_v2')}catch(e){} location.reload(); };
+  document.addEventListener('change',function(e){ if(e.target.type==='checkbox') setTimeout(refresh,0); });
+})();
+</script>
+</body></html>
