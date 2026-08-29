@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SAW 리무빙 현황</title>
+<style>
+  :root{--bg:#f4f4f5;--panel:#fff;--hair:#e3e3e3;--ink:#1a1a1a;--dim:#666;--dim2:#888;--acc:#1565c0;--red:#c62828;--green:#2e7d32}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Helvetica Neue",sans-serif;font-size:14px;line-height:1.5}
+  .gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:var(--bg);padding:24px}
+  .gate .box{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--hair);padding:36px 32px;border-radius:8px}
+  .gate h1{font-size:20px;font-weight:800;margin:0}
+  .gate .sub{font-size:12.5px;color:var(--dim2);margin-top:6px;word-break:keep-all}
+  .gate label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.18em;color:var(--dim2);margin:18px 0 6px}
+  .fld{width:100%;padding:10px 12px;border:1px solid var(--hair);border-radius:6px;font-size:14px;font-family:inherit}
+  .btn{padding:10px 16px;border:0;border-radius:6px;background:var(--ink);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:13px}
+  .btn.wide{width:100%;margin-top:18px}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--hair)}
+  .msg{font-size:12.5px;color:var(--dim);margin-top:10px;min-height:1.2em}
+  .msg.err{color:var(--red)}
+  .hidden{display:none!important}
+  /* 상단 바 */
+  .bar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--hair);padding:8px 16px;display:flex;gap:12px;align-items:center;font-size:12.5px;color:var(--dim)}
+  .bar b{color:var(--ink)}
+  .bar .sp{flex:1}
+  .bar .st{font-variant-numeric:tabular-nums}
+  .bar .st.ok{color:var(--green)}.bar .st.bad{color:var(--red)}
+  .bar button{padding:5px 10px;font-size:12px}
+  /* 문서 영역 */
+  #doc{padding:0}
+  /* 업로더 */
+  .up{max-width:640px;margin:60px auto;background:#fff;border:1px solid var(--hair);border-radius:8px;padding:28px 32px}
+  .up h2{margin:0 0 6px;font-size:18px}
+  .up p{color:var(--dim);font-size:13px}
+  /* 체크박스 열 (문서 안 표에 주입) */
+  th.ck,td.ck{width:46px;text-align:center;padding:6px 4px!important}
+  td.ck input{width:18px;height:18px;cursor:pointer;accent-color:var(--acc)}
+  td.ck input.done{accent-color:var(--green)}
+  td.ck .by{display:block;font-size:9.5px;color:var(--dim2);line-height:1.1;margin-top:2px;white-space:nowrap}
+  tr.working td{background:#fffde7!important}
+  tr.working td.f::before{content:'▶ ';color:#b26a00}
+  tr.finished td{opacity:.45;text-decoration:line-through;background:#fafafa!important}
+  tr.finished td.ck{opacity:1;text-decoration:none}
+  tr.finished td.f::after{content:''!important}
+</style>
+</head>
+<body>
+
+<!-- ══ 로그인 ══ -->
+<div class="gate" id="gate">
+  <div class="box">
+    <h1>SAW 리무빙 현황</h1>
+    <p class="sub">주식회사 스토리에이아이웍스 내부 작업 현황입니다. 사내 인원만 이용해 주세요.</p>
+    <label>이름</label>
+    <input class="fld" id="g-id" placeholder="예: 공수빈" autocomplete="username">
+    <label>비밀번호</label>
+    <input class="fld" id="g-pw" type="password" autocomplete="current-password">
+    <button class="btn wide" id="g-go">입장</button>
+    <p class="msg err" id="g-msg"></p>
+  </div>
+</div>
+
+<!-- ══ 본문 ══ -->
+<div id="app" class="hidden">
+  <div class="bar">
+    <b id="b-title">리무빙 현황</b>
+    <span id="b-me"></span>
+    <span class="sp"></span>
+    <span class="st" id="b-st">불러오는 중…</span>
+    <button class="btn ghost" id="b-reload" title="서버 상태 다시 읽기">새로고침</button>
+    <label class="btn ghost" for="b-file" style="cursor:pointer">현황 HTML 교체</label>
+    <input type="file" id="b-file" accept=".html" class="hidden">
+    <button class="btn ghost" id="b-out">나가기</button>
+  </div>
+  <div id="up" class="up hidden">
+    <h2>현황 문서가 아직 없습니다</h2>
+    <p>로컬에서 만든 <code>SAW_리무빙_잔여_YYYYMMDD.html</code> 파일을 올리면 이 페이지에 표시되고, 체크 상태는 모두에게 공유됩니다.</p>
+    <input type="file" id="up-file" accept=".html">
+    <p class="msg" id="up-msg"></p>
+  </div>
+  <div id="doc"></div>
+</div>
+
+<script>
+/* ══ 설정 ══
+   /board/ 와 같은 비밀번호·같은 봉인 토큰·같은 비공개 저장소를 쓴다.
+   내용(HTML)과 체크 상태(JSON)는 모두 saw-board 저장소 removal/ 아래에 있어서
+   이 공개 페이지 자체에는 아무 업무 정보도 들어 있지 않다. */
+const REPO   = 'subinkong-web/saw-board';
+const DIR    = 'removal';
+const SEALED = 'eyJ2IjoxLCJzIjoidXI4RFNSTm1hTklTRE9VMGcxQVBnZz09IiwiaSI6IkF5UUVwaVFsdDFqbWc1WEQiLCJjIjoiM0l5bDViMHJMaUkyYUhoQVBKek9aVzUzbWdjOEdvb0daWWNydVZiWWRsWVlZTGMwRHNEQTE3WThldFJmWTF3T3dBUWZqdTMrQk5rS3J5dFV1WEdGclROOW5pYm50ZGVxVU5kVHRZY1JTNTBNWWlRSnpOd1NWKzlsMGtmQUJKM3YzT2JxM2pWaG9hQ21OQzhEVnc9PSJ9';
+const POLL_MS = 10000;
+
+const $ = s => document.querySelector(s);
+const b64enc = s => btoa(unescape(encodeURIComponent(s)));
+const b64dec = s => decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
+const token = () => localStorage.getItem('saw_removal_token') || localStorage.getItem('saw_board_token') || '';
+const auth  = () => ({ Authorization:'Bearer ' + token(), Accept:'application/vnd.github+json' });
+const te = new TextEncoder(), td = new TextDecoder();
+const toBuf = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pass, salt){
+  const km = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:310000, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function unseal(blob, pass){
+  const o = JSON.parse(atob(blob));
+  return td.decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:toBuf(o.i)}, await deriveKey(pass, toBuf(o.s)), toBuf(o.c)));
+}
+
+/* ══ GitHub ══ */
+async function ghGet(path){
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=main`, {headers:auth(), cache:'no-store'});
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
+  return r.json();
+}
+async function ghPut(path, text, msg, sha){
+  const body = { message: msg, content: b64enc(text), branch:'main' };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {method:'PUT', headers:{...auth(), 'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  if (r.status === 409 || r.status === 422) { const e = new Error('conflict'); e.conflict = true; throw e; }
+  if (!r.ok) throw new Error('PUT ' + path + ' → ' + r.status);
+  return r.json();
+}
+
+/* ══ 상태 ══ */
+const S = { me:'', doc:null, docSha:null, state:{}, stateSha:null, dirty:false, saving:false, pollTimer:0 };
+const stPath = () => `${DIR}/state.json`;
+const docPath = () => `${DIR}/content.html`;
+
+/* ══ 로그인 ══ */
+async function enter(){
+  const id = $('#g-id').value.trim();
+  const pw = $('#g-pw').value;
+  const bad = m => { $('#g-msg').textContent = m || '이름 또는 비밀번호가 올바르지 않습니다.'; };
+  if (!id) return bad('이름을 넣어 주세요.');
+  $('#g-msg').textContent = '확인 중…';
+  let tk;
+  try { tk = await unseal(SEALED, pw); } catch { return bad(); }
+  localStorage.setItem('saw_removal_token', tk);
+  localStorage.setItem('saw_removal_me', id);
+  sessionStorage.setItem('saw_removal_in', '1');
+  $('#g-msg').textContent = '';
+  boot();
+}
+function logout(){
+  localStorage.removeItem('saw_removal_token'); sessionStorage.removeItem('saw_removal_in');
+  location.reload();
+}
+$('#g-go').onclick = enter;
+$('#g-pw').addEventListener('keydown', e => { if (e.key === 'Enter') enter(); });
+$('#b-out').onclick = logout;
+
+/* ══ 부팅 ══ */
+async function boot(){
+  S.me = localStorage.getItem('saw_removal_me') || localStorage.getItem('saw_board_me') || '';
+  $('#gate').classList.add('hidden'); $('#app').classList.remove('hidden');
+  $('#b-me').textContent = S.me ? `· ${S.me}` : '';
+  try { await loadAll(); }
+  catch (e) { status('불러오기 실패: ' + e.message, 'bad'); if (/401|403/.test(e.message)) { localStorage.removeItem('saw_removal_token'); } return; }
+  schedulePoll();
+}
+function status(t, cls){ const el = $('#b-st'); el.textContent = t; el.className = 'st ' + (cls||''); }
+
+async function loadAll(){
+  status('불러오는 중…');
+  const [d, s] = await Promise.all([ghGet(docPath()), ghGet(stPath())]);
+  if (s) { S.state = JSON.parse(b64dec(s.content)); S.stateSha = s.sha; } else { S.state = {}; S.stateSha = null; }
+  if (!d) { $('#up').classList.remove('hidden'); $('#doc').innerHTML = ''; status('문서 없음', 'bad'); return; }
+  if (d.sha !== S.docSha) { S.docSha = d.sha; S.doc = b64dec(d.content); render(); }
+  else applyState();
+  $('#up').classList.add('hidden');
+  status('동기화됨 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}), 'ok');
+}
+
+/* ══ 문서 렌더 ══
+   로컬 HTML 그대로 받아서 <style>과 .wrap 만 뽑아 넣는다. 원본의 localStorage 스크립트는 버리고
+   체크박스는 여기서 다시 붙여 공유 상태에 연결한다. */
+function render(){
+  const p = new DOMParser().parseFromString(S.doc, 'text/html');
+  const styles = [...p.querySelectorAll('style')].map(s => s.outerHTML).join('');
+  const wrap = p.querySelector('.wrap') || p.body;
+  wrap.querySelectorAll('script').forEach(x => x.remove());
+  // 원본이 이미 체크박스 열을 갖고 있으면(로컬판) 제거하고 다시 붙인다
+  wrap.querySelectorAll('th.ck, td.ck').forEach(x => x.remove());
+  wrap.querySelectorAll('.ckhelp').forEach(x => x.remove());
+  $('#doc').innerHTML = styles + wrap.outerHTML;
+  const t = p.querySelector('title'); if (t) $('#b-title').textContent = t.textContent;
+  injectChecks();
+  applyState();
+}
+function rowKey(sec, f){ return sec + '|' + f.textContent.trim().slice(0,60); }
+function injectChecks(){
+  let sec = 0;
+  $('#doc').querySelectorAll('table').forEach(t => {
+    const rows = t.querySelectorAll('tr'); if (!rows.length) return;
+    if (![...rows].some(r => r.querySelector('td.f'))) return;
+    sec++;
+    const head = rows[0];
+    const h1 = document.createElement('th'); h1.className='ck'; h1.textContent='작업중';
+    const h2 = document.createElement('th'); h2.className='ck'; h2.textContent='완료';
+    head.insertBefore(h2, head.firstChild); head.insertBefore(h1, head.firstChild);
+    rows.forEach((r, i) => {
+      if (i === 0) return;
+      const f = r.querySelector('td.f'); if (!f) return;
+      const id = rowKey(sec, f);
+      r.dataset.key = id;
+      const tdW = document.createElement('td'); tdW.className='ck';
+      const tdD = document.createElement('td'); tdD.className='ck';
+      const w = document.createElement('input'); w.type='checkbox'; w.title='작업중';
+      const d = document.createElement('input'); d.type='checkbox'; d.title='완료'; d.className='done';
+      const byW = document.createElement('span'); byW.className='by';
+      const byD = document.createElement('span'); byD.className='by';
+      tdW.append(w, byW); tdD.append(d, byD);
+      r.insertBefore(tdD, r.firstChild); r.insertBefore(tdW, r.firstChild);
+      w.addEventListener('change', () => setState(id, {w:w.checked, d:false}));
+      d.addEventListener('change', () => setState(id, {w:false, d:d.checked}));
+    });
+  });
+}
+function applyState(){
+  $('#doc').querySelectorAll('tr[data-key]').forEach(r => {
+    const v = S.state[r.dataset.key] || {};
+    const [w, d] = r.querySelectorAll('td.ck input');
+    const [byW, byD] = r.querySelectorAll('td.ck .by');
+    w.checked = !!v.w; d.checked = !!v.d;
+    r.classList.toggle('working', !!v.w && !v.d);
+    r.classList.toggle('finished', !!v.d);
+    byW.textContent = v.w && v.by ? v.by : '';
+    byD.textContent = v.d && v.by ? v.by : '';
+  });
+}
+function setState(id, v){
+  S.state[id] = {...v, by:S.me, at:Date.now()};
+  if (!v.w && !v.d) delete S.state[id];
+  applyState();
+  S.dirty = true; saveSoon();
+}
+
+/* ══ 저장 (충돌 시 서버판과 합쳐 재시도) ══ */
+let saveTimer = 0;
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(save, 800); }
+async function save(){
+  if (!S.dirty || S.saving) return;
+  S.saving = true; status('저장 중…');
+  try {
+    const r = await ghPut(stPath(), JSON.stringify(S.state, null, 1), `removal — ${S.me}`, S.stateSha);
+    S.stateSha = r.content.sha; S.dirty = false;
+    status('저장됨 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}), 'ok');
+  } catch (e) {
+    if (e.conflict) {
+      // 다른 사람이 먼저 저장했다 → 서버판을 읽어 내 변경(더 최신 at)만 덮어 다시 저장
+      const s = await ghGet(stPath());
+      const srv = s ? JSON.parse(b64dec(s.content)) : {};
+      for (const k of Object.keys(S.state)) if (!srv[k] || (S.state[k].at||0) > (srv[k].at||0)) srv[k] = S.state[k];
+      S.state = srv; S.stateSha = s ? s.sha : null; applyState();
+      S.saving = false; return save();
+    }
+    status('저장 실패: ' + e.message, 'bad');
+  } finally { S.saving = false; }
+}
+
+/* ══ 주기 확인 ══ */
+function schedulePoll(){ clearTimeout(S.pollTimer); S.pollTimer = setTimeout(poll, POLL_MS); }
+async function poll(){
+  if (!S.dirty && !S.saving && !document.hidden) {
+    try {
+      const s = await ghGet(stPath());
+      if (s && s.sha !== S.stateSha) { S.state = JSON.parse(b64dec(s.content)); S.stateSha = s.sha; applyState(); status('동기화됨 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}), 'ok'); }
+      const d = await ghGet(docPath());
+      if (d && d.sha !== S.docSha) { S.docSha = d.sha; S.doc = b64dec(d.content); render(); }
+    } catch (e) { status('연결 확인 실패', 'bad'); }
+  }
+  schedulePoll();
+}
+$('#b-reload').onclick = () => loadAll().catch(e => status('실패: ' + e.message, 'bad'));
+
+/* ══ 문서 올리기/교체 ══ */
+async function uploadDoc(file, msgEl){
+  if (!file) return;
+  const text = await file.text();
+  if (!/<table/i.test(text)) { msgEl.textContent = 'HTML 표가 없는 파일입니다.'; return; }
+  msgEl.textContent = '올리는 중…';
+  try {
+    const cur = await ghGet(docPath());
+    const r = await ghPut(docPath(), text, `removal 문서 — ${file.name} — ${S.me}`, cur ? cur.sha : undefined);
+    S.docSha = r.content.sha; S.doc = text; render();
+    $('#up').classList.add('hidden'); msgEl.textContent = '';
+    status('문서 올림', 'ok');
+  } catch (e) { msgEl.textContent = '실패: ' + e.message; }
+}
+$('#up-file').addEventListener('change', e => uploadDoc(e.target.files[0], $('#up-msg')));
+$('#b-file').addEventListener('change', e => { if (confirm('현황 문서를 이 파일로 교체할까요? 체크 상태는 파일명이 같은 행에 한해 유지됩니다.')) uploadDoc(e.target.files[0], $('#b-st')); e.target.value=''; });
+
+/* 자동 입장: 토큰이 이미 있으면 바로 */
+if (token() && (sessionStorage.getItem('saw_removal_in') || localStorage.getItem('saw_removal_me'))) boot();
+</script>
+</body>
+</html>
