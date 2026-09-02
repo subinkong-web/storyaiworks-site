@@ -88,7 +88,7 @@ tr.add.ok td{background:#f1f8f1}
 
 
 <script>
-function reorderRows(){document.querySelectorAll('table').forEach(function(t){var rows=[].slice.call(t.querySelectorAll('tr')).filter(function(r){return r.querySelector('td.f')});if(!rows.length)return;var tb=rows[0].parentNode;var ok=rows.filter(function(r){return r.classList.contains('ok')});var sk=rows.filter(function(r){return r.classList.contains('skip')});ok.concat(sk).forEach(function(r){tb.appendChild(r)});});}
+function reorderRows(){document.querySelectorAll('table').forEach(function(t){t.querySelectorAll('tr.sep').forEach(function(r){r.remove()});var rows=[].slice.call(t.querySelectorAll('tr')).filter(function(r){return r.querySelector('td.f')});if(!rows.length)return;var tb=rows[0].parentNode;var ok=rows.filter(function(r){return r.classList.contains('ok')});var sk=rows.filter(function(r){return r.classList.contains('skip')});var pend=rows.length-ok.length-sk.length;var h=t.previousElementSibling;while(h&&!/^H[23]$/.test(h.tagName))h=h.previousElementSibling;var pn=h?(h.textContent.match(/^(파트\s?\d+|P\d+)/)||[''])[0]:'';if(ok.length){var sep=document.createElement('tr');sep.className='sep';var td=document.createElement('td');td.colSpan=(t.querySelector('tr')||{children:[]}).children.length||4;td.textContent='▼ '+(pn?pn+' ':'')+'납품 완료 '+ok.length+'컷 — 완료된 컷은 여기 아래로 모았습니다. 타임코드가 처음부터 다시 시작됩니다'+(pend?' (남은 작업은 위 '+pend+'컷)':' (이 표는 전부 완료)');sep.appendChild(td);tb.appendChild(sep);}ok.concat(sk).forEach(function(r){tb.appendChild(r)});});}
 /* 집계: 파일 행(td.f) 중 건너뜀(.skip)은 모수에서 빼고, 납품완료(.ok) 또는 체크 완료(.finished)를 완료로 센다 */
 (function(){
   function count(root){
