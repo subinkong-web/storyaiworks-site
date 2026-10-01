@@ -1265,3 +1265,19 @@ body.hascur .cring{opacity:1}
 .hfilm.mkb .cap i{font-size:10.5px;letter-spacing:.12em;color:rgba(244,243,240,.7);font-style:normal}
 .hfilm.mkb:hover .ph{border-color:var(--accline)}
 @media (max-width:520px){.hfilm.mkb .cap i{display:none}}
+
+/* ============ 리무빙 — 참여 프로그램 포스터 (2026-10-01) ============ */
+.rm-credits{margin-top:72px;padding-top:40px;border-top:1px solid var(--hair)}
+.rm-cr-h{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:baseline}
+.rm-cr-h .lb{font-size:11px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--acc)}
+.rm-cr-h b{font-size:clamp(20px,2.2vw,26px);font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.rm-cr-h p{grid-column:1/-1;margin-top:6px;font-size:14px;color:var(--dim);word-break:keep-all}
+.rm-cr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:28px;max-width:900px}
+.rm-cr-grid figure{margin:0}
+.rm-cr-grid img{display:block;width:100%;aspect-ratio:1240/1754;object-fit:cover;background:var(--panel);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.rm-cr-grid figcaption{padding-top:12px;display:flex;flex-direction:column;gap:3px}
+.rm-cr-grid figcaption b{font-size:14.5px;font-weight:800;color:var(--ink);letter-spacing:-.01em;word-break:keep-all}
+.rm-cr-grid figcaption span{font-size:11px;letter-spacing:.1em;color:var(--dim2)}
+.rm-cr-note{margin-top:16px;font-size:11px;color:var(--dim2)}
+.rm-credits + .rmcta{margin-top:48px}
+@media (max-width:620px){.rm-cr-grid{gap:12px}.rm-cr-grid figcaption b{font-size:12.5px}}
