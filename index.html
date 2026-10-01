@@ -30,7 +30,8 @@
     <li><a href="#work">Work</a></li>
     <li><a href="#pipeline">Pipeline</a></li>
     <li><a href="#infra">Flowmark</a></li>
-    <li><a href="#scripture">Scripture</a></li>
+    <!-- Scripture Engine 은 완성 후 공개(2026-10-01 대표님) — 섹션과 함께 hidden 해제 -->
+    <li hidden><a href="#scripture">Scripture</a></li>
     <li><a href="#studio">Studio</a></li>
     <li><a href="#removal">VFX</a></li>
     <li><a href="#showreel">Showreel</a></li>
@@ -58,7 +59,7 @@
       <div class="hero-meta rv d3">
         <div>Company<b>주식회사 스토리에이아이웍스</b></div>
         <div>Founded<b>2026 · Goyang, Korea</b></div>
-        <div>Systems<b>Flowmark · Scripture Engine</b></div>
+        <div>Systems<b>Flowmark</b></div>
       </div>
     </div>
 
@@ -67,19 +68,21 @@
       <button class="hfilm main rv d2" type="button"
               data-slot="film_demo" data-yt="65sRoCflCuo" data-title="데모 필름 — The First Demo">
         <span class="ph">
-          <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo" fetchpriority="high">
+          <img src="images/thumb_demo.jpg?v=261001" alt="SAW 데모 필름 — The First Demo" fetchpriority="high">
           <span class="tag">지금 재생</span>
           <span class="play"></span>
         </span>
         <span class="cap"><b data-tx="film_demo_ct">데모 필름</b><i>Demo Film · 전 컷 AI 제작</i></span>
       </button>
-      <button class="hfilm sm rv d3" type="button"
+      <!-- 메이킹 필름 — 버튼 전체를 배너로: 제작 5단계(캐릭터 시트→Flowmark→AI 러프컷→그린스크린 실사→완성 컷)를 한 줄로. 2026-10-01 -->
+      <button class="hfilm sm mkb rv d3" type="button"
               data-slot="film_making" data-yt="poNytRVqcjs" data-title="메이킹 필름 — 데이터가 컷이 되기까지">
         <span class="ph">
-          <img src="images/thumb_making.jpg" alt="SAW 메이킹 필름 — 데이터가 컷이 되기까지" loading="lazy">
+          <img src="images/making_banner.jpg" alt="SAW 제작 5단계 — 캐릭터 데이터, Flowmark, AI 러프컷, 그린스크린 실사, 완성 컷" loading="lazy">
+          <span class="mk-st"><i>01 Data</i><i>02 System</i><i>03 AI cut</i><i>04 Shoot</i><i>05 Final</i></span>
           <span class="play"></span>
+          <span class="cap"><b data-tx="film_mk_ct">메이킹 필름</b><i>데이터가 컷이 되기까지 · Making Film</i></span>
         </span>
-        <span class="cap"><b data-tx="film_mk_ct">메이킹 필름</b><i>Making Film</i></span>
       </button>
     </div>
   </div>
@@ -100,7 +103,7 @@
 <!-- ══ 파이프라인 티커 ══ -->
 <div class="ticker" aria-hidden="true">
   <div class="tin">
-    <span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> SCRIPTURE ENGINE <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span><span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> SCRIPTURE ENGINE <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span>
+    <span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span><span>DATA <em>──</em> MISE-EN-SCÈNE <em>──</em> ROUGH CUT <em>──</em> LIVE ACTION <em>──</em> COLOR <em>──</em> SOUND <em>──</em> FINAL MIX <em>·</em> FLOWMARK <em>──</em> EASTEREGG STUDIO <em>·</em> MADE WITH AI <em>·</em> </span>
   </div>
 </div>
 
@@ -119,12 +122,12 @@
         그 파이프라인을 구동하는 <b>제작 시스템을 직접 개발</b>합니다.</p>
         <div class="about-facts rv d3" style="margin-top:38px">
           <div class="row"><span>법인명</span><div><b>주식회사 스토리에이아이웍스</b> — SAW / Story AI Works</div></div>
-          <div class="row"><span>설립</span><div><b>2026. 4</b></div></div>
+          <div class="row"><span>설립</span><div><b>2026. 4. 15</b></div></div>
           <div class="row"><span>경영진</span><div><b>정태우</b> CEO · Content Strategy&nbsp;/&nbsp;<b>공수빈</b> CTO · Tech Direction</div></div>
           <div class="row"><span>소재지</span><div>경기도 고양시 일산동구 노첨길24번길 34-3, 1층 (장항동)</div></div>
           <div class="row"><span>등록번호</span><div>사업자등록번호 164-87-03772</div></div>
           <div class="row"><span>사업 영역</span><div>AI 영화·영상 제작 · 콘텐츠 IP 개발 · 제작 시스템 개발</div></div>
-          <div class="row"><span>자체 시스템</span><div><b>Flowmark</b> 통합 AI 워크플로우 · <b>Scripture Engine</b> 대본 자동화</div></div>
+          <div class="row"><span>자체 시스템</span><div><b>Flowmark</b> 통합 AI 워크플로우</div></div>
         </div>
         <div class="tworoots rv d4">
           <span class="lb">Two Roots</span>
@@ -179,7 +182,7 @@
           <div class="n">04</div>
           <h3>제작 시스템 개발</h3>
           <div class="e">Production Tech</div>
-          <p>워크플로우 시스템 Flowmark, 대본 자동화 Scripture Engine 등 제작 기술을 직접 개발·자산화합니다.</p>
+          <p>워크플로우 시스템 Flowmark 등 제작 기술을 직접 개발·자산화합니다.</p>
         </div>
       </div>
       <div class="biz rv d4">
@@ -452,8 +455,8 @@
   </div>
 </section>
 
-<!-- ══ SCRIPTURE ENGINE (LIGHT PRODUCT) ══ -->
-<section class="sec light" id="scripture">
+<!-- ══ SCRIPTURE ENGINE (LIGHT PRODUCT) — 2026-10-01 대표님: 완성 전까지 숨김(아래 3개 section 의 hidden 제거하면 복구) ══ -->
+<section class="sec light" id="scripture" hidden>
   <div class="wrap">
     <div class="fm-k rv">Infrastructure · Proprietary System 02</div>
     <div class="prod-t rv d1">SCRIPTURE<br>ENGINE</div>
@@ -494,7 +497,7 @@
 </section>
 
 <!-- ══ SCRIPTURE 02 — 프로세스 · Beat 태깅 ══ -->
-<section class="sec light" style="padding-top:0">
+<section class="sec light" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="klabel rv">Scripture Engine 02 — Process</div>
     <h2 class="ktitle rv d1">원문에서 대본까지,<br><em>세 단계</em>의 구조 변환</h2>
@@ -520,7 +523,7 @@
 </section>
 
 <!-- ══ SCRIPTURE 03 — 성능 · 파이프라인 직결 ══ -->
-<section class="sec light" style="padding-top:0">
+<section class="sec light" style="padding-top:0" hidden>
   <div class="wrap">
     <div class="klabel rv">Scripture Engine 03 — Performance &amp; Integration</div>
     <h2 class="ktitle rv d1">수치로 증명하고,<br><em>파이프라인에 직결</em>됩니다</h2>
@@ -664,7 +667,7 @@
     <!-- 대표작 — 데모 필름 (Films 섹션과 중복이지만 의도된 재노출) -->
     <figure class="film reel-feature rv" data-yt="65sRoCflCuo" data-slot="showreel_featured">
       <div class="ph">
-        <img src="images/thumb_demo.jpg" alt="SAW 데모 필름 — The First Demo">
+        <img src="images/thumb_demo.jpg?v=261001" alt="SAW 데모 필름 — The First Demo">
         <div class="play"></div>
       </div>
       <figcaption><b>데모 필름 — The First Demo</b><span>RT 3:24 · 전 컷 AI 제작 · Generated &amp; Directed by SAW</span></figcaption>
@@ -811,7 +814,7 @@
       <div class="rv d2"><span class="now-tag">Now</span><div class="y">2026 H2</div><b>첫 작품 실행</b>
         <p>영화 프로젝트 착수 · 광고·브랜드 콘텐츠 수주 확대</p></div>
       <div class="rv d3"><div class="y">2027</div><b>제작 확장</b>
-        <p>장편·시리즈 라인업 · IP 파트너십 · Scripture Engine 파일럿</p></div>
+        <p>장편·시리즈 라인업 · IP 파트너십</p></div>
       <div class="rv d4"><div class="y">2028</div><b>파이프라인 상용화</b>
         <p>제작 시스템의 외부 공급 · 글로벌 공동 제작</p></div>
     </div>

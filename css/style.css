@@ -1248,3 +1248,20 @@ body.hascur .cring{opacity:1}
   .cm-row{grid-template-columns:1fr}
   .cm-brands li{font-size:17px;min-width:0}
 }
+
+/* ============ 메이킹 필름 배너 버튼 (2026-10-01) — 버튼 전체가 이미지, 글자는 위에 얹는다 ============ */
+.hfilm.sm.mkb{display:block;padding:0;border:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.hfilm.sm.mkb:hover{background:none;box-shadow:none}
+.hfilm.mkb .ph{aspect-ratio:7/2;width:100%;flex:none;border-color:rgba(255,255,255,.16)}
+.hfilm.mkb .ph::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(0deg,rgba(8,8,10,.86) 0%,rgba(8,8,10,.35) 42%,rgba(8,8,10,0) 70%),linear-gradient(180deg,rgba(8,8,10,.45) 0%,rgba(8,8,10,0) 30%)}
+.hfilm.mkb .mk-st{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:repeat(5,1fr);pointer-events:none}
+.hfilm.mkb .mk-st i{font-style:normal;padding:8px 0 0 8px;font-size:8.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(244,243,240,.9);border-left:1px solid rgba(244,243,240,.35);text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.hfilm.mkb .mk-st i:first-child{border-left:0}
+.hfilm.mkb .play{width:40px;height:40px}
+.hfilm.mkb .play::after{border-left-width:10px;border-top-width:6px;border-bottom-width:6px;margin-left:3px}
+.hfilm.mkb .cap{position:absolute;left:14px;right:14px;bottom:10px;z-index:3;flex-direction:row;align-items:baseline;gap:10px;padding:0}
+.hfilm.mkb .cap b{font-size:15px;color:#F4F3F0}
+.hfilm.mkb .cap i{font-size:10.5px;letter-spacing:.12em;color:rgba(244,243,240,.7);font-style:normal}
+.hfilm.mkb:hover .ph{border-color:var(--accline)}
+@media (max-width:520px){.hfilm.mkb .cap i{display:none}}
