@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /board/
+Disallow: /removal/
+Disallow: /projects/
+Disallow: /grants/
+Disallow: /assets-src/
+Disallow: /_ref/
+
+Sitemap: https://www.storyaiworks.com/sitemap.xml
