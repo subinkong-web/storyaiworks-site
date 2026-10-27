@@ -88,6 +88,28 @@
   .making .sub b{color:var(--ink);font-weight:700}
   .making .meta{margin-top:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;color:#7a7a82;text-transform:uppercase}
   .making .meta b{color:var(--acc);font-weight:700}
+
+  /* ══ 창립자 인터뷰 v3 — 드론(절벽 위 인터뷰룸 건물) + 정태우 앉은 인터뷰 2분할(10-27 대표님) ══ */
+  .founder3 .panes{position:absolute;inset:0;z-index:1;display:grid;grid-template-columns:1.32fr 1fr;gap:3px;background:var(--acc)}
+  .founder3 .pane{position:relative;overflow:hidden}
+  .founder3 .pane img{width:100%;height:100%;object-fit:cover;filter:saturate(1.1) contrast(1.08)}
+  .founder3 .p1 img{object-position:46% 62%}
+  .founder3 .p2 img{object-position:60% 40%;transform:scale(1.26);transform-origin:60% 18%}
+  .founder3 .pane i{position:absolute;top:104px;right:26px;z-index:7;font-style:normal;
+    font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:#F4F3F0;text-transform:uppercase;
+    background:rgba(11,11,12,.55);border:1px solid rgba(255,255,255,.28);padding:6px 12px}
+  .founder3 .pane i b{color:var(--acc);font-weight:800;margin-right:8px}
+  .founder3 .shade{position:absolute;inset:0;z-index:5;background:
+    radial-gradient(ellipse at 16% 80%,rgba(103,68,152,.22),transparent 48%),
+    linear-gradient(to top,rgba(11,11,12,.92) 6%,rgba(11,11,12,.55) 34%,rgba(11,11,12,0) 60%),
+    linear-gradient(90deg,rgba(11,11,12,.55),rgba(11,11,12,0) 45%)}
+  .founder3 .tt{position:absolute;left:52px;bottom:62px;z-index:7}
+  .founder3 .k{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:800;letter-spacing:.4em;color:var(--acc);text-transform:uppercase}
+  .founder3 .k::before{content:"";width:46px;height:2px;background:var(--acc);box-shadow:0 0 18px rgba(180,155,226,.9)}
+  .founder3 h1{margin-top:18px;font-size:68px;line-height:1.12;font-weight:800;color:var(--ink);letter-spacing:-.02em;text-shadow:0 14px 50px rgba(0,0,0,.85)}
+  .founder3 h1 em{font-style:normal;color:var(--acc)}
+  .founder3 .meta{margin-top:20px;font-family:var(--mono);font-size:12px;letter-spacing:.26em;color:rgba(244,243,240,.75);text-transform:uppercase}
+  .founder3 .meta b{color:var(--acc);font-weight:700}
 </style>
 </head>
 <body>
@@ -131,6 +153,27 @@
     <h1>데이터가<br><em>컷</em>이 되기까지</h1>
     <div class="sub">Behind the Pipeline</div>
     <div class="meta"><b>Easteregg Studio</b> · Chroma Stage 1 · 15 × 10 M Horizont</div>
+  </div>
+  <div class="vin"></div>
+  <div class="grain"></div>
+  <div class="corner bl"></div><div class="corner br"></div>
+</div>
+
+
+<!-- 창립자 인터뷰 썸네일 v3 (2026-10-27) — 인터뷰필름 v13 r27: 왼쪽 91.5초 드론(절벽 위 건물) · 오른쪽 13.4초 정태우 앉은 인터뷰(자막 없는 프레임) -->
+<div class="thumb founder3" id="t-founder">
+  <div class="panes">
+    <div class="pane p1"><img src="../images/founder_cliff.jpg" alt=""></div>
+    <div class="pane p2"><img src="../images/founder_jtw.jpg" alt=""><i><b>CEO</b>Jung Taewoo</i></div>
+  </div>
+  <div class="shade"></div>
+  <div class="grid"></div>
+  <img class="logo" src="../images/saw_logo_white.png" alt="">
+  <div class="tr">Founder Interview · 2026</div>
+  <div class="tt">
+    <div class="k">SAW — Founder Interview</div>
+    <h1>이야기가 <em>시스템</em>이 되고,<br>상상이 <em>현실</em>이 되는 곳</h1>
+    <div class="meta">Story AI Works · RT <b>1:42</b></div>
   </div>
   <div class="vin"></div>
   <div class="grain"></div>
