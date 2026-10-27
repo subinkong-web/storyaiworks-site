@@ -220,7 +220,7 @@ body.hascur .cring{opacity:1}
 .hero-in{
   position:relative;z-index:2;width:100%;
   padding-top:clamp(96px,12vh,130px);padding-bottom:clamp(52px,7vh,86px);
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
   column-gap:clamp(28px,4vw,64px);align-items:center;
 }
 .hero-k{
@@ -228,7 +228,7 @@ body.hascur .cring{opacity:1}
   text-transform:uppercase;margin-bottom:22px;
 }
 .hero-t{
-  font-size:clamp(32px,3.7vw,56px);font-weight:800;color:var(--ink);
+  font-size:clamp(32px,3vw,48px);font-weight:800;color:var(--ink);
   line-height:1.18;letter-spacing:-.035em;word-break:keep-all;max-width:14em;
 }
 .hero-t em{font-family:var(--serifkr);font-style:normal;font-weight:600;color:var(--acc)}
@@ -244,6 +244,11 @@ body.hascur .cring{opacity:1}
 
 /* ---- 히어로 필름 카드 ---- */
 .hero-films{display:flex;flex-direction:column;gap:clamp(12px,1.4vw,16px)}
+/* 데모 필름·창립자 인터뷰 — 같은 크기 두 장을 한 줄에(2026-10-27) */
+.hf-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.4vw,16px)}
+.hf-row .hfilm .play{width:54px;height:54px}
+.hf-row .hfilm .play::after{border-left-width:12px;border-top-width:8px;border-bottom-width:8px}
+.hf-row .hfilm .cap{flex-direction:column;align-items:flex-start;gap:4px}
 .hfilm{
   display:block;width:100%;background:none;border:0;padding:0;margin:0;
   color:inherit;font:inherit;text-align:left;cursor:pointer;
@@ -343,6 +348,7 @@ body.hascur .cring{opacity:1}
 }
 @media (max-width:720px){
   .hero-meta{display:none}
+  .hf-row{grid-template-columns:1fr}
   .hfilm .play{width:56px;height:56px}
   .hfilm.sm .play{width:46px;height:46px}
 }

@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+KR:wght@400;600;700&display=swap">
 <!-- CSS 구조가 바뀌면 v를 올린다 — 캐시된 옛 스타일시트로 새 섹션이 깨져 보이는 것을 막는다 -->
-<link rel="stylesheet" href="css/style.css?v=20260809b">
+<link rel="stylesheet" href="css/style.css?v=20261027">
 </head>
 <body>
 
@@ -73,8 +73,10 @@
       </div>
     </div>
 
-    <!-- 히어로 필름 카드 — data-slot은 site-config.json의 영상 슬롯과 연결된다 -->
+    <!-- 히어로 필름 카드 — data-slot은 site-config.json의 영상 슬롯과 연결된다
+         데모 필름·창립자 인터뷰를 같은 크기로 한 줄에(2026-10-27 대표님), 메이킹은 그 아래 보조 배너 -->
     <div class="hero-films">
+      <div class="hf-row">
       <button class="hfilm main rv d2" type="button"
               data-slot="film_demo" data-yt="JZXNSSvJtAA" data-title="데모 필름 — The First Demo">
         <span class="ph">
@@ -84,6 +86,16 @@
         </span>
         <span class="cap"><b data-tx="film_demo_ct">데모 필름</b><i>Demo Film · 전 컷 AI 제작</i></span>
       </button>
+      <button class="hfilm main rv d2" type="button"
+              data-slot="founder_interview" data-yt="4mAojV1EyYs" data-title="창립자 인터뷰 — Founder Interview">
+        <span class="ph">
+          <img src="images/thumb_founder.jpg?v=261027c" alt="SAW 창립자 인터뷰 — 절벽 위 인터뷰룸 건물과 정태우 CEO">
+          <span class="tag">New</span>
+          <span class="play"></span>
+        </span>
+        <span class="cap"><b data-tx="film_fi_ct">창립자 인터뷰</b><i>Founder Interview · RT 1:42</i></span>
+      </button>
+      </div>
       <!-- 메이킹 필름 — 버튼 전체를 배너로: 제작 5단계(캐릭터 시트→Flowmark→AI 러프컷→그린스크린 실사→완성 컷)를 한 줄로. 2026-10-01 -->
       <button class="hfilm sm mkb rv d3" type="button"
               data-slot="film_making" data-yt="g55R3-_9mXE" data-title="메이킹 필름 — 데이터가 컷이 되기까지">
@@ -910,6 +922,7 @@
     <div class="vhead">
       <div class="vtabs">
         <button class="vtab on" type="button" data-slot="film_demo" data-yt="JZXNSSvJtAA">데모 필름</button>
+        <button class="vtab" type="button" data-slot="founder_interview" data-yt="4mAojV1EyYs">창립자 인터뷰</button>
         <button class="vtab" type="button" data-slot="film_making" data-yt="g55R3-_9mXE">메이킹 필름</button>
       </div>
       <button class="vx" id="vbox-x" aria-label="닫기">×</button>
